@@ -1,0 +1,374 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-04-06 20:33-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: bazaar_dog/settings/base.py:188
+msgid "Arabic"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:189
+msgid "Danish"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:190
+msgid "German"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:191
+msgid "English"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:192
+msgid "Spanish"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:193
+msgid "French"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:194
+msgid "Italian"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:195
+msgid "Dutch"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:196
+msgid "Portuguese"
+msgstr ""
+
+#: bazaar_dog/settings/base.py:197
+msgid "Russian"
+msgstr ""
+
+#: ob/api/base.py:41 ob/api/base.py:132
+msgid "𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌"
+msgstr "𝕮𝖆𝖓𝖊 𝖉𝖊𝖑 𝕭𝖆𝖟𝖆𝖗"
+
+#: ob/api/base.py:43 ob/api/base.py:134
+msgid "Bazaar Dog"
+msgstr "Cane del Bazar"
+
+#: ob/api/base.py:132
+msgid "𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰"
+msgstr "𝔓𝔯𝔬𝔣𝔦𝔩𝔦"
+
+#: ob/api/base.py:134
+msgid "Profiles"
+msgstr "Profili"
+
+#: ob/api/filter.py:72
+msgid "Search"
+msgstr ""
+
+#: ob/api/filter.py:73
+msgid "A search term."
+msgstr ""
+
+#: ob/api/param_dev.py:12
+msgid "Default"
+msgstr ""
+
+#: ob/api/param_dev.py:25 ob/api/param_dev.py:42
+msgid "Online"
+msgstr ""
+
+#: ob/api/param_dev.py:26 ob/api/param_profile.py:150
+msgid "All"
+msgstr "Tutti"
+
+#: ob/api/param_dev.py:35
+msgid "Language"
+msgstr ""
+
+#: ob/api/param_listing.py:20 ob/api/param_profile.py:51
+msgid "Bitcoin Cash"
+msgstr ""
+
+#: ob/api/param_listing.py:21 ob/api/param_profile.py:52
+msgid "Bitcoin Legacy"
+msgstr ""
+
+#: ob/api/param_listing.py:29 ob/api/param_profile.py:60 ob/models.py:127
+#: ob/models.py:141 ob/models.py:632 ob/models.py:647
+msgid "Any"
+msgstr "Tutti"
+
+#: ob/api/param_listing.py:102 ob/api/param_profile.py:126
+msgid "Hide"
+msgstr "No"
+
+#: ob/api/param_listing.py:102 ob/api/param_profile.py:127
+msgid "Show"
+msgstr "Si"
+
+#: ob/api/param_listing.py:102 ob/api/param_profile.py:128
+msgid "Only NSFW"
+msgstr "Solo contenuti per adulti"
+
+#: ob/api/param_listing.py:239
+#, python-brace-format
+msgid "to {place}"
+msgstr "in {place}"
+
+#: ob/api/param_listing.py:241
+msgid "to Anywhere"
+msgstr "in Tutto il Mondo"
+
+#: ob/api/param_listing.py:278 ob/api/param_profile.py:217
+msgid "Main Network"
+msgstr "Rete Principale"
+
+#: ob/api/param_listing.py:278 ob/api/param_profile.py:217
+msgid "Test Network"
+msgstr "Modalità Test"
+
+#: ob/api/param_listing.py:331
+#, python-brace-format
+msgid "> ~{percentage}% Bitcoin Fee"
+msgstr ""
+
+#: ob/api/param_listing.py:340 ob/api/param_listing.py:406
+#: ob/api/param_profile.py:38 ob/api/param_profile.py:308
+msgid "Reset"
+msgstr "Reset"
+
+#: ob/api/param_listing.py:346 ob/api/param_profile.py:253
+msgid "Accepted Currencies"
+msgstr "Valute Accettate"
+
+#: ob/api/param_listing.py:351
+msgid "Verified Moderator"
+msgstr ""
+
+#: ob/api/param_listing.py:356
+msgid "Moderators Available"
+msgstr ""
+
+#: ob/api/param_listing.py:361 ob/api/param_profile.py:293
+msgid "Adult Content"
+msgstr "Contenuto per Adulti"
+
+#: ob/api/param_listing.py:366
+msgid "Condition"
+msgstr "Condizioni"
+
+#: ob/api/param_listing.py:371 ob/api/param_profile.py:28
+#: ob/api/sort_listing.py:22 ob/api/sort_profile.py:22
+msgid "Rating"
+msgstr "Valutazione"
+
+#: ob/api/param_listing.py:376
+msgid "Type"
+msgstr "Tipo"
+
+#: ob/api/param_listing.py:381
+msgid "Ships to"
+msgstr "Spedizione in"
+
+#: ob/api/param_listing.py:386
+msgid "Ships Free "
+msgstr "Spedizione gratuita"
+
+#: ob/api/param_listing.py:391
+msgid "Connection Type (Alpha)"
+msgstr ""
+
+#: ob/api/param_listing.py:396 ob/api/param_profile.py:303
+msgid "Network"
+msgstr "Rete"
+
+#: ob/api/param_listing.py:401
+msgid "Show Dust"
+msgstr ""
+
+#: ob/api/param_profile.py:12 ob/api/sort_listing.py:7 ob/api/sort_profile.py:7
+msgid "Relevance"
+msgstr "Rilevanza"
+
+#: ob/api/param_profile.py:18 ob/api/sort_profile.py:12
+msgid "Items Listed (High to Low)"
+msgstr ""
+
+#: ob/api/param_profile.py:23 ob/api/sort_profile.py:17
+msgid "Moderating (High to Low)"
+msgstr ""
+
+#: ob/api/param_profile.py:150 ob/api/widgets.py:11 ob/api/widgets.py:48
+msgid "Yes"
+msgstr "Sì"
+
+#: ob/api/param_profile.py:171
+msgid "Is an OB1 Verified Moderator"
+msgstr ""
+
+#: ob/api/param_profile.py:191
+msgid "Has OB1 Verified Moderator"
+msgstr ""
+
+#: ob/api/param_profile.py:258
+msgid "Verification"
+msgstr ""
+
+#: ob/api/param_profile.py:263
+msgid "Offers Moderation"
+msgstr ""
+
+#: ob/api/param_profile.py:268
+msgid "Moderator Language"
+msgstr ""
+
+#: ob/api/param_profile.py:273
+msgid "Store Verification"
+msgstr ""
+
+#: ob/api/param_profile.py:278
+msgid "Store Moderators Available"
+msgstr ""
+
+#: ob/api/param_profile.py:283
+msgid "Vendor Rating"
+msgstr "Valutazione"
+
+#: ob/api/param_profile.py:288
+msgid "Server Version"
+msgstr "Versione"
+
+#: ob/api/param_profile.py:298
+msgid "Connection Type"
+msgstr ""
+
+#: ob/api/sort_listing.py:12
+msgid "Price (Low to High)"
+msgstr "Prezzo crescente"
+
+#: ob/api/sort_listing.py:17
+msgid "Price (High to Low)"
+msgstr "Prezzo decrescente"
+
+#: ob/api/sort_listing.py:27
+msgid "Random"
+msgstr "Casuale"
+
+#: ob/api/sort_listing.py:37
+msgid "Newest"
+msgstr "Nuovo"
+
+#: ob/api/sort_listing.py:42
+msgid "Oldest"
+msgstr "Meno Nuovo"
+
+#: ob/api/sort_listing.py:47
+msgid "Title A-Z"
+msgstr "Nome A-Z"
+
+#: ob/api/sort_listing.py:52
+msgid "Title Z-A"
+msgstr "Nome Z-A"
+
+#: ob/api/sort_listing.py:57
+msgid "Least Relevant️"
+msgstr "Meno Rilevante"
+
+#: ob/api/widgets.py:10 ob/api/widgets.py:47
+msgid "Unknown"
+msgstr ""
+
+#: ob/api/widgets.py:12 ob/api/widgets.py:49
+msgid "No"
+msgstr ""
+
+#: ob/models.py:128
+msgid "Percentage"
+msgstr ""
+
+#: ob/models.py:129
+msgid "Fixed"
+msgstr ""
+
+#: ob/models.py:130
+msgid "Fixed Plus Percentage"
+msgstr ""
+
+#: ob/models.py:142
+msgid "Clearnet"
+msgstr ""
+
+#: ob/models.py:143
+msgid "Dual Stack"
+msgstr ""
+
+#: ob/models.py:144
+msgid "Tor Only"
+msgstr ""
+
+#: ob/models.py:145
+msgid "IPFS Cashed"
+msgstr ""
+
+#: ob/models.py:633
+msgid "Physical Good"
+msgstr "Bene fisico"
+
+#: ob/models.py:634
+msgid "Digital Good"
+msgstr "Bene digitale"
+
+#: ob/models.py:635
+msgid "Service"
+msgstr "Servizio"
+
+#: ob/models.py:637
+msgid "Cryptocurrency"
+msgstr ""
+
+#: ob/models.py:648
+msgid "New"
+msgstr "Nuovo"
+
+#: ob/models.py:649
+msgid "Used Exellent"
+msgstr "Usato - Eccellente"
+
+#: ob/models.py:650
+msgid "Used Good"
+msgstr "Usato - Buono"
+
+#: ob/models.py:651
+msgid "Used Poor"
+msgstr "Usato - Messo male"
+
+#: ob/models.py:652
+msgid "Refurbished"
+msgstr "Ristrutturato"
+
+#: ob/models.py:888
+msgid "Local Pickup"
+msgstr ""
+
+#: ob/models.py:889
+msgid "Fixed Price"
+msgstr ""
+
+#~ msgid "Fastest"
+#~ msgstr "Veloce"
+
+#~ msgid "𝔅𝔞𝔷𝔞𝔞𝔯 𝔇𝔬𝔤"
+#~ msgstr "𝕮𝖆𝖓𝖊 𝖉𝖊𝖑 𝔅𝖆𝖟𝖆𝖗"
