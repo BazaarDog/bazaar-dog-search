@@ -26,8 +26,8 @@ cd bazaar-dog-search
 # install a python3 virtual environment
 
 pip3 install virtualenv
-virtualenv ~/.bazzar_dog_venv
-source ~/.bazzar_dog_venv/bin/activate
+virtualenv ~/.bazaar_dog_venv
+source ~/.bazaar_dog_venv/bin/activate
 
 # install project requirements
 
