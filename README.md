@@ -78,7 +78,7 @@ database may contain content that is NSFW, or illegal in your area.**
 The OpenBazaar reference client prefers search engines on real domain names and not 'localhost' or '127.0.0.1',
 So the easiest approach is to fake it by mapping the development port to a standard port (80/443) and fake the dns.
 
-On a debian based system, following will map your development port from 8000 to 80
+On a debian-based system, the following commands should map your development port from 8000 to 80
 
 ```bash
 sudo iptables -t nat -I PREROUTING --src 0/0 --dst 127.0.0.1 -p tcp --dport 80 -j REDIRECT --to-ports 8000
@@ -147,6 +147,6 @@ attempt to make it more efficient.
 
 * [ob.tasks.ping](ob/tasks/ping.py) contains functions to discover which nodes are online.
 * `profile.should_update()` tries to prevent oversampling.
-* `listing.sync()` checks if the checksum differs.
+* `listing.sync()` checks if the checksum differs when called.
 
 Future plans are dependent on PubSub (ipfs) features coming online in 2018.
