@@ -54,16 +54,23 @@ OB_API_AUTH = (OB_API_USER, OB_API_PASSWORD)
 
 
 CRAWL_TIMEOUT = 48  # seconds
-SHORTEST_UPDATE_HOURS = 24
+SHORTEST_UPDATE_HOURS = 4 # don't hit people more than once every X hours
 
-HTTPS = 'https://'
+OB_USE_SSL = os.environ.get('OB_USE_SSL')
+OB_CERTIFICATE = os.environ.get('OB_CERTIFICATE')
+
+# Don't use ssl if explicitly set not to.
+if OB_USE_SSL == 'False':
+    OB_PROTOCOL = 'http://'
+else:
+    OB_PROTOCOL = 'https://'
 
 OB_SERVER = os.environ.get('OB_SERVER')
 OB_SERVER_MAINNET_PORT = os.environ.get('OB_SERVER_MAINNET_PORT')
 OB_SERVER_TESTNET_PORT = os.environ.get('OB_SERVER_TESTNET_PORT')
 
-OB_MAINNET_ENDPOINT = HTTPS + OB_SERVER + ':' + OB_SERVER_MAINNET_PORT
-OB_TESTNET_ENDPOINT = HTTPS + OB_SERVER + ':' + OB_SERVER_TESTNET_PORT
+OB_MAINNET_ENDPOINT = OB_PROTOCOL + OB_SERVER + ':' + OB_SERVER_MAINNET_PORT
+OB_TESTNET_ENDPOINT = OB_PROTOCOL + OB_SERVER + ':' + OB_SERVER_TESTNET_PORT
 
 IPNS_MAINNET_HOST = OB_MAINNET_ENDPOINT + "/ipns/"
 IPNS_TESTNET_HOST = OB_TESTNET_ENDPOINT + '/ipns/'
@@ -75,7 +82,7 @@ DUST_FEE_PERCENT = 2
 
 APPEND_SLASH = True
 
-SITE_NAME = 'Not Bazaar Doggo'
+SITE_NAME = 'Not Bazaaro Doggo'
 SITE_URL = 'http://admin.bazaar.dog'
 
 
@@ -197,4 +204,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+# not used
 STATIC_URL = '/static/'
