@@ -50,7 +50,7 @@ pip install -r requirements.txt
 
 In order to keep passwords and local configurations out of harms way, one approach is to store them in environment
 variables. Currently configuration variables are stored in [postactivate](postactivate), the base configuration
-assumes a `openbazaar-go` server on localhost:4003 with no auth or ssl.
+assumes a `openbazaar-go` server on 127.0.0.1:4003 with no auth or ssl.
 
 In the future, these variables will likely move to an ansible-vault type configuration.
 
@@ -60,7 +60,7 @@ In the future, these variables will likely move to an ansible-vault type configu
 A management command is provided to bootstrap a node. It uses a list of peers stored in [custom.py](custom.py) in
 the variable `the_champions_of_decentralized_commerce`.
 
-It can be run from the project directory in the python virtual environment with like so:
+It can be run from the project directory in the python virtual environment a management command:
 
 ```
 ./manage.py bootstrap
@@ -91,7 +91,7 @@ If you choose something else for your domain name, be sure to add it to `ALLOWED
 
 ### Internationalization
 
-Translations are configured in [settings.base](bazaar_dog/settings/base.py) with source in locale, there are a few django-admin
+Translations are configured in [settings.base](bazaar_dog/settings/base.py) with the translation source files in locale, there are a few django-admin
 commands that are useful for building international support
 
 ```bash
@@ -129,3 +129,24 @@ then calls update_price_values
 ```
 ob.tasks.valuation.update_price_values()
 ```
+
+### Customization
+
+Several functions are not provided to encourage innovation, for legal reasons, and for security through obfuscation.
+
+* `get_listing_rank` returns the rank of a listing
+* `get_profile_rank` returns the rank of a profile
+* `mark_scammers` will mark all listed profiles as scams, causing them not to appear. List excluded for legal reasons
+* `mark_dust` mark transactions as dust which fall below some percentage fee threshold.
+* `the_champions_of_decentralized_commerce` is a list of 'good nodes', which an operator may choose to change.
+
+### Crawling
+
+This code is not terribly efficient at crawling the IPFS network at the moment. There are several tools which
+attempt to make it more efficient.
+
+* [ob.tasks.ping](ob/tasks/ping.py) contains functions to discover which nodes are online.
+* `profile.should_update()` tries to prevent oversampling.
+* `listing.sync()` checks if the checksum differs.
+
+Future plans are dependent on PubSub (ipfs) features coming online in 2018.
