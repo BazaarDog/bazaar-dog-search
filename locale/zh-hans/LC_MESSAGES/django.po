@@ -17,367 +17,459 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:184
 msgid "Arabic"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:185
 msgid "Danish"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:186
 msgid "German"
 msgstr ""
 
+# Ignore, Do not translate, in base translations
 #: bazaar_dog/settings/base.py:187
 msgid "English"
 msgstr ""
 
+# Ignore, Do not translate, in base translations
 #: bazaar_dog/settings/base.py:188
 msgid "Spanish"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:189
 msgid "French"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:190
 msgid "Italian"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:191
 msgid "Japanese"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:192
 msgid "Korean"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:193
 msgid "Dutch"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:194
 msgid "Portuguese"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:195
 msgid "Russian"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:196
 msgid "Simplified Chinese"
 msgstr ""
 
+# Ignore, Do not translate, in base translation
 #: bazaar_dog/settings/base.py:197
 msgid "Traditional Chinese"
 msgstr ""
 
+# Please translate
+# see thejoewoods.com/blackletter and https://yaytext.com/fraktur/
 #: ob/api/base.py:41 ob/api/base.py:132
 msgid "𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌"
 msgstr ""
 
+# Please translate
 #: ob/api/base.py:43 ob/api/base.py:134
 msgid "Bazaar Dog"
 msgstr ""
 
+# Please translate
+# see thejoewoods.com/blackletter and https://yaytext.com/fraktur/
 #: ob/api/base.py:132
 msgid "𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰"
 msgstr ""
 
+# Please translate
 #: ob/api/base.py:134
 msgid "Profiles"
 msgstr ""
 
+# Not used
 #: ob/api/filter.py:72
 msgid "Search"
 msgstr ""
 
+# Not used
 #: ob/api/filter.py:73
 msgid "A search term."
 msgstr ""
 
+# Please translate
 #: ob/api/param_dev.py:12
 msgid "Default"
 msgstr ""
 
+# Please translate
 #: ob/api/param_dev.py:25 ob/api/param_dev.py:42
 msgid "Online"
 msgstr ""
 
+# Please translate
 #: ob/api/param_dev.py:26 ob/api/param_profile.py:150
 msgid "All"
 msgstr ""
 
+# Please translate
 #: ob/api/param_dev.py:35
 msgid "Language"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:20 ob/api/param_profile.py:51
 msgid "Bitcoin Cash"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:21 ob/api/param_profile.py:52
 msgid "Bitcoin Legacy"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:29 ob/api/param_profile.py:60 ob/models.py:127
 #: ob/models.py:141 ob/models.py:632 ob/models.py:647
 msgid "Any"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:126
 msgid "Hide"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:127
 msgid "Show"
 msgstr ""
 
+# Please translate
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:128
 msgid "Only NSFW"
 msgstr ""
 
+# Please translate (leave variable ( {place} ) in translation)
 #: ob/api/param_listing.py:239
 #, python-brace-format
 msgid "to {place}"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:241
 msgid "to Anywhere"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:278 ob/api/param_profile.py:217
 msgid "Main Network"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:278 ob/api/param_profile.py:217
 msgid "Test Network"
 msgstr ""
 
+# Please Translate - used to filter listing with >X fee leave varible in translated string
 #: ob/api/param_listing.py:331
 #, python-brace-format
 msgid "> ~{percentage}% Bitcoin Fee"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:340 ob/api/param_listing.py:406
 #: ob/api/param_profile.py:38 ob/api/param_profile.py:308
 msgid "Reset"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:346 ob/api/param_profile.py:253
 msgid "Accepted Currencies"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:351
 msgid "Verified Moderator"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:356
 msgid "Moderators Available"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:361 ob/api/param_profile.py:293
 msgid "Adult Content"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:366
 msgid "Condition"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:371 ob/api/param_profile.py:28
 #: ob/api/sort_listing.py:22 ob/api/sort_profile.py:22
 msgid "Rating"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:376
 msgid "Type"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:381
 msgid "Ships to"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:386
 msgid "Ships Free "
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:391
 msgid "Connection Type (Alpha)"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_listing.py:396 ob/api/param_profile.py:303
 msgid "Network"
 msgstr ""
 
+# Please Translate, i.e. listings where the BTC network is too high
 #: ob/api/param_listing.py:401
 msgid "Show Dust"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:12 ob/api/sort_listing.py:7 ob/api/sort_profile.py:7
 msgid "Relevance"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:18 ob/api/sort_profile.py:12
 msgid "Items Listed (High to Low)"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:23 ob/api/sort_profile.py:17
 msgid "Moderating (High to Low)"
 msgstr ""
 
+# Ignore, in base translation
 #: ob/api/param_profile.py:150 ob/api/widgets.py:11 ob/api/widgets.py:48
 msgid "Yes"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:171
 msgid "Is an OB1 Verified Moderator"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:191
 msgid "Has OB1 Verified Moderator"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:258
 msgid "Verification"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:263
 msgid "Offers Moderation"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:268
 msgid "Moderator Language"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:273
 msgid "Store Verification"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:278
 msgid "Store Moderators Available"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:283
 msgid "Vendor Rating"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:288
 msgid "Server Version"
 msgstr ""
 
+# Please Translate
 #: ob/api/param_profile.py:298
 msgid "Connection Type"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:12
 msgid "Price (Low to High)"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:17
 msgid "Price (High to Low)"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:27
 msgid "Random"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:37
 msgid "Newest"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:42
 msgid "Oldest"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:47
 msgid "Title A-Z"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:52
 msgid "Title Z-A"
 msgstr ""
 
+# Please Translate
 #: ob/api/sort_listing.py:57
 msgid "Least Relevant️"
 msgstr ""
 
+# Please Translate
 #: ob/api/widgets.py:10 ob/api/widgets.py:47
 msgid "Unknown"
 msgstr ""
 
+# Ignore, in base translation
 #: ob/api/widgets.py:12 ob/api/widgets.py:49
 msgid "No"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:128
 msgid "Percentage"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:129
 msgid "Fixed"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:130
 msgid "Fixed Plus Percentage"
 msgstr ""
 
+# Please Translate (clear net is normal internet)
 #: ob/models.py:142
 msgid "Clearnet"
 msgstr ""
 
+# Please Translate (Both ipv4/ipv6 and .onion
 #: ob/models.py:143
 msgid "Dual Stack"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:144
 msgid "Tor Only"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:145
 msgid "IPFS Cashed"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:633
 msgid "Physical Good"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:634
 msgid "Digital Good"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:635
 msgid "Service"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:637
 msgid "Cryptocurrency"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:648
 msgid "New"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:649
 msgid "Used Exellent"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:650
 msgid "Used Good"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:651
 msgid "Used Poor"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:652
 msgid "Refurbished"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:888
 msgid "Local Pickup"
 msgstr ""
 
+# Please Translate
 #: ob/models.py:889
 msgid "Fixed Price"
 msgstr ""
