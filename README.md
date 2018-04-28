@@ -2,13 +2,21 @@
 
 [![Build Status](https://travis-ci.org/BazaarDog/bazaar-dog-search.svg?branch=master)](https://travis-ci.org/BazaarDog/bazaar-dog-search)
 
+## Project status
+
+This project is in the process of transition from a primarily serverless closed source project designed to run on AWS, to a well tested
+open-source project designed to run on a single board computer, beware of the Dragons 🐉...    
+
+The main limitation to running this code is the bandwidth consumed by the openbazaar 'supernode' used as a crawler (up to ~1TB/month). 
+ 
+The goal is to have a search provider that can be deployed with a few commands.    
 
 ## requirements
 
 
 ```
 # debian-based system requirements
-sudo apt-get install python3-pip git sqlite3
+sudo apt-get install python3-pip git sqlite3 # to start
 ```
 
 In addition, you'll need a running node of openbazaar-go, either locally or configured securely
@@ -51,6 +59,12 @@ pip install -r requirements.txt
 In order to keep passwords and local configurations out of harms way, one approach is to store them in environment
 variables. Currently configuration variables are stored in [postactivate](postactivate), the base configuration
 assumes a `openbazaar-go` server on 127.0.0.1:4003 with no auth or ssl.
+
+each time you change your configuration, you'll need to rerun
+
+```
+source postactivate
+```
 
 In the future, these variables will likely move to an ansible-vault type configuration.
 
