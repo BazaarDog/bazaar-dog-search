@@ -1,6 +1,8 @@
 # bazaar-dog-search
 
 [![Build Status](https://travis-ci.org/BazaarDog/bazaar-dog-search.svg?branch=master)](https://travis-ci.org/BazaarDog/bazaar-dog-search)
+[![Coverage Status](https://coveralls.io/repos/github/BazaarDog/bazaar-dog-search/badge.svg?branch=master)](https://coveralls.io/github/BazaarDog/bazaar-dog-search?branch=master)
+[![Requirements Status](https://requires.io/github/BazaarDog/bazaar-dog-search/requirements.svg?branch=master)](https://requires.io/github/BazaarDog/bazaar-dog-search/requirements/?branch=master)
 
 ## Project status
 
@@ -16,7 +18,7 @@ The goal is to have a search provider that can be deployed with a few commands.
 
 ```
 # debian-based system requirements
-sudo apt-get install python3-pip git sqlite3 # to start
+sudo apt-get install python3-pip git sqlite3
 ```
 
 In addition, you'll need a running node of openbazaar-go, either locally or configured securely
