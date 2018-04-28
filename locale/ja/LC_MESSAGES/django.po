@@ -16,7 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: bazaar_dog/settings/base.py:184
 msgid "Arabic"
@@ -76,19 +76,19 @@ msgstr ""
 
 #: ob/api/base.py:41 ob/api/base.py:132
 msgid "𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌"
-msgstr "𝔅𝔞𝔰𝔞𝔯 ℌ𝔲𝔫𝔡"
+msgstr ""
 
 #: ob/api/base.py:43 ob/api/base.py:134
 msgid "Bazaar Dog"
-msgstr "Basar Hund"
+msgstr ""
 
 #: ob/api/base.py:132
 msgid "𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰"
-msgstr "𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰"
+msgstr ""
 
 #: ob/api/base.py:134
 msgid "Profiles"
-msgstr "Profiles"
+msgstr ""
 
 #: ob/api/filter.py:72
 msgid "Search"
@@ -108,7 +108,7 @@ msgstr ""
 
 #: ob/api/param_dev.py:26 ob/api/param_profile.py:150
 msgid "All"
-msgstr "Alle"
+msgstr ""
 
 #: ob/api/param_dev.py:35
 msgid "Language"
@@ -116,59 +116,59 @@ msgstr ""
 
 #: ob/api/param_listing.py:20 ob/api/param_profile.py:51
 msgid "Bitcoin Cash"
-msgstr "Bitcoin Bargeld"
+msgstr ""
 
 #: ob/api/param_listing.py:21 ob/api/param_profile.py:52
 msgid "Bitcoin Legacy"
-msgstr "Bitcoin-Vermächtnis"
+msgstr ""
 
 #: ob/api/param_listing.py:29 ob/api/param_profile.py:60 ob/models.py:127
 #: ob/models.py:141 ob/models.py:632 ob/models.py:647
 msgid "Any"
-msgstr "Alle"
+msgstr ""
 
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:126
 msgid "Hide"
-msgstr "Nein"
+msgstr ""
 
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:127
 msgid "Show"
-msgstr "Ja"
+msgstr ""
 
 #: ob/api/param_listing.py:102 ob/api/param_profile.py:128
 msgid "Only NSFW"
-msgstr "Nur Inhalte für Erwachsene"
+msgstr ""
 
 #: ob/api/param_listing.py:239
 #, python-brace-format
 msgid "to {place}"
-msgstr "nach {place}"
+msgstr ""
 
 #: ob/api/param_listing.py:241
 msgid "to Anywhere"
-msgstr "nach Überall"
+msgstr ""
 
 #: ob/api/param_listing.py:278 ob/api/param_profile.py:217
 msgid "Main Network"
-msgstr "Standard"
+msgstr ""
 
 #: ob/api/param_listing.py:278 ob/api/param_profile.py:217
 msgid "Test Network"
-msgstr "Test Netzwerk"
+msgstr ""
 
 #: ob/api/param_listing.py:331
 #, python-brace-format
 msgid "> ~{percentage}% Bitcoin Fee"
-msgstr "> ~{percentage}% Bitcoin Vermächtnis Netzwerkgebühr"
+msgstr ""
 
 #: ob/api/param_listing.py:340 ob/api/param_listing.py:406
 #: ob/api/param_profile.py:38 ob/api/param_profile.py:308
 msgid "Reset"
-msgstr "Zurücksetzen"
+msgstr ""
 
 #: ob/api/param_listing.py:346 ob/api/param_profile.py:253
 msgid "Accepted Currencies"
-msgstr "Akzeptierte Währungen"
+msgstr ""
 
 #: ob/api/param_listing.py:351
 msgid "Verified Moderator"
@@ -180,28 +180,28 @@ msgstr ""
 
 #: ob/api/param_listing.py:361 ob/api/param_profile.py:293
 msgid "Adult Content"
-msgstr "Inhalte für Erwachsene"
+msgstr ""
 
 #: ob/api/param_listing.py:366
 msgid "Condition"
-msgstr "Zustand"
+msgstr ""
 
 #: ob/api/param_listing.py:371 ob/api/param_profile.py:28
 #: ob/api/sort_listing.py:22 ob/api/sort_profile.py:22
 msgid "Rating"
-msgstr "Bewertungen"
+msgstr ""
 
 #: ob/api/param_listing.py:376
 msgid "Type"
-msgstr "Art"
+msgstr ""
 
 #: ob/api/param_listing.py:381
 msgid "Ships to"
-msgstr "Wird Schiff zu"
+msgstr ""
 
 #: ob/api/param_listing.py:386
 msgid "Ships Free "
-msgstr "Kostenloser Versand"
+msgstr ""
 
 #: ob/api/param_listing.py:391
 msgid "Connection Type (Alpha)"
@@ -209,15 +209,15 @@ msgstr ""
 
 #: ob/api/param_listing.py:396 ob/api/param_profile.py:303
 msgid "Network"
-msgstr "Netzwerk"
+msgstr ""
 
 #: ob/api/param_listing.py:401
 msgid "Show Dust"
-msgstr "Zeige Netzwerkgebühr Staub"
+msgstr ""
 
 #: ob/api/param_profile.py:12 ob/api/sort_listing.py:7 ob/api/sort_profile.py:7
 msgid "Relevance"
-msgstr "Relevanz"
+msgstr ""
 
 #: ob/api/param_profile.py:18 ob/api/sort_profile.py:12
 msgid "Items Listed (High to Low)"
@@ -261,11 +261,11 @@ msgstr ""
 
 #: ob/api/param_profile.py:283
 msgid "Vendor Rating"
-msgstr "Bewertungen"
+msgstr ""
 
 #: ob/api/param_profile.py:288
 msgid "Server Version"
-msgstr "Version"
+msgstr ""
 
 #: ob/api/param_profile.py:298
 msgid "Connection Type"
@@ -273,35 +273,35 @@ msgstr ""
 
 #: ob/api/sort_listing.py:12
 msgid "Price (Low to High)"
-msgstr "Preis (aufsteigend)"
+msgstr ""
 
 #: ob/api/sort_listing.py:17
 msgid "Price (High to Low)"
-msgstr "Preis (absteigend)"
+msgstr ""
 
 #: ob/api/sort_listing.py:27
 msgid "Random"
-msgstr "Zufällig"
+msgstr ""
 
 #: ob/api/sort_listing.py:37
 msgid "Newest"
-msgstr "Neueste"
+msgstr ""
 
 #: ob/api/sort_listing.py:42
 msgid "Oldest"
-msgstr "Weniger Neu"
+msgstr ""
 
 #: ob/api/sort_listing.py:47
 msgid "Title A-Z"
-msgstr "Titel A-Z"
+msgstr ""
 
 #: ob/api/sort_listing.py:52
 msgid "Title Z-A"
-msgstr "Titel Z-A"
+msgstr ""
 
 #: ob/api/sort_listing.py:57
 msgid "Least Relevant️"
-msgstr "Wenigsten Relevanz"
+msgstr ""
 
 #: ob/api/widgets.py:10 ob/api/widgets.py:47
 msgid "Unknown"
@@ -341,15 +341,15 @@ msgstr ""
 
 #: ob/models.py:633
 msgid "Physical Good"
-msgstr "Materielle Ware"
+msgstr ""
 
 #: ob/models.py:634
 msgid "Digital Good"
-msgstr "Digitale Ware"
+msgstr ""
 
 #: ob/models.py:635
 msgid "Service"
-msgstr "Dienstleistung"
+msgstr ""
 
 #: ob/models.py:637
 msgid "Cryptocurrency"
@@ -357,23 +357,23 @@ msgstr ""
 
 #: ob/models.py:648
 msgid "New"
-msgstr "Neu"
+msgstr ""
 
 #: ob/models.py:649
 msgid "Used Exellent"
-msgstr "Gebraucht – Sehr gut"
+msgstr ""
 
 #: ob/models.py:650
 msgid "Used Good"
-msgstr "Gebraucht – Gut"
+msgstr ""
 
 #: ob/models.py:651
 msgid "Used Poor"
-msgstr "Gebraucht – Mangelhaft"
+msgstr ""
 
 #: ob/models.py:652
 msgid "Refurbished"
-msgstr "Wieder instand gesetzt"
+msgstr ""
 
 #: ob/models.py:888
 msgid "Local Pickup"
@@ -382,12 +382,3 @@ msgstr ""
 #: ob/models.py:889
 msgid "Fixed Price"
 msgstr ""
-
-#~ msgid "Fastest"
-#~ msgstr "Schnellsten"
-
-#~ msgid "𝔅𝔞𝔷𝔞𝔞𝔯 𝔇𝔬𝔤"
-#~ msgstr "𝔅𝔞𝔰𝔞𝔯 ℌ𝔲𝔫𝔡"
-
-#~ msgid "Clear All Filters"
-#~ msgstr "Rückstellung"

@@ -37,6 +37,7 @@ DEV = False
         VVVVV   |____/_/   \_\_| \_|\____|_____|_| \_\                                      
 """
 DEBUG = False # setting this to True will post your everything on every error. Only use in local env
+# it is recommended that you create a dev.py settings file and set debug true there.
 """
         ^^^^^   ____    _    _   _  ____ _____ ____  
                 |  _ \  / \  | \ | |/ ___| ____|  _ \ 
@@ -104,14 +105,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    #'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'ob.middleware.ForceCORS',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'ob.middleware.HumanizeMiddleware',
 ]
 
@@ -188,9 +190,13 @@ LANGUAGES = [
     ('es', _('Spanish')),
     ('fr', _('French')),
     ('it', _('Italian')),
+    ('ja', _('Japanese')),
+    ('ko', _('Korean')),
     ('nl', _('Dutch')),
     ('pt', _('Portuguese')),
     ('ru', _('Russian')),
+    ('zh-hans', _('Simplified Chinese')),
+    ('zh-hant', _('Traditional Chinese')),
 ]
 
 TIME_ZONE = 'UTC'
