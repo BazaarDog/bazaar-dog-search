@@ -383,7 +383,7 @@ def get_options(params):
         }),
         ("free_shipping_region", {
             "type": "checkbox",
-            "label": _("Ships Free "),
+            "label": _("Ships Free"),
             "options": free_shipping_options
         }),
         ("connection", {
