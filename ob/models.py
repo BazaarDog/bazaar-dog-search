@@ -142,7 +142,7 @@ class Profile(models.Model):
         (CLEAR, _('Clearnet')),
         (DUAL, _('Dual Stack')),
         (TOR, _('Tor Only')),
-        (OFFLINE, _('IPFS Cashed')),
+        (OFFLINE, _('IPFS Cached')),
     )
     CONNECTION_TYPE_DICT = dict(CONNECTION_TYPE_CHOICES)
 
