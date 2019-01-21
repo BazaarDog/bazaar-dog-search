@@ -7,7 +7,6 @@ from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.postgres.fields import ArrayField
 
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.settings import api_settings
@@ -17,11 +16,11 @@ from django_filters.widgets import BooleanWidget
 from distutils.util import strtobool
 from ob.models import Listing, Profile
 
-from django_filters import STRICTNESS
 from django.db.models.fields import FieldDoesNotExist
 from rest_framework.filters import OrderingFilter
 from django.db.models.fields.reverse_related import ForeignObjectRel, OneToOneRel
 from .widgets import TruthyWidget, FalsyWidget
+
 
 class RelatedOrderingFilter(OrderingFilter):
     """
@@ -31,6 +30,7 @@ class RelatedOrderingFilter(OrderingFilter):
     Extends OrderingFilter to support ordering by fields in related models
     using the Django ORM __ notation
     """
+
     def is_valid_field(self, model, field):
         """
         Return true if the field exists within the model (or in the related
@@ -57,6 +57,7 @@ class RelatedOrderingFilter(OrderingFilter):
     def remove_invalid_fields(self, queryset, fields, ordering, view):
         return [term for term in fields
                 if self.is_valid_field(queryset.model, term.lstrip('-'))]
+
 
 class CustomSearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
@@ -170,70 +171,49 @@ class CustomSearchFilter(BaseFilterBackend):
             )
         ]
 
+
 class ProfileFilter(django_filters.FilterSet):
-
-    #acceptedCurrencies = django_filters.Filter(name='moderator_accepted_currencies', lookup_expr='icontains')
-    rating = django_filters.Filter(name='rating_average', lookup_expr='gte')
-    version = django_filters.Filter(name='user_agent', lookup_expr='icontains')
-    moderator_languages = django_filters.Filter(name='moderator_languages', lookup_expr='contains')
-    has_email = django_filters.Filter(name='email', lookup_expr='isnull', exclude=True, widget=BooleanWidget())
-    has_website = django_filters.Filter(name='website', lookup_expr='isnull', exclude=True, widget=BooleanWidget())
-    is_moderator = django_filters.BooleanFilter(name='moderator', lookup_expr='exact', widget=BooleanWidget())
-    is_verified = django_filters.Filter(name='verified', exclude=False, widget=TruthyWidget())
-    has_verified = django_filters.Filter(name='listing__moderators__verified', widget=TruthyWidget())
+    # acceptedCurrencies = django_filters.Filter(field_name='moderator_accepted_currencies', lookup_expr='icontains')
+    rating = django_filters.Filter(field_name='rating_average', lookup_expr='gte')
+    version = django_filters.Filter(field_name='user_agent', lookup_expr='icontains')
+    moderator_languages = django_filters.Filter(field_name='moderator_languages', lookup_expr='contains')
+    has_email = django_filters.Filter(field_name='email', lookup_expr='isnull', exclude=True, widget=BooleanWidget())
+    has_website = django_filters.Filter(field_name='website', lookup_expr='isnull', exclude=True,
+                                        widget=BooleanWidget())
+    is_moderator = django_filters.BooleanFilter(field_name='moderator', lookup_expr='exact', widget=BooleanWidget())
+    is_verified = django_filters.Filter(field_name='verified', exclude=False, widget=TruthyWidget())
+    has_verified = django_filters.Filter(field_name='listing__moderators__verified', widget=TruthyWidget())
     moderator_count = django_filters.NumberFilter(method='filter_listing_by_moderator_count')
-    connection = django_filters.TypedChoiceFilter(name='connection_type',
-                                     choices=Profile.CONNECTION_TYPE_CHOICES)
-    online = django_filters.Filter(name='online', widget=TruthyWidget())
-    #pgp_block = django_filters.BooleanFilter(name='description', method='filter_published')
-
-
+    connection = django_filters.TypedChoiceFilter(field_name='connection_type',
+                                                  choices=Profile.CONNECTION_TYPE_CHOICES)
+    online = django_filters.Filter(field_name='online', widget=TruthyWidget())
 
     class Meta:
         model = Profile
         exclude = ()
         order_by = True
-        filter_overrides = {
-            ArrayField: {
-                'filter_class': django_filters.CharFilter,
-                'extra': lambda f: {
-                    'lookup_expr': 'icontains',
-                },
-            },
-        }
 
     def filter_listing_by_moderator_count(self, queryset, name, value):
         return queryset.filter(moderators_count__gte=value)
 
 
 class ListingFilter(django_filters.FilterSet):
-
-    acceptedCurrencies = django_filters.Filter(name='accepted_currencies', lookup_expr='icontains')
-    tags = django_filters.Filter(name='tags', lookup_expr='icontains')
-    categories = django_filters.Filter(name='categories', lookup_expr='icontains')
-    rating = django_filters.Filter(name='rating_average', lookup_expr='gte')
-    connection = django_filters.TypedChoiceFilter(name='profile__connection_type',
-                                     choices=Profile.CONNECTION_TYPE_CHOICES)
+    acceptedCurrencies = django_filters.Filter(field_name='accepted_currencies', lookup_expr='icontains')
+    tags = django_filters.Filter(field_name='tags', lookup_expr='icontains')
+    categories = django_filters.Filter(field_name='categories', lookup_expr='icontains')
+    rating = django_filters.Filter(field_name='rating_average', lookup_expr='gte')
+    connection = django_filters.TypedChoiceFilter(field_name='profile__connection_type',
+                                                  choices=Profile.CONNECTION_TYPE_CHOICES)
     condition_type = django_filters.ChoiceFilter(choices=Listing.CONDITION_TYPE_CHOICES)
-    contract_type = django_filters.NumberFilter(name='contract_type', lookup_expr='icontains')
+    contract_type = django_filters.NumberFilter(field_name='contract_type', lookup_expr='icontains')
     moderator_count = django_filters.NumberFilter(method='filter_listing_by_moderator_count')
-    moderator_verified = django_filters.Filter(name='moderators__verified', widget=TruthyWidget())
-    online = django_filters.Filter(name='profile__online', widget=TruthyWidget())
-    #dust = django_filters.BooleanFilter(name='dust', widget=FalsyWidget())
+    moderator_verified = django_filters.Filter(field_name='moderators__verified', widget=TruthyWidget())
+    online = django_filters.Filter(field_name='profile__online', widget=TruthyWidget())
 
     class Meta:
         model = Listing
         exclude = ()
         order_by = True
-        strict = STRICTNESS.IGNORE
-        filter_overrides = {
-            ArrayField: {
-                'filter_class': django_filters.CharFilter,
-                'extra': lambda f: {
-                    'lookup_expr': 'icontains',
-                },
-            },
-        }
 
     def filter_listing_contract_type(self, queryset, name, value):
         return queryset.filter(contract_type=value)

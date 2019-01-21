@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/BazaarDog/bazaar-dog-search.svg?branch=master)](https://travis-ci.org/BazaarDog/bazaar-dog-search)
 [![Coverage Status](https://coveralls.io/repos/github/BazaarDog/bazaar-dog-search/badge.svg?branch=master)](https://coveralls.io/github/BazaarDog/bazaar-dog-search?branch=master)
 [![Requirements Status](https://requires.io/github/BazaarDog/bazaar-dog-search/requirements.svg?branch=master)](https://requires.io/github/BazaarDog/bazaar-dog-search/requirements/?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c8b6d655a510184b9282/maintainability)](https://codeclimate.com/github/BazaarDog/bazaar-dog-search/maintainability)
 
 ## Project status
 
@@ -21,8 +22,17 @@ The goal is to have a search provider that can be deployed with a few commands.
 sudo apt-get install python3-pip git sqlite3
 ```
 
-In addition, you'll need a running node of openbazaar-go, either locally or configured securely
-somewhere else. Parameters to connect are stored in [postactivate](postactivate).
+## configuring crawler node
+
+Install the openbazaar-go using the appropriate method i.e.: [install-linux](https://github.com/OpenBazaar/openbazaar-go/blob/master/docs/install-linux.md), [install-pi3](https://github.com/OpenBazaar/openbazaar-go/blob/master/docs/install-pi3.md), or [install-osx](https://github.com/OpenBazaar/openbazaar-go/blob/master/docs/install-osx.md)
+ 
+ Secure your openbazaar-go server
+ 
+ `openbazaar-go init`
+ `openbazaar-go gencerts`
+ `openbazaar-go setapicreds`
+
+Parameters to connect to your crawling node are stored in [postactivate](postactivate).
 
 ## install
 
@@ -36,9 +46,10 @@ cd bazaar-dog-search
 
 # install a python3 virtual environment
 
-pip3 install virtualenv
-virtualenv ~/.bazaar_dog_venv
-source ~/.bazaar_dog_venv/bin/activate
+python3 -m venv .bazaar_dog_venv
+source .bazaar_dog_venv/bin/activate
+
+# Fill out the fields in postactivate
 
 source postactivate
 
@@ -164,5 +175,21 @@ attempt to make it more efficient.
 * [ob.tasks.ping](ob/tasks/ping.py) contains functions to discover which nodes are online.
 * `profile.should_update()` tries to prevent oversampling.
 * `listing.sync()` checks if the checksum differs when called.
+
+### Management
+
+There are several commands to aid in management 
+
+Crawl a list of "good nodes":
+
+`./manage.py bootstrap`
+
+Mark listings as reported for various reasons, i.e. scam:
+
+`./manage.py blacklist --reason scam --peerID Qm...`
+
+Crawl:
+
+`./manage.py crawl`
 
 Future plans are dependent on PubSub (ipfs) features coming online in 2018.

@@ -2,8 +2,6 @@ from .base import *
 from .serializer import *
 from .filter import *
 from django.db.models import Q, Prefetch
-from datetime import datetime
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import filters
 from django.db.models import Prefetch, Count, Avg
@@ -13,21 +11,21 @@ from datetime import timedelta
 from requests.exceptions import ConnectTimeout
 from ob.models import Listing, ListingReport
 
-class Report(generics.CreateAPIView):
 
+class Report(generics.CreateAPIView):
     model = ListingReport
     serializer_class = ListingReportSerializer
 
-class ProfileSearch(ProfilePaginateAPIView):
 
+class ProfileSearch(ProfilePaginateAPIView):
     model = Profile
     serializer_class = ProfileWrapSerializer
     ordering = Profile._meta.ordering
     filter_class = ProfileFilter
 
-    filter_backends = (DjangoFilterBackend,filters.OrderingFilter,CustomSearchFilter,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, CustomSearchFilter,)
     ordering_fields = ('__all__')
-    search_fields = ('name','about','short_description','peerID',)
+    search_fields = ('name', 'about', 'short_description', 'peerID',)
 
     def get_queryset(self):
 
@@ -41,14 +39,15 @@ class ProfileSearch(ProfilePaginateAPIView):
             "header",
             queryset=Image.objects.filter(),
             to_attr="header_prefetch")
-        ).filter(Q(vendor=True) | Q(moderator=True)).exclude(name='')\
+        ).filter(Q(vendor=True) | Q(moderator=True)).exclude(name='') \
             .exclude(scam=True) \
-            .filter(was_online__gt=a_week_ago)\
+            .filter(was_online__gt=a_week_ago) \
             .exclude(illegal_in_us=True)
 
         if 'acceptedCurrencies' in self.request.query_params:
             c = self.request.query_params['acceptedCurrencies']
-            queryset = queryset.filter( Q(moderator_accepted_currencies__icontains=c) | Q(listing__accepted_currencies__icontains=c))
+            queryset = queryset.filter(
+                Q(moderator_accepted_currencies__icontains=c) | Q(listing__accepted_currencies__icontains=c))
         queryset = queryset.annotate(moderators_count=Count('listing__moderators', distinct=True))
 
         if 'q' in self.request.query_params:
@@ -57,7 +56,7 @@ class ProfileSearch(ProfilePaginateAPIView):
                 try:
                     p = Profile.objects.get(pk=search_term)
                     if now() - timedelta(hours=1) >= p.modified:
-                        #print('SYNC BY SEARCH ' + search_term)
+                        # print('SYNC BY SEARCH ' + search_term)
                         try:
                             if 'network' in self.request.query_params:
                                 is_testnet = (True if self.request.query_params['network'] == 'testnet' else False)
@@ -68,7 +67,7 @@ class ProfileSearch(ProfilePaginateAPIView):
                             pass
                     else:
                         pass
-                        #print('not syncing ' + search_term)
+                        # print('not syncing ' + search_term)
                 except Profile.DoesNotExist:
                     p = Profile(pk=search_term)
                     try:
@@ -91,17 +90,16 @@ class ProfileSearch(ProfilePaginateAPIView):
 
 
 class ListingSearch(ListingPaginateAPIView):
-
     model = Listing
     serializer_class = ListingWrapSerializer
     ordering = Listing._meta.ordering
 
     filter_class = ListingFilter
 
-    filter_backends = (DjangoFilterBackend,filters.OrderingFilter,CustomSearchFilter,RelatedOrderingFilter,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, CustomSearchFilter, RelatedOrderingFilter,)
     ordering_fields = ('__all__')
-    search_fields = ('description','tags','categories','title','profile__peerID','profile__handle','profile__name',)
-
+    search_fields = (
+        'description', 'tags', 'categories', 'title', 'profile__peerID', 'profile__handle', 'profile__name',)
 
     def get_queryset(self):
 
@@ -111,7 +109,7 @@ class ListingSearch(ListingPaginateAPIView):
                 try:
                     p = Profile.objects.get(pk=search_term)
                     if now() - timedelta(hours=1) >= p.modified:
-                        #print('SYNC BY SEARCH ' + search_term)
+                        # print('SYNC BY SEARCH ' + search_term)
                         try:
                             if 'network' in self.request.query_params:
                                 is_testnet = (True if self.request.query_params['network'] == 'testnet' else False)
@@ -122,7 +120,7 @@ class ListingSearch(ListingPaginateAPIView):
                             pass
                     else:
                         pass
-                        #print('not syncing ' + search_term)
+                        # print('not syncing ' + search_term)
                 except Profile.DoesNotExist:
                     p = Profile(pk=search_term)
                     try:
@@ -131,23 +129,15 @@ class ListingSearch(ListingPaginateAPIView):
                         pass
 
         if 'dust' in self.request.query_params and self.request.query_params['dust'] == 'true':
-            dust_param = [True,False]
+            dust_param = [True, False]
         else:
             dust_param = [False]
 
         a_week_ago = now() - timedelta(hours=156)
         queryset = Listing.objects \
-            .prefetch_related(
-            "moderators",
-            Prefetch(
-                    "images",
-                    queryset=ListingImage.objects.filter(index=0),
-                    to_attr="thumbnail"),
-            Prefetch(
-                "profile__avatar",
-                queryset=Image.objects.filter(),
-                to_attr="avatar_prefetch")
-            ) \
+            .prefetch_related("moderators",
+                              Prefetch("images", queryset=ListingImage.objects.filter(index=0), to_attr="thumbnail"),
+                              Prefetch("profile__avatar", queryset=Image.objects.filter(), to_attr="avatar_prefetch")) \
             .select_related('profile') \
             .filter(profile__vendor=True) \
             .filter(profile__was_online__gt=a_week_ago) \
@@ -156,30 +146,34 @@ class ListingSearch(ListingPaginateAPIView):
             .exclude(profile__scam=True) \
             .filter(dust__in=dust_param) \
             .exclude(profile__illegal_in_us=True)
-            #.filter(active=True) \ this is redundant with vendor=True
+        # .filter(active=True) \ this is redundant with vendor=True
 
         queryset = queryset.annotate(moderators_count=Count('moderators'))
 
         if 'shipping' in self.request.query_params:
             c = self.request.query_params['shipping']
-            queryset = queryset.filter(Q(shippingoptions__regions__icontains=c) | Q(shippingoptions__regions__icontains='ALL')| Q(shippingoptions__regions__isnull=True))
+            queryset = queryset.filter(
+                Q(shippingoptions__regions__icontains=c) | Q(shippingoptions__regions__icontains='ALL') | Q(
+                    shippingoptions__regions__isnull=True))
 
-        if 'free_shipping_region' in self.request.query_params and self.request.query_params['free_shipping_region'] == 'true':
+        if 'free_shipping_region' in self.request.query_params and self.request.query_params[
+            'free_shipping_region'] == 'true':
             if self.request.query_params['shipping']:
                 c = self.request.query_params['shipping']
             else:
                 c = 'ALL'
-            queryset = queryset.filter(contract_type=Listing.PHYSICAL_GOOD).filter(Q(free_shipping__icontains=c) | Q(free_shipping__icontains='ALL') | Q(shippingoptions__regions__isnull=True))
-
+            queryset = queryset.filter(contract_type=Listing.PHYSICAL_GOOD).filter(
+                Q(free_shipping__icontains=c) | Q(free_shipping__icontains='ALL') | Q(
+                    shippingoptions__regions__isnull=True))
 
         if 'nsfw' in self.request.query_params:
             value = self.request.query_params['nsfw']
-            #print('get_query nsfw value is ' + str(value))
+            # print('get_query nsfw value is ' + str(value))
             if not value:
                 return queryset.exclude(nsfw=True)
             elif value == 'Affirmative':
                 return queryset.filter(nsfw=True)
-            elif value == 'true' or value == True:
+            elif value == 'true' or value is True:
                 return queryset
             else:
                 return queryset.exclude(nsfw=True)

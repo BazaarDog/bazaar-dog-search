@@ -18,14 +18,14 @@ def get_options(params):
     distinct_currency = OrderedDict(
         [
             ('BCH', _('Bitcoin Cash') + ' (BCH)'),
-            ('BTC', _('Bitcoin Legacy') + ' (BTC)'),
-            # ('ETH', 'Ethereum (ETH)'),
-            # ('ETC', 'Ethereum Classic (ETC)'),
-            # ('DOGE', 'Dogecoin (DOGE)'),
-            # ('LTC', 'Litecoin (LTC)'),
+            ('BTC', _('Bitcoin Core') + ' (BTC)'),
+            #('DOGE', 'Dogecoin (DOGE)'),
+            #('ETC', 'Ethereum Classic (ETC)'),
+            #('ETH', 'Ethereum (ETH)'),
+            ('LTC', 'Litecoin (LTC)'),
             ('ZEC', 'ZCash (ZEC)'),
             #('XZC', 'ZCoin (XZC)'),
-            ('ZEN', 'ZenCash (ZEN)'),
+            #('ZEN', 'ZenCash (ZEN)'),
             ('', _('Any')),
             # ('TBCH', 'Testnet BCH (TBCH)'),
             # ('TBTC', 'Testnet BTC (TBTC)'),
@@ -342,7 +342,7 @@ def get_options(params):
 
     available_options = [
         ("acceptedCurrencies", {
-            "type": "radio",
+            "type": "checkbox",
             "label": _("Accepted Currencies"),
             "options": currency_type_options
         }),

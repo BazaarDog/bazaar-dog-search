@@ -13,6 +13,13 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 from django.utils.translation import ugettext_lazy as _
 
 import os
+import random
+import string
+
+
+def get_random_str(str_len):
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(str_len))
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -21,7 +28,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    SECRET_KEY = get_random_str(80)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -36,29 +45,20 @@ DEV = False
                 | |_| / ___ \| |\  | |_| | |___|  _ < 
         VVVVV   |____/_/   \_\_| \_|\____|_____|_| \_\                                      
 """
-DEBUG = False # setting this to True will post your everything on every error. Only use in local env
-# it is recommended that you create a dev.py settings file and set debug true there.
-"""
-        ^^^^^   ____    _    _   _  ____ _____ ____  
-                |  _ \  / \  | \ | |/ ___| ____|  _ \ 
-                | | | |/ _ \ |  \| | |  _|  _| | |_) |
-                | |_| / ___ \| |\  | |_| | |___|  _ < 
-                |____/_/   \_\_| \_|\____|_____|_| \_\                                      
-"""
+DEBUG = False  # Rather than change this setting, it is recommended to use the
 
 ONION = False
 
-OB_API_USER = os.environ.get('OB_API_USER')
-OB_API_PASSWORD = os.environ.get('OB_API_PASSWORD')
+OB_API_USER = os.getenv('OB_API_USER')
+OB_API_PASSWORD = os.getenv('OB_API_PASSWORD')
 
 OB_API_AUTH = (OB_API_USER, OB_API_PASSWORD)
 
-
 CRAWL_TIMEOUT = 48  # seconds
-SHORTEST_UPDATE_HOURS = 4 # don't hit people more than once every X hours
+SHORTEST_UPDATE_HOURS = 0  # don't hit nodes more than once every X hours
 
-OB_USE_SSL = os.environ.get('OB_USE_SSL')
-OB_CERTIFICATE = os.environ.get('OB_CERTIFICATE')
+OB_USE_SSL = os.getenv('OB_USE_SSL', 'True')
+OB_CERTIFICATE = os.getenv('OB_CERTIFICATE', '/home/'+os.getenv('USER')+'/.openbazaar/ssl/OpenBazaar.crt')
 
 # Don't use ssl if explicitly set not to.
 if OB_USE_SSL == 'False':
@@ -66,9 +66,9 @@ if OB_USE_SSL == 'False':
 else:
     OB_PROTOCOL = 'https://'
 
-OB_SERVER = os.environ.get('OB_SERVER')
-OB_SERVER_MAINNET_PORT = os.environ.get('OB_SERVER_MAINNET_PORT')
-OB_SERVER_TESTNET_PORT = os.environ.get('OB_SERVER_TESTNET_PORT')
+OB_SERVER = os.getenv('OB_SERVER', '127.0.0.1')
+OB_SERVER_MAINNET_PORT = os.getenv('OB_SERVER_MAINNET_PORT', '4002')
+OB_SERVER_TESTNET_PORT = os.getenv('OB_SERVER_TESTNET_PORT', '4102')
 
 OB_MAINNET_ENDPOINT = OB_PROTOCOL + OB_SERVER + ':' + OB_SERVER_MAINNET_PORT
 OB_TESTNET_ENDPOINT = OB_PROTOCOL + OB_SERVER + ':' + OB_SERVER_TESTNET_PORT
@@ -86,8 +86,7 @@ APPEND_SLASH = True
 SITE_NAME = 'Not Bazaaro Doggo'
 SITE_URL = 'http://admin.bazaar.dog'
 
-
-ALLOWED_HOSTS = ['127.0.0.1','localhost','admin.bazaar.dog',]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'admin.bazaar.dog', ]
 
 # Application definition
 
@@ -105,15 +104,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    #'django.middleware.security.SecurityMiddleware',
+    # 'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'ob.middleware.ForceCORS',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'ob.middleware.HumanizeMiddleware',
 ]
 

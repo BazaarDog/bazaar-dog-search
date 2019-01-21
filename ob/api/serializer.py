@@ -59,11 +59,11 @@ class ListingSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
-    freeShipping = serializers.ListField(source='free_shipping')
+    #freeShipping = serializers.CharField(source='free_shipping')
 
     class Meta:
         #exclude = ('condition_type', 'pricing_currency','contract_type','rating_average','rating_count',)
-        fields = ('thumbnail','contractType','price','averageRating','ratingCount','slug','nsfw','title','freeShipping')
+        fields = ('thumbnail','contractType','price','averageRating','ratingCount','slug','nsfw','title')#,'freeShipping')
         model = Listing
 
     #def get_freeShipping(self,o):

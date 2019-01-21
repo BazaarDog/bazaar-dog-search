@@ -7,11 +7,11 @@ from ob.models import Profile, Listing
 from time import sleep
 from requests.exceptions import ReadTimeout
 
+
 def find_nodes(testnet=False):
+    # network = ('testnet' if testnet else 'mainnet')
 
-    #network = ('testnet' if testnet else 'mainnet')
-
-    qs = Profile.objects.filter(network='mainnet',online=True).exclude(name='')
+    qs = Profile.objects.filter(network='mainnet', online=True).exclude(name='')
     count = qs.aggregate(count=Count('pk'))['count']
     random.seed(now())
     random_index = random.randint(0, count - 1)
@@ -32,15 +32,14 @@ def find_nodes(testnet=False):
     print("Successfully crawled got more peers")
 
 
-
 def sync_an_empty_peer(testnet=False):
     network = ('testnet' if testnet else 'mainnet')
     while True:
-        count = Profile.objects.filter(name='',network=network).aggregate(count=Count('pk'))['count']
+        count = Profile.objects.filter(name='', network=network).aggregate(count=Count('pk'))['count']
         random.seed(now())
         if count > 0:
             random_index = random.randint(0, count - 1)
-            p = Profile.objects.filter(name='',network=network)[random_index]
+            p = Profile.objects.filter(name='', network=network)[random_index]
             if p.should_update():
                 try:
                     p.sync(testnet)
@@ -55,7 +54,8 @@ def sync_an_empty_peer(testnet=False):
 def sync_a_known_peer():
     some_time_ago = now() - timedelta(hours=24)
     a_long_time_ago = now() - timedelta(days=14)
-    qs = Profile.objects.filter(modified__lt=some_time_ago,modified__gt=a_long_time_ago, online=True, network='mainnet').exclude(name='')
+    qs = Profile.objects.filter(modified__lt=some_time_ago, modified__gt=a_long_time_ago, online=True,
+                                network='mainnet').exclude(name='')
     count = qs.aggregate(count=Count('pk'))['count']
     if count > 0:
         random.seed(now())
@@ -72,7 +72,6 @@ def sync_a_known_peer():
         print("Successfully crawled a known peer")
     else:
         print("All caught up")
-
 
 
 def sync_an_empty_listing(testnet=False):
@@ -113,4 +112,3 @@ def sync_a_listing(testnet=False):
                 print('skipping profile')
             print("Successfully crawled a listing")
         sleep(10)
-

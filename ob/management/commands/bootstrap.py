@@ -15,7 +15,7 @@ class Command(BaseCommand):
         import json
         import requests
         from time import sleep
-        from custom import the_champions_of_decentralized_commerce
+        from custom import good_nodes
 
         from ob.util import get_exchange_rates
         get_exchange_rates()
@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         try:
             known_pks = [p['peerID'] for p in qs.values('peerID')]
-            for peerID in the_champions_of_decentralized_commerce:
+            for peerID in good_nodes:
                 if peerID not in known_pks:
                     print(peerID)
                     p, profile_created = Profile.objects.get_or_create(pk=peerID)

@@ -1,11 +1,14 @@
-# This is important for django security
-export SECRET_KEY=`head -c 5000 /dev/urandom |tr -dc A-Z9|head -c${1:-81}`
+# Random string for salting passwords, etc
+#
+# head -c 5000 /dev/urandom |tr -dc A-Z9|head -c${1:-81}
+#
+export SECRET_KEY=``
 
 # Settings for local openbazaar-go server
-export OB_USE_SSL=False
-export OB_CERTIFICATE="" # i.e.  "OpenBazaar.crt"
-export OB_API_USER=""
-export OB_API_PASSWORD=""
+export OB_USE_SSL=True
+export OB_CERTIFICATE="/home/$USER/.openbazaar/ssl/OpenBazaar.crt"
+export OB_API_USER="crawler"
+# export OB_API_PASSWORD=""
 export OB_SERVER="127.0.0.1"
 export OB_SERVER_MAINNET_PORT="4002"
 

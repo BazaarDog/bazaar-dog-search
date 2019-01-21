@@ -9,7 +9,6 @@ images/*
 
 ### Notes and SSL ####
 OpenBazaar_HM.crt
-new_dev_ideas
 
 
 ### Load Testing ####
@@ -18,10 +17,9 @@ locustfile.py
 
 ### Settings ####
 bazaar_dog/settings/alpha.py
-bazaar_dog/settings/dev.py
 bazaar_dog/settings/onion.py
-manage_dev.py
 manage_alpha.py
+postactivate
 
 
 ### AWS Lambda ####
@@ -64,6 +62,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+.bazaar_dog_venv/
 build/
 develop-eggs/
 dist/

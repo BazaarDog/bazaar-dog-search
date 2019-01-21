@@ -15,7 +15,7 @@ from django.utils.translation import ugettext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
-#from django.contrib.postgres.fields import ArrayField
+# from django.contrib.postgres.fields import ArrayField
 
 from django.dispatch import receiver
 
@@ -24,6 +24,7 @@ from urllib3.exceptions import SubjectAltNameWarning
 import ipaddress
 import os
 import asyncio
+
 requests.packages.urllib3.disable_warnings(SubjectAltNameWarning)
 
 try:
@@ -48,7 +49,8 @@ def requests_get_wrap(url, timeout=settings.CRAWL_TIMEOUT):
         return requests.get(url,
                             timeout=settings.CRAWL_TIMEOUT)
 
-def requests_post_wrap(url,data):
+
+def requests_post_wrap(url, data):
     print(url)
     if 'https' in url:
         if Path(settings.OB_CERTIFICATE).is_file():
@@ -203,7 +205,7 @@ class Profile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     attempt = models.DateTimeField(auto_now=True)
-    was_online = models.DateTimeField(auto_now=False,null=True)
+    was_online = models.DateTimeField(auto_now=False, null=True)
     pinged = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -219,7 +221,7 @@ class Profile(models.Model):
                 peer_data = json.loads(peer_response.content.decode('utf-8'))
                 return peer_data['serializedRecord']
             else:
-                print('{}'.format(peer_response.status_code))
+                print('Error getting seralized record {}'.format(peer_response))
         except IndexError:
             print('index error getting serialized record')
 
@@ -242,10 +244,6 @@ class Profile(models.Model):
             print("offline")
             return False
 
-
-
-
-
     # '4002/ob/peerinfo/QmTQNzpvq1Lgx6NvXhnoiWirLV1oQbF9LJZwMENKoPYVon'
 
     def get_neighbors(self, testnet=False):
@@ -264,11 +262,11 @@ class Profile(models.Model):
     def sync(self, testnet=False):
         import requests
         import json
-        IPNS_HOST = settings.IPNS_TESTNET_HOST  if self.network == 'testnet' else settings.IPNS_MAINNET_HOST
+        IPNS_HOST = settings.IPNS_TESTNET_HOST if self.network == 'testnet' else settings.IPNS_MAINNET_HOST
         OB_HOST = settings.OB_TESTNET_HOST if self.network == 'testnet' else settings.OB_MAINNET_HOST
         OB_INFO_URL = OB_HOST + 'peerinfo/'
 
-        profile_url = IPNS_HOST + self.peerID + '/profile.json'
+        profile_url = OB_HOST + 'profile/' + self.peerID
         try:
             profile_response = requests_get_wrap(profile_url)
             if profile_response.status_code == 200:
@@ -484,7 +482,7 @@ class Profile(models.Model):
         IPNS_HOST = settings.IPNS_MAINNET_HOST if not testnet else settings.IPNS_TESTNET_HOST
         OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
 
-        listing_url = IPNS_HOST + self.peerID + '/listings.json'
+        listing_url = OB_HOST + 'listings/' + self.peerID
 
         try:
             response = requests_get_wrap(listing_url)
@@ -506,9 +504,11 @@ class Profile(models.Model):
 
                             listing.price = listing_data['price']['amount']
                             listing.pricing_currency = listing_data['price']['currencyCode']
-                            c = ExchangeRate.objects.get(symbol=listing.pricing_currency)
-                            listing.price_value = listing.price / float(c.base_unit) / float(c.rate)
-
+                            c, fx_created = ExchangeRate.objects.get_or_create(symbol=listing.pricing_currency)
+                            try:
+                                listing.price_value = listing.price / float(c.base_unit) / float(c.rate)
+                            except ZeroDivisionError:
+                                listing.price_value = 0.0001
                             listing.network = ('mainnet' if not testnet else 'testnet')
 
                             if "SERVICE" in listing_data['contractType']:
@@ -527,7 +527,7 @@ class Profile(models.Model):
                                 listing.rating_count_stale = listing_data['ratingCount']
                             if 'freeShipping' in listing_data.keys():
                                 listing.free_shipping = listing_data['freeShipping']
-                            listing.active=True
+                            listing.active = True
                             listing.sync(testnet=testnet)
                         else:
                             if 'averageRating' in listing_data.keys():
@@ -565,13 +565,12 @@ class Profile(models.Model):
     def __str__(self):
         return self.peerID
 
-
     def ping(self, testnet=False):
         try:
             OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
             health_url = OB_HOST + 'status/' + self.peerID
 
-            peer_response = requests_get_wrap(health_url,timeout=5)
+            peer_response = requests_get_wrap(health_url, timeout=5)
             try:
                 return json.loads(peer_response.content.decode('utf-8'))['status'] == 'online'
             except:
@@ -610,7 +609,6 @@ class ListingRating(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-
     def get_average(self):
         return float(self.overall + self.quality + self.description + self.delivery_speed + self.customer_service) / 5.0
 
@@ -633,7 +631,7 @@ class Listing(models.Model):
         (PHYSICAL_GOOD, _('Physical Good')),
         (DIGITAL_GOOD, _('Digital Good')),
         (SERVICE, _('Service')),
-        #(CROWD_FUND, _('Crowd Fund')),
+        # (CROWD_FUND, _('Crowd Fund')),
         (CRYPTOCURRENCY, _('Cryptocurrency')),
     )
 
@@ -663,7 +661,7 @@ class Listing(models.Model):
 
     free_shipping = models.TextField(null=True)
     # Array fields will not work with sqlite3, use the text field instead
-    #free_shipping = ArrayField(models.CharField(max_length=80), null=True, blank=True)
+    # free_shipping = ArrayField(models.CharField(max_length=80), null=True, blank=True)
 
     tags = models.TextField(blank=True, default='')
     # Array fields will not work with sqlite3, use the text field instead
@@ -704,7 +702,6 @@ class Listing(models.Model):
     modified = models.DateTimeField(auto_now=True)
     attempt = models.DateTimeField(auto_now=True)
 
-
     class Meta:
         unique_together = ('profile', 'slug',)
         ordering = ['-rank']
@@ -721,12 +718,12 @@ class Listing(models.Model):
             print("offline")
             return False
 
-    #should_update = Profile.should_update
+    # should_update = Profile.should_update
 
 
     def get_sync_url(self, testnet=False):
-        IPNS_HOST = settings.IPNS_MAINNET_HOST if not testnet else settings.IPNS_TESTNET_HOST
-        return IPNS_HOST + self.profile_id + '/listings/' + self.slug + '.json'
+        OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
+        return OB_HOST + 'listing/' + self.profile_id + '/' + self.slug
 
     # Listing
     def get_rank(self):
@@ -734,7 +731,7 @@ class Listing(models.Model):
             return get_listing_rank(self)
         except:
             print("Warning, no listing ranking function")
-            return randint(1,1000)
+            return randint(1, 1000)
 
     # Listing
     def sync(self, force=True, testnet=False):
@@ -832,13 +829,14 @@ class Listing(models.Model):
                             pass
 
                     if "shippingOptions" in listing_data:
-                        for s in listing_data['shippingOptions']:
-                            S = ShippingOptions.create_from_json(self, s)
-                            S.save()
+                        for so in listing_data['shippingOptions']:
+                            s = ShippingOptions.create_from_json(self, so)
+                            s.save()
 
                     self.network = ('mainnet' if not testnet else 'testnet')
                     self.save()
-
+            else:
+                print('Error: {}'.format(response.status_code))
 
 
         except json.decoder.JSONDecodeError:
@@ -872,15 +870,14 @@ class ListingReport(models.Model):
         if self.reason != 'OKAY':
             Listing.objects.filter(profile_id=self.peerID, slug__icontains=self.slug).update(nsfw=True)
 
-        if os.environ.get('SCAM_OBSCURE_WORD') and self.reason == os.environ.get('SCAM_OBSCURE_WORD'):
+        if os.getenv('SCAM_OBSCURE_WORD') and self.reason == os.getenv('SCAM_OBSCURE_WORD'):
             Profile.objects.filter(peerID=self.peerID).update(scam=True)
-        if os.environ.get('ILLEGAL_OBSCURE_WORD') and self.reason == os.environ.get('ILLEGAL_OBSCURE_WORD'):
+        if os.getenv('ILLEGAL_OBSCURE_WORD') and self.reason == os.getenv('ILLEGAL_OBSCURE_WORD'):
             Profile.objects.filter(peerID=self.peerID).update(illegal_in_us=True)
         super(ListingReport, self).save(*args, **kwargs)
 
 
 class ShippingOptions(models.Model):
-
     LOCAL_PICKUP = 0
     FIXED_PRICE = 1
 
