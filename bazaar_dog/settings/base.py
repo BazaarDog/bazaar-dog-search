@@ -39,13 +39,13 @@ if not SECRET_KEY:
 DEV = False
 
 """
-                ____    _    _   _  ____ _____ ____  
-                |  _ \  / \  | \ | |/ ___| ____|  _ \ 
-                | | | |/ _ \ |  \| | |  _|  _| | |_) |
-                | |_| / ___ \| |\  | |_| | |___|  _ < 
-        VVVVV   |____/_/   \_\_| \_|\____|_____|_| \_\                                      
+DANGER  VVVVV                                   
 """
-DEBUG = False  # Rather than change this setting, it is recommended to use the
+DEBUG = False  # Rather than change this setting, it is recommended to override it in a child config
+"""
+DANGER  ^^^^^                                   
+"""
+
 
 ONION = False
 
@@ -58,7 +58,8 @@ CRAWL_TIMEOUT = 48  # seconds
 SHORTEST_UPDATE_HOURS = 3  # don't hit nodes more than once every X hours
 
 OB_USE_SSL = os.getenv('OB_USE_SSL', 'True')
-OB_CERTIFICATE = os.getenv('OB_CERTIFICATE', '/home/'+os.getenv('USER')+'/.openbazaar/ssl/OpenBazaar.crt')
+DEFAULT_CERT_PATH = '/home/' + os.getenv('USER') + '/.openbazaar/ssl/OpenBazaar.crt'
+OB_CERTIFICATE = os.getenv('OB_CERTIFICATE', DEFAULT_CERT_PATH)
 
 # Don't use ssl if explicitly set not to.
 if OB_USE_SSL == 'False':
