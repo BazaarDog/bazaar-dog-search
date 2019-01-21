@@ -8,7 +8,10 @@ env:
   - DJANGO_VERSION=2.1.5
 install:
   - pip install -r requirements.txt
-# command to run tests
+  - pip install coveralls coverage
 script:
   - source postactivate_sample
-  - ./manage_base.py test
+  script:
+  - coverage run manage_base.py test
+after_success:
+  - coveralls
