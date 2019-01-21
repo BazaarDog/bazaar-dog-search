@@ -2,7 +2,7 @@ language: python
 sudo: false
 python:
   - "3.6"
-  - "3.7"  # 3.7 development branch
+  - "3.7-dev"  # 3.7 development branch
 # command to install dependencies
 env:
   - DJANGO_VERSION=2.1.5
