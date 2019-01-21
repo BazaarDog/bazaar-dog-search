@@ -1,9 +1,10 @@
 from distutils.util import strtobool
 from collections import OrderedDict
-from ob.models import Listing, Profile
+from ob.models import Profile
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from .param_util import build_options, build_checkbox
+from .param_common import get_nsfw_options, get_currency_type_options, get_clear_all_options
 
 
 def get_profile_sort():
@@ -33,44 +34,87 @@ def get_profile_sort():
 
 
 def get_profile_options(params):
-    clear_all_options = [
-        {"value": True,
-         "label": _("Reset"),
-         "checked": False,
-         "default": False
-         }
+
+    available_options = [
+        ("acceptedCurrencies", {
+            "type": "radio",
+            "label": _("Accepted Currencies"),
+            "options": get_currency_type_options(params)
+        }),
+        ("is_verified", {
+            "type": "checkbox",
+            "label": _("Verification"),
+            "options": get_is_verified_options(params)
+        }),
+        ("is_moderator", {
+            "type": "radio",
+            "label": _("Offers Moderation"),
+            "options": get_is_moderator_options(params)
+        }),
+        ("moderator_languages", {
+            "type": "dropdown",
+            "label": _("Moderator Language"),
+            "options": get_moderator_languages_options(params)
+        }),
+        ("has_verified", {
+            "type": "checkbox",
+            "label": _("Store Verification"),
+            "options": get_has_verified_options(params)
+        }),
+        ("moderator_count", {
+            "type": "radio",
+            "label": _("Store Moderators Available"),
+            "options": get_has_moderator_options(params)
+        }),
+        ("rating", {
+            "type": "radio",
+            "label": _("Vendor Rating"),
+            "options": get_rating_options(params)
+        }),
+        ("version", {
+            "type": "radio",
+            "label": _("Server Version"),
+            "options": get_ua_options(params)
+        }),
+        ("nsfw", {
+            "type": "radio",
+            "label": _("Adult Content"),
+            "options": get_nsfw_options(params)
+        }),
+        ("connection", {
+            "type": "radio",
+            "label": _("Connection Type"),
+            "options": get_connection_options(params)
+        }),
+        ("network", {
+            "type": "radio",
+            "label": _("Network"),
+            "options": get_network_options(params)
+        }),
+        ("clear_all", {
+            "type": "checkbox",
+            "label": _("Reset"),
+            "options": get_clear_all_options()
+        }),
     ]
+    if settings.DEV:
+        from .param_dev import get_debug_options
+        available_options += get_debug_options(params)
 
-    if 'acceptedCurrencies' in params.keys():
-        currency = params['acceptedCurrencies']
-    else:
-        currency = ''
+    options = OrderedDict(available_options)
 
-    distinct_currency = OrderedDict(
-        [
-            ('BCH', _('Bitcoin Cash') + ' (BCH)'),
-            ('BTC', _('Bitcoin Legacy') + ' (BTC)'),
-            # ('DOGE', 'Dogecoin (DOGE)'),
-            # ('ETH', 'Ethereum (ETH)'),
-            # ('ETC', 'Ethereum Classic (ETC)'),
-            # ('LTC', 'Litecoin (LTC)'),
-            ('ZEC', 'ZCash (ZEC)'),
-            #('XZC', 'ZCoin (XZC)'),
-            ('ZEN', 'ZenCash (ZEN)'),
-            ('', _('Any'))
-        ]
-    )
+    return options
 
-    currency_type_options = build_options(currency, distinct_currency)
 
-    if 'version' in params.keys():
-        version = params['version']
-        # print('version found:' + version)
-    else:
-        version = ''
+def get_ua_options(params):
+
+    version = params['version'] if 'version' in params.keys() else ''
 
     distinct_version = OrderedDict(
         [
+            ('openbazaar-go:0.14', '0.14.*'),
+            ('openbazaar-go:0.13', '0.13.*'),
+            ('openbazaar-go:0.12', '0.12.*'),
             ('openbazaar-go:0.11', '0.11.*'),
             ('openbazaar-go:0.10', '0.10.*'),
             ('openbazaar-go:0.9', '0.9.*'),
@@ -78,8 +122,10 @@ def get_profile_options(params):
         ]
     )
 
-    ua_options = build_options(version, distinct_version)
+    return build_options(version, distinct_version)
 
+
+def get_has_moderator_options(params):
     if 'moderator_count' in params.keys():
         try:
             moderator_count = int(params['moderator_count'])
@@ -88,7 +134,7 @@ def get_profile_options(params):
     else:
         moderator_count = 0
 
-    has_moderator_options = [
+    return [
         {
             "value": v,
             "label": '\u2696️' * v + ' ' + str(v) + '+',
@@ -103,33 +149,8 @@ def get_profile_options(params):
         } for v in range(3, -1, -1)
     ]
 
-    if 'nsfw' in params.keys():
-        try:
-            if params['nsfw'] == 'true':
-                nsfw = True
-            elif params['nsfw'] == 'Affirmative':
-                nsfw = 'Affirmative'
-            elif params['nsfw'] == 'false':
-                nsfw = False
-            elif params['nsfw'] == '':
-                nsfw = ''
-            else:
-                nsfw = False
-                # print('nsfw found:' + str(nsfw))
-        except ValueError:
-            nsfw = False
-    else:
-        nsfw = False
 
-    nsfw_choicea = OrderedDict(
-        [
-            (False, _('Hide')),
-            (True, _('Show')),
-            ('Affirmative', _('Only NSFW'))
-        ]
-    )
-
-    nsfw_options = build_options(nsfw, nsfw_choicea)
+def get_is_moderator_options(params):
 
     if 'is_moderator' in params.keys():
         try:
@@ -149,7 +170,10 @@ def get_profile_options(params):
     is_moderator_choices = OrderedDict(
         [(True, _('Yes')), ('', _('All')), ])
 
-    is_moderator_options = build_options(is_moderator, is_moderator_choices)
+    return build_options(is_moderator, is_moderator_choices)
+
+
+def get_is_verified_options(params):
 
     if 'is_verified' in params.keys():
         try:
@@ -170,7 +194,10 @@ def get_profile_options(params):
     is_verified_choices = OrderedDict(
         [(True, _('Is an OB1 Verified Moderator')), ])
 
-    is_verified_options = build_options(is_verified, is_verified_choices)
+    return build_options(is_verified, is_verified_choices)
+
+
+def get_has_verified_options(params):
 
     if 'has_verified' in params.keys():
         try:
@@ -190,7 +217,10 @@ def get_profile_options(params):
 
     has_verified_choices = OrderedDict([(True, _('Has OB1 Verified Moderator')), ])
 
-    has_verified_options = build_options(has_verified, has_verified_choices)
+    return build_options(has_verified, has_verified_choices)
+
+
+def get_moderator_languages_options(params):
 
     if 'moderator_languages' in params.keys():
         lang = params['moderator_languages']
@@ -206,28 +236,30 @@ def get_profile_options(params):
         ("mk", "македонски"), ("af", "Afrikaans")
     ])
 
-    moderator_languages_options = build_options(lang, moderator_languages)
+    return build_options(lang, moderator_languages)
+
+
+def get_network_options(params):
 
     if 'network' in params.keys():
         network = params['network']
-        # print('network found:' + network)
     else:
         network = 'mainnet'
 
     network_choices = OrderedDict([('mainnet', _("Main Network")), ('testnet', _("Test Network")), ])
+    return build_options(network, network_choices)
 
-    network_options = build_options(network, network_choices)
 
-    if 'rating' in params.keys():
-        try:
-            rating = float(params['rating'])
-        except ValueError:
-            rating = 0
+def get_rating_options(params):
 
-    else:
+    try:
+        rating = float(params['rating'])
+    except ValueError:
+        rating = 0
+    except KeyError:
         rating = 0
 
-    rating_options = [
+    return [
         {
             "value": v,
             "label": "{:.2f}".format(v) + ' >=',
@@ -236,83 +268,15 @@ def get_profile_options(params):
         } for v in [5.0, 4.95, 4.9, 4.8, 4.5, 4.0, 0.0]
     ]
 
-    if 'connection' in params.keys():
-        try:
-            connection = int(params['connection'])
-        except ValueError:
-            connection = ''
-            # print('connection found:' + str(connection) + " class" + str(type(connection)))
-    else:
+
+def get_connection_options(params):
+
+    try:
+        connection = int(params['connection'])
+    except ValueError:
+        connection = ''
+    except KeyError:
         connection = ''
 
-    connection_options = build_options(connection, Profile.CONNECTION_TYPE_DICT)
+    return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
-    available_options = [
-        ("acceptedCurrencies", {
-            "type": "radio",
-            "label": _("Accepted Currencies"),
-            "options": currency_type_options
-        }),
-        ("is_verified", {
-            "type": "checkbox",
-            "label": _("Verification"),
-            "options": is_verified_options
-        }),
-        ("is_moderator", {
-            "type": "radio",
-            "label": _("Offers Moderation"),
-            "options": is_moderator_options
-        }),
-        ("moderator_languages", {
-            "type": "dropdown",
-            "label": _("Moderator Language"),
-            "options": moderator_languages_options
-        }),
-        ("has_verified", {
-            "type": "checkbox",
-            "label": _("Store Verification"),
-            "options": has_verified_options
-        }),
-        ("moderator_count", {
-            "type": "radio",
-            "label": _("Store Moderators Available"),
-            "options": has_moderator_options
-        }),
-        ("rating", {
-            "type": "radio",
-            "label": _("Vendor Rating"),
-            "options": rating_options
-        }),
-        ("version", {
-            "type": "radio",
-            "label": _("Server Version"),
-            "options": ua_options
-        }),
-        ("nsfw", {
-            "type": "radio",
-            "label": _("Adult Content"),
-            "options": nsfw_options
-        }),
-        ("connection", {
-            "type": "radio",
-            "label": _("Connection Type"),
-            "options": connection_options
-        }),
-        ("network", {
-            "type": "radio",
-            "label": _("Network"),
-            "options": network_options
-        }),
-        ("clear_all", {
-            "type": "checkbox",
-            "label": _("Reset"),
-            "options": clear_all_options
-        }),
-    ]
-    if settings.DEV:
-        from .param_dev import get_debug_options
-        available_options += get_debug_options(params)
-
-    options = OrderedDict(available_options)
-
-    return options

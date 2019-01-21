@@ -3,40 +3,89 @@ from ob.models import Listing, Profile
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from .param_util import build_options, build_checkbox
+from .param_common import get_nsfw_options, get_currency_type_options, get_clear_all_options
 
 
 def get_options(params):
+    available_options = [
+        ("acceptedCurrencies", {
+            "type": "checkbox",
+            "label": _("Accepted Currencies"),
+            "options": get_currency_type_options(params)
+        }),
+        ("moderator_verified", {
+            "type": "checkbox",
+            "label": _("Verified Moderator"),
+            "options": get_moderator_verified_options(params)
+        }),
+        ("moderator_count", {
+            "type": "radio",
+            "label": _("Moderators Available"),
+            "options": get_moderator_options(params)
+        }),
+        ("nsfw", {
+            "type": "radio",
+            "label": _("Adult Content"),
+            "options": get_nsfw_options(params)
+        }),
+        ("condition_type", {
+            "type": "radio",
+            "label": _("Condition"),
+            "options": get_condition_type_options(params)
+        }),
+        ("rating", {
+            "type": "radio",
+            "label": _("Rating"),
+            "options": get_rating_options(params)
+        }),
+        ("contract_type", {
+            "type": "radio",
+            "label": _("Type"),
+            "options": get_contract_type_options(params)
+        }),
+        ("shipping", {
+            "type": "dropdown",
+            "label": _("Ships to"),
+            "options": get_region_options(params)
+        }),
+        ("free_shipping_region", {
+            "type": "checkbox",
+            "label": _("Ships Free"),
+            "options": get_free_shipping_options(params)
+        }),
+        ("connection", {
+            "type": "radio",
+            "label": _("Connection Type (Alpha)"),
+            "options": get_connection_options(params)
+        }),
+        ("network", {
+            "type": "radio",
+            "label": _("Network"),
+            "options": get_network_options(params)
+        }),
+        ("dust", {
+            "type": "checkbox",
+            "label": _("Show Dust"),
+            "options": get_dust_options(params)
+        }),
+        ("clear_all", {
+            "type": "checkbox",
+            "label": _("Reset"),
+            "options": get_clear_all_options()
+        }),
+    ]
+
+    if settings.DEV:
+        from .param_dev import get_debug_options
+        available_options += get_debug_options(params)
+
+    options = OrderedDict(available_options)
+
+    return options
 
 
-    # Accepted Currencies
-
-    if 'acceptedCurrencies' in params.keys():
-        currency = params['acceptedCurrencies']
-    else:
-        currency = ''
-
-    distinct_currency = OrderedDict(
-        [
-            ('BCH', _('Bitcoin Cash') + ' (BCH)'),
-            ('BTC', _('Bitcoin Core') + ' (BTC)'),
-            #('DOGE', 'Dogecoin (DOGE)'),
-            #('ETC', 'Ethereum Classic (ETC)'),
-            #('ETH', 'Ethereum (ETH)'),
-            ('LTC', 'Litecoin (LTC)'),
-            ('ZEC', 'ZCash (ZEC)'),
-            #('XZC', 'ZCoin (XZC)'),
-            #('ZEN', 'ZenCash (ZEN)'),
-            ('', _('Any')),
-            # ('TBCH', 'Testnet BCH (TBCH)'),
-            # ('TBTC', 'Testnet BTC (TBTC)'),
-        ]
-    )
-
-    currency_type_options = build_options(selected=currency, options=distinct_currency)
-    currency_type_options[0]['default'] = True
-
-
-    # Verified Moderator
+def get_moderator_verified_options(params):
+    # Build verified moderator options
 
     if 'moderator_verified' in params.keys():
         try:
@@ -55,10 +104,12 @@ def get_options(params):
 
     moderator_verified_choices = OrderedDict([(True, 'OB1 Verified Moderator'), ])
 
-    moderator_verified_options = build_options(moderator_verified, moderator_verified_choices)
+    return build_options(moderator_verified, moderator_verified_choices)
 
 
-    # Number of moderators
+def get_moderator_options(params):
+
+    # Build number of moderator options
 
     if 'moderator_count' in params.keys():
         try:
@@ -76,40 +127,19 @@ def get_options(params):
             "default": False
         } for v in range(3, -1, -1)
     ]
-
     moderator_options[1]['default'] = True
 
-
-    # NSFW
-
-    if 'nsfw' in params.keys():
-        try:
-            if params['nsfw'] == 'true':
-                nsfw = True
-            elif params['nsfw'] == 'Affirmative':
-                nsfw = 'Affirmative'
-            elif params['nsfw'] == 'false':
-                nsfw = False
-            elif params['nsfw'] == '':
-                nsfw = ''
-            else:
-                nsfw = False
-        except ValueError:
-            nsfw = False
-    else:
-        nsfw = False
-
-    nsfw_choices = OrderedDict([(False, _('Hide')), (True, _('Show')), ('Affirmative', _('Only NSFW'))])
-
-    nsfw_options = build_options(nsfw, nsfw_choices)
+    return moderator_options
 
 
-    # Ship to
+def get_region(params):
 
-    if 'shipping' in params.keys():
-        region = params['shipping']
-    else:
-        region = 'any'
+    return params['shipping'] if 'shipping' in params.keys() else 'any'
+
+
+def get_region_options(params):
+
+    region = get_region(params)
 
     distinct_region = OrderedDict(
         [
@@ -219,9 +249,11 @@ def get_options(params):
         ]
     )
 
-    region_options = build_options(region, distinct_region)
+    return build_options(region, distinct_region)
 
 
+def get_free_shipping_options(params):
+    region = get_region(params)
     # Free shipping
 
     if 'free_shipping_region' in params.keys():
@@ -236,13 +268,17 @@ def get_options(params):
         free_shipping = ''
 
     if region and region.lower() != 'any':
-        free_shipping_choices = OrderedDict([(True, _('to {place}').format(place=region.title().replace('_', ' '))), ])
+        to_str = _('to {place}').format(place=region.title().replace('_', ' '))
+        free_shipping_choices = OrderedDict([(True, to_str), ])
     else:
         free_shipping_choices = OrderedDict([(True, _('to Anywhere')), ])
 
-    free_shipping_options = build_options(free_shipping, free_shipping_choices)
+    return build_options(free_shipping, free_shipping_choices)
 
-    # Contract
+
+def get_contract_type_options(params):
+
+    # build contract type options
 
     if 'contract_type' in params.keys():
         try:
@@ -252,10 +288,12 @@ def get_options(params):
     else:
         contract = ''
 
-    contract_type_options = build_options(contract, Listing.CONTRACT_TYPE_DICT)
+    return build_options(contract, Listing.CONTRACT_TYPE_DICT)
 
 
-    # Condition
+def get_condition_type_options(params):
+
+    # Build condition type options
 
     if 'condition_type' in params.keys():
         try:
@@ -265,10 +303,12 @@ def get_options(params):
     else:
         condition = ''
 
-    condition_type_options = build_options(condition, Listing.CONDITION_TYPE_DICT)
+    return build_options(condition, Listing.CONDITION_TYPE_DICT)
 
 
-    # Network
+def get_network_options(params):
+
+    # Build network type options
 
     if 'network' in params.keys():
         network = params['network']
@@ -277,9 +317,10 @@ def get_options(params):
 
     network_choices = OrderedDict([('mainnet', _("Main Network")), ('testnet', _("Test Network"))])
 
-    network_options = build_options(network, network_choices)
+    return build_options(network, network_choices)
 
 
+def get_rating_options(params):
     # Ratings
 
     if 'rating' in params.keys():
@@ -290,7 +331,7 @@ def get_options(params):
     else:
         rating = 0
 
-    rating_options = [
+    return [
         {
             "value": v,
             "label": "{:.2f}".format(v) + ' >=',
@@ -300,6 +341,7 @@ def get_options(params):
     ]
 
 
+def get_connection_options(params):
     # Connection type
 
     if 'connection' in params.keys():
@@ -310,9 +352,10 @@ def get_options(params):
     else:
         connection = ''
 
-    connection_options = build_options(connection, Profile.CONNECTION_TYPE_DICT)
+    return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
 
+def get_dust_options(params):
     # Dust
 
     if 'dust' in params.keys():
@@ -332,88 +375,6 @@ def get_options(params):
         ]
     )
 
-    dust_options = build_options(dust, dust_choices)
+    return build_options(dust, dust_choices)
 
 
-    # Reset button
-
-    clear_all_options = build_checkbox(checked=False, label=_("Reset"))
-
-
-    available_options = [
-        ("acceptedCurrencies", {
-            "type": "checkbox",
-            "label": _("Accepted Currencies"),
-            "options": currency_type_options
-        }),
-        ("moderator_verified", {
-            "type": "checkbox",
-            "label": _("Verified Moderator"),
-            "options": moderator_verified_options
-        }),
-        ("moderator_count", {
-            "type": "radio",
-            "label": _("Moderators Available"),
-            "options": moderator_options
-        }),
-        ("nsfw", {
-            "type": "radio",
-            "label": _("Adult Content"),
-            "options": nsfw_options
-        }),
-        ("condition_type", {
-            "type": "radio",
-            "label": _("Condition"),
-            "options": condition_type_options
-        }),
-        ("rating", {
-            "type": "radio",
-            "label": _("Rating"),
-            "options": rating_options
-        }),
-        ("contract_type", {
-            "type": "radio",
-            "label": _("Type"),
-            "options": contract_type_options
-        }),
-        ("shipping", {
-            "type": "dropdown",
-            "label": _("Ships to"),
-            "options": region_options
-        }),
-        ("free_shipping_region", {
-            "type": "checkbox",
-            "label": _("Ships Free"),
-            "options": free_shipping_options
-        }),
-        ("connection", {
-            "type": "radio",
-            "label": _("Connection Type (Alpha)"),
-            "options": connection_options
-        }),
-        ("network", {
-            "type": "radio",
-            "label": _("Network"),
-            "options": network_options
-        }),
-        ("dust", {
-            "type": "checkbox",
-            "label": _("Show Dust"),
-            "options": dust_options
-        }),
-        ("clear_all", {
-            "type": "checkbox",
-            "label": _("Reset"),
-            "options": clear_all_options
-        }),
-    ]
-
-    hap = """        """
-
-    if settings.DEV:
-        from .param_dev import get_debug_options
-        available_options += get_debug_options(params)
-
-    options = OrderedDict(available_options)
-
-    return options

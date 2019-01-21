@@ -5,6 +5,7 @@ from .param_util import build_options
 
 
 def get_debug_options(params):
+
     if 'locale' in params.keys():
         locale = params['locale']
     else:

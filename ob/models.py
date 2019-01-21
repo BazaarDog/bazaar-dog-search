@@ -1,4 +1,3 @@
-import math
 import json
 from pathlib import Path
 import requests
@@ -23,9 +22,11 @@ from urllib3.exceptions import SubjectAltNameWarning
 
 import ipaddress
 import os
-import asyncio
 
 requests.packages.urllib3.disable_warnings(SubjectAltNameWarning)
+
+OB_HOST = settings.OB_MAINNET_HOST
+IPNS_HOST = settings.IPNS_MAINNET_HOST
 
 try:
     from obscure import get_listing_rank, get_profile_rank
@@ -211,10 +212,9 @@ class Profile(models.Model):
     class Meta:
         ordering = ['-rank']
 
-    def get_seralized_record(self, testnet=False):
+    def get_seralized_record(self):
 
         try:
-            OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
             profile_url = OB_HOST + 'ipns/' + self.peerID
             peer_response = requests_get_wrap(profile_url)
             if peer_response.status_code == 200:
@@ -246,9 +246,8 @@ class Profile(models.Model):
 
     # '4002/ob/peerinfo/QmTQNzpvq1Lgx6NvXhnoiWirLV1oQbF9LJZwMENKoPYVon'
 
-    def get_neighbors(self, testnet=False):
+    def get_neighbors(self):
         try:
-            OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
             closestpeers_url = OB_HOST + 'closestpeers/' + self.peerID
             peer_response = requests_get_wrap(closestpeers_url)
             if peer_response.status_code == 200:
@@ -260,12 +259,7 @@ class Profile(models.Model):
 
     # Profile
     def sync(self, testnet=False):
-        import requests
-        import json
-        IPNS_HOST = settings.IPNS_TESTNET_HOST if self.network == 'testnet' else settings.IPNS_MAINNET_HOST
-        OB_HOST = settings.OB_TESTNET_HOST if self.network == 'testnet' else settings.OB_MAINNET_HOST
         OB_INFO_URL = OB_HOST + 'peerinfo/'
-
         profile_url = OB_HOST + 'profile/' + self.peerID
         try:
             profile_response = requests_get_wrap(profile_url)
@@ -721,8 +715,7 @@ class Listing(models.Model):
     # should_update = Profile.should_update
 
 
-    def get_sync_url(self, testnet=False):
-        OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
+    def get_sync_url(self):
         return OB_HOST + 'listing/' + self.profile_id + '/' + self.slug
 
     # Listing
