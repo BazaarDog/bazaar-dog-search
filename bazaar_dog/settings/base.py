@@ -55,7 +55,7 @@ OB_API_PASSWORD = os.getenv('OB_API_PASSWORD')
 OB_API_AUTH = (OB_API_USER, OB_API_PASSWORD)
 
 CRAWL_TIMEOUT = 48  # seconds
-SHORTEST_UPDATE_HOURS = 0  # don't hit nodes more than once every X hours
+SHORTEST_UPDATE_HOURS = 3  # don't hit nodes more than once every X hours
 
 OB_USE_SSL = os.getenv('OB_USE_SSL', 'True')
 OB_CERTIFICATE = os.getenv('OB_CERTIFICATE', '/home/'+os.getenv('USER')+'/.openbazaar/ssl/OpenBazaar.crt')

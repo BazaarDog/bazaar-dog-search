@@ -773,9 +773,11 @@ class Listing(models.Model):
                         # self.categories_array = item_details['categories']
                     if 'price' in item_details:
                         self.price = item_details['price']
-
-                        c = ExchangeRate.objects.get(symbol=self.pricing_currency)
-                        self.price_value = self.price / float(c.base_unit) / float(c.rate)
+                        try:
+                            c = ExchangeRate.objects.get(symbol=self.pricing_currency)
+                            self.price_value = self.price / float(c.base_unit) / float(c.rate)
+                        except ZeroDivisionError:
+                            listing.price_value = 0.0001
 
                     if 'description' in item_details.keys():
                         self.description = item_details['description']

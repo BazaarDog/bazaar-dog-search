@@ -11,4 +11,4 @@ install:
 # command to run tests
 script:
   - source postactivate_sample
-  - ./manage.py test
+  - ./manage_base.py test

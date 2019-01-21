@@ -7,6 +7,7 @@ django-filter==2.0.0
 djangorestframework==3.7.7
 idna==2.8
 idna-ssl==1.1.0
+lxml==4.3.0
 multidict==4.5.2
 pytz==2018.9
 urllib3==1.23
