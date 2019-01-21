@@ -11,7 +11,6 @@ install:
   - pip install coveralls coverage
 script:
   - source postactivate_sample
-  script:
   - coverage run manage_base.py test
 after_success:
   - coveralls
