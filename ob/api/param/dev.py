@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from .param_util import build_options
+from .util import build_options
 
 
 def get_debug_options(params):

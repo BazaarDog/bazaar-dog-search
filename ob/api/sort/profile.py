@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from django.utils.translation import ugettext_lazy as _
 
+
 def get_profile_sort():
     return OrderedDict([
         ("", {

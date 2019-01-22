@@ -3,8 +3,8 @@ from collections import OrderedDict
 from ob.models import Profile
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from .param_util import build_options, build_checkbox
-from .param_common import get_nsfw_options, get_currency_type_options, get_clear_all_options
+from .util import build_options, build_checkbox
+from .param_common import get_nsfw_options, get_currency_type_options, get_clear_all_options, get_network_options
 
 
 def get_profile_sort():
@@ -126,6 +126,7 @@ def get_ua_options(params):
 
 
 def get_has_moderator_options(params):
+
     if 'moderator_count' in params.keys():
         try:
             moderator_count = int(params['moderator_count'])
@@ -237,17 +238,6 @@ def get_moderator_languages_options(params):
     ])
 
     return build_options(lang, moderator_languages)
-
-
-def get_network_options(params):
-
-    if 'network' in params.keys():
-        network = params['network']
-    else:
-        network = 'mainnet'
-
-    network_choices = OrderedDict([('mainnet', _("Main Network")), ('testnet', _("Test Network")), ])
-    return build_options(network, network_choices)
 
 
 def get_rating_options(params):

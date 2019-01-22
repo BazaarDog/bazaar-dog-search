@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .param_util import build_options
+from .util import build_options
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -65,3 +65,10 @@ def get_nsfw_options(params):
     )
 
     return build_options(nsfw, nsfw_choices)
+
+
+def get_network_options(params):
+
+    network = params['network'] if 'network' in params.keys() else 'mainnet'
+    network_choices = OrderedDict([('mainnet', _("Main Network")), ('testnet', _("Test Network")), ])
+    return build_options(network, network_choices)

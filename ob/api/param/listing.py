@@ -2,11 +2,11 @@ from collections import OrderedDict
 from ob.models import Listing, Profile
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from .param_util import build_options, build_checkbox
-from .param_common import get_nsfw_options, get_currency_type_options, get_clear_all_options
+from .util import build_options, build_checkbox
+from .common import get_nsfw_options, get_currency_type_options, get_clear_all_options
 
 
-def get_options(params):
+def get_listing_options(params):
     available_options = [
         ("acceptedCurrencies", {
             "type": "checkbox",
@@ -76,7 +76,7 @@ def get_options(params):
     ]
 
     if settings.DEV:
-        from .param_dev import get_debug_options
+        from .dev import get_debug_options
         available_options += get_debug_options(params)
 
     options = OrderedDict(available_options)
@@ -304,20 +304,6 @@ def get_condition_type_options(params):
         condition = ''
 
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
-
-
-def get_network_options(params):
-
-    # Build network type options
-
-    if 'network' in params.keys():
-        network = params['network']
-    else:
-        network = 'mainnet'
-
-    network_choices = OrderedDict([('mainnet', _("Main Network")), ('testnet', _("Test Network"))])
-
-    return build_options(network, network_choices)
 
 
 def get_rating_options(params):

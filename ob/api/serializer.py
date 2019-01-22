@@ -1,13 +1,8 @@
-import json
 from rest_framework import serializers
 from ob.models import Listing, Profile, Image, ListingImage, ListingReport
 
-from django.utils.translation import ugettext_lazy as _
-
-
 
 class ListingReportSerializer(serializers.ModelSerializer):
-
     listing = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
@@ -17,17 +12,17 @@ class ListingReportSerializer(serializers.ModelSerializer):
 
 class ImageMedSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('medium','small')
+        fields = ('medium', 'small')
         model = Image
 
 
 class ImageSmallSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ('small','tiny')
+        fields = ('small', 'tiny')
         model = Image
 
-class ProfileSerializer(serializers.ModelSerializer):
 
+class ProfileSerializer(serializers.ModelSerializer):
     avatarHashes = ImageSmallSerializer(source='avatar')
 
     shortDescription = serializers.CharField(source='short_description')
@@ -38,12 +33,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfileBadgeSerializer(serializers.ModelSerializer):
-
     avatarHashes = serializers.SerializerMethodField()
-    #shortDescription = serializers.CharField(source='short_description')
+
+    # shortDescription = serializers.CharField(source='short_description')
 
     class Meta:
-        fields = ('avatarHashes', 'name','peerID',)
+        fields = ('avatarHashes', 'name', 'peerID',)
         model = Profile
 
     def get_avatarHashes(self, o):
@@ -52,21 +47,23 @@ class ProfileBadgeSerializer(serializers.ModelSerializer):
         except ListingImage.DoesNotExist:
             return ""
 
-class ListingSerializer(serializers.ModelSerializer):
 
+class ListingSerializer(serializers.ModelSerializer):
     thumbnail = serializers.SerializerMethodField(source='thumbnail')
     contractType = serializers.IntegerField(source='contract_type')
     price = serializers.SerializerMethodField()
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
-    #freeShipping = serializers.CharField(source='free_shipping')
+
+    # freeShipping = serializers.CharField(source='free_shipping')
 
     class Meta:
-        #exclude = ('condition_type', 'pricing_currency','contract_type','rating_average','rating_count',)
-        fields = ('thumbnail','contractType','price','averageRating','ratingCount','slug','nsfw','title')#,'freeShipping')
+        # exclude = ('condition_type', 'pricing_currency','contract_type','rating_average','rating_count',)
+        fields = ('thumbnail', 'contractType', 'price', 'averageRating', 'ratingCount', 'slug', 'nsfw',
+                  'title')  # ,'freeShipping')
         model = Listing
 
-    #def get_freeShipping(self,o):
+    # def get_freeShipping(self,o):
     #    return o.free_shipping[1:-1].replace("'","").split(",")
 
     def get_thumbnail(self, o):
@@ -84,21 +81,17 @@ class ListingSerializer(serializers.ModelSerializer):
         }
 
 
-
-
 class ProfileAsListingSerializer(serializers.ModelSerializer):
-
     thumbnail = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     title = serializers.CharField(source='name')
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
-    #moderators = serializers.SerializerMethodField()
+    # moderators = serializers.SerializerMethodField()
     slug = serializers.SerializerMethodField()
 
-
     class Meta:
-        fields = ('peerID', 'price', 'thumbnail','title','ratingCount','averageRating','slug','nsfw',)
+        fields = ('peerID', 'price', 'thumbnail', 'title', 'ratingCount', 'averageRating', 'slug', 'nsfw',)
         model = Profile
 
     def get_slug(self, o):
@@ -118,16 +111,16 @@ class ProfileAsListingSerializer(serializers.ModelSerializer):
         if o.moderator_fee_fixed_amount:
             return {
                 "currencyCode": o.moderator_fee_fixed_currency,
-                "amount":  o.moderator_fee_fixed_amount
+                "amount": o.moderator_fee_fixed_amount
             }
         else:
             return {
                 "currencyCode": "USD",
-                "amount":  0.00
+                "amount": 0.00
             }
 
-class ProfileWrapSerializer(serializers.ModelSerializer):
 
+class ProfileWrapSerializer(serializers.ModelSerializer):
     class Meta:
         exclude = ('')
         model = Profile
@@ -144,8 +137,6 @@ class ProfileWrapSerializer(serializers.ModelSerializer):
 
 
 class ListingWrapSerializer(serializers.ModelSerializer):
-
-
     class Meta:
         exclude = ('')
         model = Listing
