@@ -331,10 +331,10 @@ class Profile(models.Model):
                 self.pub_date = timezone.now()
 
                 if "avatarHashes" in profile_data.keys():
-                    a, aCreated = Image.objects.get_or_create(**profile_data['avatarHashes'])
+                    a, a_created = Image.objects.get_or_create(**profile_data['avatarHashes'])
                     self.avatar = a
                 if "headerHashes" in profile_data.keys():
-                    h, hCreated = Image.objects.get_or_create(**profile_data['headerHashes'])
+                    h, h_created = Image.objects.get_or_create(**profile_data['headerHashes'])
                     self.header = h
 
                 if "stats" in profile_data.keys():
@@ -473,8 +473,6 @@ class Profile(models.Model):
     def update_listings(self, testnet=False):
         import requests
         import json
-        IPNS_HOST = settings.IPNS_MAINNET_HOST if not testnet else settings.IPNS_TESTNET_HOST
-        OB_HOST = settings.OB_MAINNET_HOST if not testnet else settings.OB_TESTNET_HOST
 
         listing_url = OB_HOST + 'listings/' + self.peerID
 
@@ -531,10 +529,7 @@ class Profile(models.Model):
                             if 'freeShipping' in listing_data.keys():
                                 listing.free_shipping = listing_data['freeShipping']
                             listing.active = True
-                            listing.sync(testnet=testnet)
-
-
-                            # print('shipping: ' + str(listing_data['freeShipping']))
+                            listing.sync()
 
                 except json.decoder.JSONDecodeError:
                     print("Problem decoding json for listings of peer: " + self.peerID)
