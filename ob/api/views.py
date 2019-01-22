@@ -5,7 +5,7 @@ from ob.api.query.profile import get_queryset as get_queryset_profile
 from ob.models import ListingReport
 from .base import *
 from .filter import *
-from .query_listing import get_queryset as get_queryset_listing
+from .query.listing import get_queryset as get_queryset_listing
 from .serializer import ListingReportSerializer, ProfileWrapSerializer, ListingWrapSerializer
 
 
