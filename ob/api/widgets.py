@@ -39,6 +39,7 @@ class TruthyWidget(TweekedWidget):
             value = ''
         return super().render(name, value, attrs, renderer)
 
+
 class FalsyWidget(TweekedWidget):
 
     def render(self, name, value, attrs=None, renderer=None):
