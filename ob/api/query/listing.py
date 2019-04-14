@@ -40,8 +40,8 @@ def get_queryset(self):
     if 'shipping' in self.request.query_params:
         c = self.request.query_params['shipping']
         queryset = queryset.filter(
-            Q(shippingoptions__regions__icontains=c) | Q(shippingoptions__regions__icontains='ALL') | Q(
-                shippingoptions__regions__isnull=True))
+            Q(shippingoptions__regions_array__icontains=c) | Q(shippingoptions__regions_array__icontains='ALL') | Q(
+                shippingoptions__regions_array__isnull=True))
 
     if 'free_shipping_region' in self.request.query_params and self.request.query_params[
         'free_shipping_region'] == 'true':

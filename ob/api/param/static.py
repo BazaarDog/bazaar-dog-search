@@ -1,3 +1,6 @@
+from collections import OrderedDict
+from django.utils.translation import ugettext_lazy as _
+
 country_list = [
             ("", "(Any country)"),
             ("united_states", "🇺🇸 United States of America (The)"),
@@ -193,3 +196,20 @@ country_list = [
             ("zambia", "🇿🇲 Zambia"),
             ("zimbabwe", "🇿🇼 Zimbabwe")
         ]
+
+currency_list = OrderedDict(
+        [
+            ('BCH', _('Bitcoin Cash') + ' (BCH)'),
+            ('BTC', _('Bitcoin Core') + ' (BTC)'),
+            # ('DOGE', 'Dogecoin (DOGE)'),
+            # ('ETC', 'Ethereum Classic (ETC)'),
+            ('ETH', 'Ethereum (ETH)'),
+            ('LTC', 'Litecoin (LTC)'),
+            ('ZEC', 'ZCash (ZEC)'),
+            # ('XZC', 'ZCoin (XZC)'),
+            # ('ZEN', 'ZenCash (ZEN)'),
+            ('', _('Any')),
+            # ('TBCH', 'Testnet BCH (TBCH)'),
+            # ('TBTC', 'Testnet BTC (TBTC)'),
+        ]
+    )

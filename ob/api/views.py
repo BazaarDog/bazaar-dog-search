@@ -37,6 +37,6 @@ class ListingSearch(ListingPaginateAPIView):
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter, CustomSearchFilter, RelatedOrderingFilter,)
     ordering_fields = ('__all__')
     search_fields = (
-        'description', 'tags', 'categories', 'title', 'profile__peerID', 'profile__handle', 'profile__name',)
+        'description', 'tags_array', 'categories_array', 'title', 'profile__peerID', 'profile__handle', 'profile__name',)
     get_queryset = get_queryset_listing
 

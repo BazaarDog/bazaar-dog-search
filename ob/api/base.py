@@ -24,11 +24,10 @@ class ListingResultsSetPagination(PageNumberPagination):
 
     def get_paginated_response(self, data):
 
-        options = get_options(self.request.query_params)
+        options = get_listing_options(self.request.query_params)
         sort_by = get_sort()
-        if 'clear_all' in self.request.query_params.keys():
-            if self.request.query_params['clear_all'] == 'true':
-                return redirect(settings.SITE_URL)
+        if self.request.query_params.get('clear_all') == 'true':
+            return redirect(settings.SITE_URL)
 
         if 'locale' in self.request.query_params.keys():
             from django.utils import translation

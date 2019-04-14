@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from ob.models import Listing, Profile
 from django.conf import settings
+from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext_lazy as _
 from .util import build_options, build_checkbox
 from .common import get_nsfw_options, get_currency_type_options, \
@@ -150,7 +151,7 @@ def get_region_options(params):
 def get_free_shipping_options(params):
     try:
         free_shipping = True if params['free_shipping_region'] == 'true' else ''
-    except ValueError:
+    except MultiValueDictKeyError:
         free_shipping = ''
     region = get_region(params)
     if region and region.lower() != 'any':

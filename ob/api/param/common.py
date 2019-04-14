@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from .util import build_options
+from .static import currency_list
+from .util import build_options, build_multi_options
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -15,27 +16,11 @@ def get_clear_all_options():
 
 def get_currency_type_options(params):
     if 'acceptedCurrencies' in params.keys():
-        currency = params['acceptedCurrencies']
+        currencies = params.getlist('acceptedCurrencies')
     else:
-        currency = ''
-
-    distinct_currency = OrderedDict(
-        [
-            ('BCH', _('Bitcoin Cash') + ' (BCH)'),
-            ('BTC', _('Bitcoin Core') + ' (BTC)'),
-            # ('DOGE', 'Dogecoin (DOGE)'),
-            # ('ETC', 'Ethereum Classic (ETC)'),
-            # ('ETH', 'Ethereum (ETH)'),
-            ('LTC', 'Litecoin (LTC)'),
-            ('ZEC', 'ZCash (ZEC)'),
-            # ('XZC', 'ZCoin (XZC)'),
-            # ('ZEN', 'ZenCash (ZEN)'),
-            ('', _('Any')),
-            # ('TBCH', 'Testnet BCH (TBCH)'),
-            # ('TBTC', 'Testnet BTC (TBTC)'),
-        ]
-    )
-    return build_options(currency, distinct_currency)
+        currencies = []
+    distinct_currency = currency_list
+    return build_multi_options(currencies, distinct_currency)
 
 
 def get_nsfw_options(params):

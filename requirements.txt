@@ -10,6 +10,7 @@ idna==2.8
 idna-ssl==1.1.0
 lxml==4.3.0
 multidict==4.5.2
+psycopg2-binary
 pytz==2018.9
 requests==2.21.0
 sqlparse==0.2.4

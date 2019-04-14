@@ -1,24 +1,27 @@
 import operator
 from functools import reduce
 
+
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.fields.reverse_related import ForeignObjectRel, OneToOneRel
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
+from django.contrib.postgres.fields import ArrayField
+from rest_framework.filters import OrderingFilter
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.settings import api_settings
 from rest_framework.compat import coreapi, coreschema, distinct
 import django_filters
 from django_filters.widgets import BooleanWidget
 from distutils.util import strtobool
+
 from ob.models import Listing, Profile
 
-from django.db.models.fields import FieldDoesNotExist
-from rest_framework.filters import OrderingFilter
-from django.db.models.fields.reverse_related import ForeignObjectRel, OneToOneRel
 from .widgets import TruthyWidget, FalsyWidget
 
 
@@ -192,14 +195,22 @@ class ProfileFilter(django_filters.FilterSet):
         model = Profile
         exclude = ()
         order_by = True
+        filter_overrides = {
+            ArrayField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            },
+        }
 
     def filter_listing_by_moderator_count(self, queryset, name, value):
         return queryset.filter(moderators_count__gte=value)
 
 
 class ListingFilter(django_filters.FilterSet):
-    acceptedCurrencies = django_filters.Filter(field_name='accepted_currencies', lookup_expr='icontains')
-    tags = django_filters.Filter(field_name='tags', lookup_expr='icontains')
+    acceptedCurrencies = django_filters.Filter(field_name='accepted_currencies_array', lookup_expr='icontains')
+    tags_array = django_filters.Filter(field_name='tags_array', lookup_expr='icontains')
     categories = django_filters.Filter(field_name='categories', lookup_expr='icontains')
     rating = django_filters.Filter(field_name='rating_average', lookup_expr='gte')
     connection = django_filters.TypedChoiceFilter(field_name='profile__connection_type',
@@ -214,6 +225,14 @@ class ListingFilter(django_filters.FilterSet):
         model = Listing
         exclude = ()
         order_by = True
+        filter_overrides = {
+            ArrayField: {
+                'filter_class': django_filters.CharFilter,
+                'extra': lambda f: {
+                    'lookup_expr': 'icontains',
+                },
+            },
+        }
 
     def filter_listing_contract_type(self, queryset, name, value):
         return queryset.filter(contract_type=value)

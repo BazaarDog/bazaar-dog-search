@@ -1,115 +1,128 @@
+import ipaddress
 import json
+import logging
 import requests
-from django.conf import settings
-from django.db.utils import IntegrityError
-from django.utils import timezone
-
-from django.dispatch import receiver
-
 from urllib3.exceptions import SubjectAltNameWarning
 
-import ipaddress
-import os
+from django.conf import settings
+from django.dispatch import receiver
+from django.db.utils import IntegrityError
+from django.utils import timezone
+from django.utils.timezone import now
+
+from ob.models import Profile, ProfileSocial, ProfileAddress, Image
+from ob.util import get, moving_average_speed
+from ob.tasks.sync_ratings import sync_ratings
+from ob.tasks.sync_listings import sync_listings
+
+logger = logging.getLogger(__name__)
+
+OB_HOST = settings.OB_MAINNET_HOST
+IPNS_HOST = settings.IPNS_MAINNET_HOST
+OB_INFO_URL = OB_HOST + 'peerinfo/'
 
 
-# Profile
-def sync(p):
-    OB_INFO_URL = OB_HOST + 'peerinfo/'
-    profile_url = OB_HOST + 'profile/' + p.peerID
+# Sync a Profile
+def sync_profile(profile):
+    profile_url = OB_HOST + 'profile/' + profile.peerID
     try:
-        profile_response = requests_get_wrap(profile_url)
+        profile_response = get(profile_url)
         if profile_response.status_code == 200:
-            print('Good Reponse from: ' + p.peerID)
-            profile_data = json.loads(profile_response.content.decode('utf-8'))
+            logger.debug('Good Reponse from: ' + profile.peerID)
+            profile_data = json.loads(
+                profile_response.content.decode('utf-8'))
             speed_rank = profile_response.elapsed.microseconds
-            p.speed_rank = float(p.speed_rank) / 2.0 + float(speed_rank) / 2.0
-            p.about = profile_data['about']
-            p.name = profile_data['name']
-            p.location = profile_data['location']
-            p.short_description = profile_data['shortDescription']
-            p.moderator = profile_data['moderator']
+            profile.speed_rank = float(profile.speed_rank) / 2.0 + float(
+                speed_rank) / 2.0
+            profile.about = profile_data['about']
+            profile.name = profile_data['name']
+            profile.location = profile_data['location']
+            profile.short_description = profile_data['shortDescription']
+            profile.moderator = profile_data['moderator']
             if 'moderatorInfo' in profile_data.keys():
                 mod_info = profile_data['moderatorInfo']
-                p.moderator_description = (mod_info['description'] if 'description' in mod_info.keys() else '')
-                p.moderator_terms = (
-                    mod_info['termsAndConditions'] if 'termsAndConditions' in mod_info.keys() else '')
-                p.moderator_languages = (mod_info['languages'] if 'languages' in mod_info.keys() else '')
-                # This is not a property with sqlite3
-                # p.moderator_languages_array = (mod_info['languages'] if 'languages' in mod_info.keys() else [])
-                p.moderator_accepted_currencies = (
-                    mod_info['acceptedCurrencies'] if 'acceptedCurrencies' in mod_info.keys() else '')
-                # Array properties don't work with sqlite3, use the text field.
-                # p.moderator_accepted_currencies_array = (mod_info['acceptedCurrencies'] if 'acceptedCurrencies' in mod_info.keys() else [])
+                profile.moderator_description = (mod_info.get('description'))
+                profile.moderator_terms = (mod_info.get('termsAndConditions'))
+                profile.moderator_languages = (mod_info.get('languages'))
+
+                profile.moderator_languages_array = (mod_info.get('languages'))
+
+                profile.moderator_accepted_currencies_array = (mod_info.get('acceptedCurrencies'))
+
                 if 'fee' in mod_info.keys():
                     fee = mod_info['fee']
-                    feeType = (mod_info['feeType'] if 'feeType' in mod_info.keys() else '')
-                    if feeType == 'PERCENTAGE':
-                        p.moderator_fee_type = 1
-                    elif feeType == 'FIXED':
-                        p.moderator_fee_type = 2
-                    elif feeType == 'FIXED_PLUS_PERCENTAGE':
-                        p.moderator_fee_type = 3
-                    else:
-                        p.moderator_fee_type = 0
-                    p.moderator_fee_percentage = (fee['percentage'] if 'percentage' in fee.keys() else '')
+                    feeType = mod_info.get('feeType')
+                    if feeType:
+                        profile.moderator_fee_type = getattr(Profile, feeType)
+                    profile.moderator_fee_percentage = (
+                        fee[
+                            'percentage'] if 'percentage' in fee.keys() else '')
                     try:
-                        p.moderator_fee_fixed_currency = fee['fixedFee']['currencyCode']
-                        p.moderator_fee_fixed_amount = fee['fixedFee']['amount']
+                        profile.moderator_fee_fixed_currency = fee['fixedFee'][
+                            'currencyCode']
+                        profile.moderator_fee_fixed_amount = fee['fixedFee'][
+                            'amount']
                     except KeyError:
-                        print('error geting mod currency')
+                        logger.debug('error geting mod currency')
 
             if 'contactInfo' in profile_data.keys():
-                # print('found contact info')
-
                 contact = profile_data['contactInfo']
-                # print(contact)
-                p.email = (contact['email'] if 'email' in contact.keys() else '')
-                p.website = (contact['website'] if 'website' in contact.keys() else '')
-                p.phone = (contact['phoneNumber'] if 'phoneNumber' in contact.keys() else '')
+                profile.email = (
+                    contact['email'] if 'email' in contact.keys() else '')
+                profile.website = (
+                    contact[
+                        'website'] if 'website' in contact.keys() else '')
+                profile.phone = (contact[
+                                     'phoneNumber'] if 'phoneNumber' in contact.keys() else '')
 
                 if 'social' in contact.keys():
                     for s in contact['social']:
                         try:
-                            sa, sa_created = ProfileSocial.objects.get_or_create(social_type=s['type'],
-                                                                                 username=s['username'],
-                                                                                 proof=s['proof'],
-                                                                                 profile=self
-                                                                                 )
+                            sa, sa_created = ProfileSocial.objects.get_or_create(
+                                social_type=s['type'],
+                                username=s['username'],
+                                proof=s['proof'],
+                                profile=profile
+                            )
                             sa.save()
                         except:
                             pass
 
             if 'nsfw' in profile_data.keys():
-                p.nsfw = profile_data['nsfw']
-            p.vendor = profile_data['vendor']
+                profile.nsfw = profile_data['nsfw']
+            profile.vendor = profile_data['vendor']
 
-            p.pub_date = timezone.now()
+            profile.pub_date = now()
 
             if "avatarHashes" in profile_data.keys():
-                a, aCreated = Image.objects.get_or_create(**profile_data['avatarHashes'])
-                p.avatar = a
+                a, a_created = Image.objects.get_or_create(
+                    **profile_data['avatarHashes'])
+                profile.avatar = a
             if "headerHashes" in profile_data.keys():
-                h, hCreated = Image.objects.get_or_create(**profile_data['headerHashes'])
-                p.header = h
+                h, h_created = Image.objects.get_or_create(
+                    **profile_data['headerHashes'])
+                profile.header = h
 
             if "stats" in profile_data.keys():
-                # print("found Stats")
                 stats = profile_data['stats']
-                p.follower_count = (stats['followerCount'] if 'followerCount' in stats.keys() else 0)
-                # p.rating_count = ( stats['ratingCount'] if 'ratingCount' in stats.keys() else '')
-                # p.rating_average = ( stats['averageRating'] if 'averageRating' in stats.keys() else '')
+                profile.follower_count = (stats.get('followerCount'))
+                # Don't trust the ratings from stats
+                # profile.rating_count =
+                # profile.rating_average =
 
-            user_agent_url = IPNS_HOST + p.peerID + '/user_agent'
-            user_agent_response = requests_get_wrap(user_agent_url)
+            user_agent_url = IPNS_HOST + profile.peerID + '/user_agent'
+            user_agent_response = get(user_agent_url)
             if user_agent_response.status_code == 200:
-                p.user_agent = user_agent_response.content.decode('utf-8')
+                profile.user_agent = user_agent_response.content.decode(
+                    'utf-8')
             else:
-                p.user_agent = 'Error : ' + user_agent_response.status_code
+                profile.user_agent = 'Error : ' + str(user_agent_response.status_code)
 
-            peer_info_url = OB_INFO_URL + p.peerID
-            peer_info_response = requests_get_wrap(peer_info_url)
+            peer_info_url = OB_INFO_URL + profile.peerID
+            peer_info_response = get(peer_info_url)
             if peer_info_response.status_code == 200:
-                peer_info_data = json.loads(peer_info_response.content.decode('utf-8'))
+                peer_info_data = json.loads(
+                    peer_info_response.content.decode('utf-8'))
                 if 'Addrs' in peer_info_data.keys():
                     for k in peer_info_data['Addrs']:
                         tmp_ip_type = ''
@@ -118,53 +131,59 @@ def sync(p):
                             tmp_ip_type = 'PUBLIC'
                             t = ProfileAddress.TOR
                         else:
-                            temp_addr = ipaddress.ip_address(k.split('/')[2])
+                            temp_addr = ipaddress.ip_address(
+                                k.split('/')[2])
                             if temp_addr.is_global:
                                 tmp_ip_type = 'PUBLIC'
-                                t = (ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6)
+                                t = (
+                                    ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6)
                             else:
                                 tmp_ip_type = 'PRIVATE'
                         try:
-                            # print(k)
                             if tmp_ip_type == 'PUBLIC':
-                                pa = ProfileAddress(address=k, profile=self, address_type=t)
+                                pa = ProfileAddress(address=k, profile=profile,
+                                                    address_type=t)
                                 pa.save()
                         except IntegrityError:
-                            print("integrity error saving address while scraping")
+                            logger.debug(
+                                "integrity error saving address while scraping")
 
-                    if p.addresses.filter(address_type=2).exists() and p.addresses.filter(
-                            address_type__in=[0, 1]).exists():
-                        p.connection_type = 1
-                    elif not p.addresses.filter(address_type=2).exists() and p.addresses.filter(
-                            address_type__in=[0, 1]).exists():
-                        p.connection_type = 0
-                    elif p.addresses.filter(address_type=2).exists() and not p.addresses.filter(
-                            address_type__in=[0, 1]).exists():
-                        p.connection_type = 2
+                    if profile.addresses.filter(
+                            address_type=2).exists() and profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 1
+                    elif not profile.addresses.filter(
+                            address_type=2).exists() and profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 0
+                    elif profile.addresses.filter(
+                            address_type=2).exists() and not profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 2
             else:
-                print('Error ' + str(peer_info_response.status_code) + '  fetching ' + peer_info_url)
+                logger.debug('Error ' + str(
+                    peer_info_response.status_code) + '  fetching ' + peer_info_url)
 
-            p.save()
-            p.listing_set.update(active=False)
-            if p.vendor:
-                p.update_listings(testnet)
-                p.update_ratings(testnet)
+            profile.save()
+            profile.listing_set.update(active=False)
+            if profile.vendor:
+                sync_listings(profile)
+                sync_ratings(profile)
             else:
-                p.listing_set.update(active=False)
-            p.save()
+                profile.listing_set.update(active=False)
+            profile.save()
         else:
-            print('Error ' + str(profile_response.status_code) + '  fetching ' + profile_url)
+            logger.debug('Error ' + str(
+                profile_response.status_code) + '  fetching ' + profile_url)
             speed_rank = settings.CRAWL_TIMEOUT * 1e6
 
             # moving average
-            new_rank = (p.speed_rank * 0.1) + (speed_rank * 0.9)
-            Profile.objects.filter(pk=p.peerID).update(speed_rank=new_rank)
+            new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
+            Profile.objects.filter(pk=profile.peerID).update(
+                speed_rank=new_rank)
 
     except json.decoder.JSONDecodeError:
-        print("Problem decoding json for peer: " + p.peerID)
+        logger.warning("Problem decoding json for peer: " + profile.peerID)
 
     except requests.exceptions.ReadTimeout:
-        speed_rank = settings.CRAWL_TIMEOUT * 1e6
-        new_rank = p.speed_rank / 2.0 + speed_rank / 2.0
-        Profile.objects.filter(pk=p.peerID).update(speed_rank=new_rank, attempt=timezone.now())
-        print("peerID " + p.peerID + " timeout")
+        moving_average_speed(profile)

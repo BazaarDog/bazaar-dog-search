@@ -1,18 +1,51 @@
 from django.conf import settings
 from django.db.models import F, Count
-from ob.models import Listing, ExchangeRate
+from django.utils.timezone import now
+from ob.models import Profile, Listing, ExchangeRate
 import json
 import requests
+from ob.bootstrap.known_nodes import peerId_list
 
-def bootstrap(more=False):
-    if more:
-        from ob.phixtures.good_nodes import more_nodes as good_nodes
+from pathlib import Path
+
+
+def get(url, timeout=settings.CRAWL_TIMEOUT):
+    if 'https' in url:
+        if Path(settings.OB_CERTIFICATE).is_file():
+            return requests.get(url,
+                                timeout=timeout,
+                                auth=settings.OB_API_AUTH,
+                                verify=settings.OB_CERTIFICATE)
+        else:
+            print(
+                "couldn't find ssl cert for a secure "
+                "connection to openbazaar-go server... ")
+            raise Exception
     else:
-        from ob.phixtures.good_nodes import good_nodes
+        return requests.get(url,
+                            timeout=settings.CRAWL_TIMEOUT)
 
-    from ob.models import Profile
-    for p in good_nodes:
-        p, pc = Profile.objects.get_or_create(pk=p)
+
+def requests_post_wrap(url, data):
+    print(url)
+    if 'https' in url:
+        if Path(settings.OB_CERTIFICATE).is_file():
+            return requests.post(url,
+                                 data=data,
+                                 timeout=settings.CRAWL_TIMEOUT,
+                                 auth=settings.OB_API_AUTH,
+                                 verify=settings.OB_CERTIFICATE
+                                 )
+        else:
+            raise Exception
+    else:
+        return requests.post(url,
+                             data=data,
+                             timeout=settings.CRAWL_TIMEOUT)
+
+def bootstrap():
+    for peerId in peerId_list:
+        p, pc = Profile.objects.get_or_create(pk=peerId)
         if p.should_update():
             try:
                 p.sync(testnet=False)
@@ -21,8 +54,18 @@ def bootstrap(more=False):
         else:
             print('skipping profile')
 
+
+def moving_average_speed(profile):
+    # Keep track of how quickly a peer resolves
+    speed_rank = settings.CRAWL_TIMEOUT * 1e6
+    new_rank = (profile.speed_rank + speed_rank) / 2.0
+    Profile.objects.filter(pk=profile.peerID).update(speed_rank=new_rank,
+                                                     attempt=now())
+    print("peerID " + profile.peerID + " timeout")
+
+
 def get_exchange_rates():
-    rates_url = settings.OB_MAINNET_HOST + 'exchangerates/'
+    rates_url = settings.OB_MAINNET_HOST + 'exchangerates/BCH'
     response = requests.get(rates_url,
                             timeout=settings.CRAWL_TIMEOUT,
                             auth=settings.OB_API_AUTH,
@@ -30,27 +73,30 @@ def get_exchange_rates():
                             )
     if response.status_code == 200:
         forex_data = json.loads(response.content.decode('utf-8'))
-        for k, v in forex_data.items():
-            updated = ExchangeRate.objects.filter(symbol__exact=k).update(rate=v)
+        for symbol, rate in forex_data.items():
+            updated = ExchangeRate.objects.filter(symbol__exact=symbol).update(
+                rate=rate)
             if updated == 0:
-                fx, fx_c = ExchangeRate.objects.get_or_create(symbol=k)
-                fx.rate = v
+                fx, fx_c = ExchangeRate.objects.get_or_create(symbol=symbol)
+                fx.rate = rate
                 fx.save()
 
 
 def update_price_values():
     # Listing.update(stories_filed=F('stories_filed') + 1)
-    qs_currency_count = Listing.objects.values('pricing_currency')\
-        .annotate(cur_count=Count('pricing_currency'))\
+    qs_currency_count = Listing.objects.values('pricing_currency') \
+        .annotate(cur_count=Count('pricing_currency')) \
         .filter(cur_count__gte=1).order_by('-cur_count')
-    distinct_currencies = [v['pricing_currency'] for v in list(qs_currency_count)]
+    distinct_currencies = [v['pricing_currency'] for v in
+                           list(qs_currency_count)]
     for c_symbol in distinct_currencies:
         try:
             c = ExchangeRate.objects.get(symbol=c_symbol)
             a = Listing.objects.filter(pricing_currency=c_symbol).update(
                 price_value=F('price') / float(c.base_unit) / float(c.rate))
         except ExchangeRate.DoesNotExist:
-            print('could not update price_values of ' + c_symbol + ' denominated listings')
+            print(
+                'could not update price_values of ' + c_symbol + ' listings')
 
 
 def update_verified():
@@ -62,5 +108,3 @@ def update_verified():
         verified_pks = [p['peerID'] for p in verified_data['moderators']]
         Profile.objects.filter().update(verified=False)
         Profile.objects.filter(pk__in=verified_pks).update(verified=True)
-
-

@@ -3,12 +3,14 @@ from django.db.models import Count
 from datetime import timedelta
 from django.utils.timezone import now
 from django.conf import settings
-from ob.models import Profile, Listing
 from time import sleep
 from requests.exceptions import ReadTimeout
 
+from ob.models import Profile, Listing
+from ob.tasks.sync_profile import sync_profile
 
-def find_nodes(testnet=False):
+
+def find_nodes():
     # network = ('testnet' if testnet else 'mainnet')
 
     qs = Profile.objects.filter(network='mainnet', online=True).exclude(name='')
@@ -17,19 +19,20 @@ def find_nodes(testnet=False):
     random_index = random.randint(0, count - 1)
     p = Profile.objects.all()[random_index]
     try:
-        random_neighbors = p.get_neighbors(False)
+        new_count = 0
+        random_neighbors = p.get_neighbors()
         known_pks = [p['peerID'] for p in qs.values('peerID')]
         for peerID in random_neighbors:
             if peerID not in known_pks:
-                print(peerID)
                 p, profile_created = Profile.objects.get_or_create(pk=peerID)
                 if profile_created or p.should_update():
-                    p.sync(testnet)
+                    new_count += 1
+                    sync_profile(p)
                 else:
                     print('skipping profile')
     except ReadTimeout:
         pass
-    print("Successfully crawled got more peers")
+    print("Successfully crawled got " + str(new_count) + " more peers")
 
 
 def sync_an_empty_peer(testnet=False):

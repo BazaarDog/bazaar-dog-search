@@ -5,11 +5,11 @@ DEV = True
 
 SITE_NAME = 'Bazaar Dog'
 
-SITE_URL = 'http://crawl.bazaar.dog'
+SITE_URL = 'http://debug.bazaar.dog'
 
-ALLOWED_HOSTS = ['crawl.bazaar.dog', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['debug.bazaar.dog', '127.0.0.1', 'localhost']
 
-INTERNAL_IPS = ['crawl.bazaar.dog', '127.0.0.1', 'localhost']
+INTERNAL_IPS = ['debug.bazaar.dog', '127.0.0.1', 'localhost']
 
 
 INSTALLED_APPS = INSTALLED_APPS + ['django.contrib.staticfiles', 'debug_toolbar']

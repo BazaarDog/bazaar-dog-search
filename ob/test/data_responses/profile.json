@@ -1,0 +1,60 @@
+{
+    "peerID": "QmcUDmZK8PsPYWw5FRHKNZFjszm2K6e68BQSTpnJYUsML7",
+    "handle": "",
+    "name": "OpenBazaar Store",
+    "location": "",
+    "about": "This is the official OpenBazaar store run by the development team.<p><br><p>All sales from this store go into the OpenBazaar project fund.</p><p><br></p></p>",
+    "shortDescription": "The official OpenBazaar store run by the development team.",
+    "nsfw": false,
+    "vendor": true,
+    "moderator": false,
+    "contactInfo": {
+        "website": "openbazaar.org",
+        "email": "project@openbazaar.org",
+        "phoneNumber": "",
+        "social": [
+            {
+                "type": "Twitter",
+                "username": "openbazaar",
+                "proof": ""
+            }
+        ]
+    },
+    "colors": {
+        "primary": "#FFFFFF",
+        "secondary": "#ECEEF2",
+        "text": "#252525",
+        "highlight": "#2BAD23",
+        "highlightText": "#252525"
+    },
+    "avatarHashes": {
+        "tiny": "zb2rhcLbHqq139K9r2DT1BPaqTdTVTSnmQnNzdb1BZpdbK4Zk",
+        "small": "zb2rhWnoRXwekSNsrRDvFJHxTEzY5AHsdgXYh5bPCpVGAD1o9",
+        "medium": "zb2rhg5hDULJqv465ChRu7qKBvMfr81U3gsjTWo9Vd6yNEA4D",
+        "large": "zb2rhbqGW95WEXEs4DoHj9i3ZAdqaTu4mGVBShcVC1dP8SN9a",
+        "original": "zb2rhY5wuaETuNnMLVbG6BsGMTvcjb2jum6hYALSvW4CQ4E3w"
+    },
+    "headerHashes": {
+        "tiny": "zb2rhmxsgh9ehHtuJGNmTWc5gi1ogL3fQuZkJ6isa7kXPeWoj",
+        "small": "zb2rhesRQSXbHM4QnpwqcmXwHTy1JbgWGefXmj5FK4CaV8p1N",
+        "medium": "zb2rhmLmerekREySY6zpMdkX9a7LCwcVJbtqrz47kH8J6ie2i",
+        "large": "zdj7WfKShzbyW3qoiVwCpDrB36MFz6PgWNBBubZxFiyRwb9fw",
+        "original": "zdj7WVzBY3AJppPq2ksNngqqhp6W3uPdDWJCcK73oCk6zZc1u"
+    },
+    "stats": {
+        "followerCount": 765,
+        "followingCount": 1,
+        "listingCount": 19,
+        "ratingCount": 92,
+        "postCount": 0,
+        "averageRating": 4.826087
+    },
+    "bitcoinPubkey": "0254327ae75f240a78159dc61aa3a55e15934c6ccc8bae06d79dacd9e047589e30",
+    "lastModified": "2019-04-13T00:04:30.423706865Z",
+    "currencies": [
+        "BTC",
+        "BCH",
+        "ZEC",
+        "LTC"
+    ]
+}

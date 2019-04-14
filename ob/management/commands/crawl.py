@@ -4,6 +4,7 @@ from django.utils import timezone
 # import the logging library
 import logging
 
+from ob.tasks.sync_profile import sync_profile
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
@@ -19,19 +20,8 @@ class Command(BaseCommand):
             dest='only_new',
             help='Only load new items',
         )
-        # Named (optional) argument
-        parser.add_argument(
-            '--testnet',
-            dest='testnet',
-            help='Crawl the testnet',
-        )
 
     def handle(self, *args, **options):
-
-        if options['testnet']:
-            is_testnet= True
-        else:
-            is_testnet = False
 
         if options['only_new']:
             only_new = True
@@ -45,7 +35,6 @@ class Command(BaseCommand):
         base_url = 'http://127.0.0.1:4002/'
         ipns_url = base_url + 'ipns/'
         peers_url = base_url + 'ob/peers'
-        peers_url = 'http://localhost:8080/peers'
         crawl_url = base_url + 'ob/closestpeers'
         info_url = base_url + 'ob/peerinfo/'
         response = requests.get(peers_url)
@@ -60,10 +49,10 @@ class Command(BaseCommand):
                 if crawl_this_node:
                     try:
                         p = Profile.objects.get(pk=peerID)
-                        p.sync(is_testnet)
+                        sync_profile(p)
                     except Profile.DoesNotExist:
                         p = Profile(pk=peerID)
-                        p.sync(is_testnet)
+                        sync_profile(p)
 
         else:
             return None

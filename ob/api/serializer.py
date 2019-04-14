@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ob.models import Listing, Profile, Image, ListingImage, ListingReport
+from .param.static import currency_list
 
 
 class ListingReportSerializer(serializers.ModelSerializer):
@@ -51,6 +52,8 @@ class ProfileBadgeSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     thumbnail = serializers.SerializerMethodField(source='thumbnail')
     contractType = serializers.IntegerField(source='contract_type')
+    acceptedCurrencies = serializers.MultipleChoiceField(choices=currency_list,
+                                                         default=['All'])
     price = serializers.SerializerMethodField()
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
@@ -59,7 +62,8 @@ class ListingSerializer(serializers.ModelSerializer):
 
     class Meta:
         # exclude = ('condition_type', 'pricing_currency','contract_type','rating_average','rating_count',)
-        fields = ('thumbnail', 'contractType', 'price', 'averageRating', 'ratingCount', 'slug', 'nsfw',
+        fields = ('thumbnail', 'contractType', 'acceptedCurrencies',
+                  'price', 'averageRating', 'ratingCount', 'slug', 'nsfw',
                   'title')  # ,'freeShipping')
         model = Listing
 
