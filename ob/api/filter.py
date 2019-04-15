@@ -1,11 +1,11 @@
 import operator
 from functools import reduce
 
-
 from django.db import models
 from django.db.models.constants import LOOKUP_SEP
 from django.db.models.fields import FieldDoesNotExist
-from django.db.models.fields.reverse_related import ForeignObjectRel, OneToOneRel
+from django.db.models.fields.reverse_related import ForeignObjectRel, \
+    OneToOneRel
 from django.template import loader
 from django.utils import six
 from django.utils.encoding import force_text
@@ -16,7 +16,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.settings import api_settings
 from rest_framework.compat import coreapi, coreschema, distinct
-import django_filters
+import django_filters as df
 from django_filters.widgets import BooleanWidget
 from distutils.util import strtobool
 
@@ -107,11 +107,13 @@ class CustomSearchFilter(BaseFilterBackend):
             for part in parts:
                 field = opts.get_field(part)
                 if hasattr(field, 'get_path_info'):
-                    # This field is a relation, update opts to follow the relation
+                    # This field is a relation,
+                    # update opts to follow the relation
                     path_info = field.get_path_info()
                     opts = path_info[-1].to_opts
                     if any(path.m2m for path in path_info):
-                        # This field is a m2m relation so we know we need to call distinct
+                        # This field is a m2m relation
+                        # so we know we need to call distinct
                         return True
         return False
 
@@ -160,8 +162,10 @@ class CustomSearchFilter(BaseFilterBackend):
         return template.render(context)
 
     def get_schema_fields(self, view):
-        assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
-        assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
+        assert coreapi is not None, 'coreapi must be installed to ' \
+                                    'use `get_schema_fields()`'
+        assert coreschema is not None, 'coreschema must be installed ' \
+                                       'to use `get_schema_fields()`'
         return [
             coreapi.Field(
                 name=self.search_param,
@@ -175,21 +179,34 @@ class CustomSearchFilter(BaseFilterBackend):
         ]
 
 
-class ProfileFilter(django_filters.FilterSet):
-    # acceptedCurrencies = django_filters.Filter(field_name='moderator_accepted_currencies', lookup_expr='icontains')
-    rating = django_filters.Filter(field_name='rating_average', lookup_expr='gte')
-    version = django_filters.Filter(field_name='user_agent', lookup_expr='icontains')
-    moderator_languages = django_filters.Filter(field_name='moderator_languages', lookup_expr='contains')
-    has_email = django_filters.Filter(field_name='email', lookup_expr='isnull', exclude=True, widget=BooleanWidget())
-    has_website = django_filters.Filter(field_name='website', lookup_expr='isnull', exclude=True,
-                                        widget=BooleanWidget())
-    is_moderator = django_filters.BooleanFilter(field_name='moderator', lookup_expr='exact', widget=BooleanWidget())
-    is_verified = django_filters.Filter(field_name='verified', exclude=False, widget=TruthyWidget())
-    has_verified = django_filters.Filter(field_name='listing__moderators__verified', widget=TruthyWidget())
-    moderator_count = django_filters.NumberFilter(method='filter_listing_by_moderator_count')
-    connection = django_filters.TypedChoiceFilter(field_name='connection_type',
-                                                  choices=Profile.CONNECTION_TYPE_CHOICES)
-    online = django_filters.Filter(field_name='online', widget=TruthyWidget())
+class ProfileFilter(df.FilterSet):
+    acceptedCurrencies = df.Filter(field_name='moderator_accepted_currencies',
+                                   lookup_expr='icontains')
+    rating = df.Filter(field_name='rating_average', lookup_expr='gte')
+    version = df.Filter(field_name='user_agent', lookup_expr='icontains')
+    moderator_languages = df.Filter(field_name='moderator_languages',
+                                    lookup_expr='contains')
+    has_email = df.Filter(field_name='email', lookup_expr='isnull',
+                          exclude=True, widget=BooleanWidget())
+    has_website = df.Filter(field_name='website',
+                            lookup_expr='isnull',
+                            exclude=True,
+                            widget=BooleanWidget())
+    is_moderator = df.BooleanFilter(field_name='moderator',
+                                    lookup_expr='exact',
+                                    widget=BooleanWidget())
+    is_verified = df.Filter(field_name='verified',
+                            exclude=False,
+                            widget=TruthyWidget())
+    has_verified = df.Filter(
+        field_name='listing__moderators__verified',
+        widget=TruthyWidget()
+    )
+    moderator_count = df.NumberFilter(
+        method='filter_listing_by_moderator_count')
+    connection = df.TypedChoiceFilter(field_name='connection_type',
+                                      choices=Profile.CONNECTION_TYPE_CHOICES)
+    online = df.Filter(field_name='online', widget=TruthyWidget())
 
     class Meta:
         model = Profile
@@ -197,7 +214,7 @@ class ProfileFilter(django_filters.FilterSet):
         order_by = True
         filter_overrides = {
             ArrayField: {
-                'filter_class': django_filters.CharFilter,
+                'filter_class': df.CharFilter,
                 'extra': lambda f: {
                     'lookup_expr': 'icontains',
                 },
@@ -208,18 +225,26 @@ class ProfileFilter(django_filters.FilterSet):
         return queryset.filter(moderators_count__gte=value)
 
 
-class ListingFilter(django_filters.FilterSet):
-    acceptedCurrencies = django_filters.Filter(field_name='accepted_currencies_array', lookup_expr='icontains')
-    tags_array = django_filters.Filter(field_name='tags_array', lookup_expr='icontains')
-    categories = django_filters.Filter(field_name='categories', lookup_expr='icontains')
-    rating = django_filters.Filter(field_name='rating_average', lookup_expr='gte')
-    connection = django_filters.TypedChoiceFilter(field_name='profile__connection_type',
-                                                  choices=Profile.CONNECTION_TYPE_CHOICES)
-    condition_type = django_filters.ChoiceFilter(choices=Listing.CONDITION_TYPE_CHOICES)
-    contract_type = django_filters.NumberFilter(field_name='contract_type', lookup_expr='icontains')
-    moderator_count = django_filters.NumberFilter(method='filter_listing_by_moderator_count')
-    moderator_verified = django_filters.Filter(field_name='moderators__verified', widget=TruthyWidget())
-    online = django_filters.Filter(field_name='profile__online', widget=TruthyWidget())
+class ListingFilter(df.FilterSet):
+    acceptedCurrencies = df.Filter(
+        field_name='accepted_currencies_array', lookup_expr='icontains')
+    tags_array = df.Filter(field_name='tags_array',
+                           lookup_expr='icontains')
+    categories = df.Filter(field_name='categories',
+                           lookup_expr='icontains')
+    rating = df.Filter(field_name='rating_average',
+                       lookup_expr='gte')
+    connection = df.TypedChoiceFilter(field_name='profile__connection_type',
+                                      choices=Profile.CONNECTION_TYPE_CHOICES)
+    condition_type = df.ChoiceFilter(choices=Listing.CONDITION_TYPE_CHOICES)
+    contract_type = df.NumberFilter(field_name='contract_type',
+                                    lookup_expr='icontains')
+    moderator_count = df.NumberFilter(
+        method='filter_listing_by_moderator_count')
+    moderator_verified = df.Filter(
+        field_name='moderators__verified', widget=TruthyWidget())
+    online = df.Filter(field_name='profile__online',
+                       widget=TruthyWidget())
 
     class Meta:
         model = Listing
@@ -227,7 +252,7 @@ class ListingFilter(django_filters.FilterSet):
         order_by = True
         filter_overrides = {
             ArrayField: {
-                'filter_class': django_filters.CharFilter,
+                'filter_class': df.CharFilter,
                 'extra': lambda f: {
                     'lookup_expr': 'icontains',
                 },
