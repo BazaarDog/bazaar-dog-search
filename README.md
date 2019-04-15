@@ -7,11 +7,8 @@
 
 ## Project status
 
-This project is in the process of transition from a primarily serverless closed source project designed to run on AWS, to a well tested
-open-source project designed to run on a single board computer, beware of the Dragons 🐉...    
+This project is dormant 
 
-The main limitation to running this code is the bandwidth consumed by the openbazaar 'supernode' used as a crawler (up to ~1TB/month). 
- 
 The goal is to have a search provider that can be deployed with a few commands.    
 
 ## requirements
