@@ -2,21 +2,22 @@ from django.utils.timezone import now
 from datetime import timedelta
 from requests.exceptions import ConnectTimeout
 from ob.models import Profile
+from ob.tasks.sync_profile import sync_profile
 
 
 def try_sync_peer(search_term):
     try:
-        p = Profile.objects.get(pk=search_term)
-        if now() - timedelta(hours=1) >= p.modified:
+        profile = Profile.objects.get(pk=search_term)
+        if now() - timedelta(hours=1) >= profile.modified:
             try:
-                p.sync()
+                sync_profile(profile)
             except ConnectTimeout:
                 pass
         else:
             pass
     except Profile.DoesNotExist:
-        p = Profile(pk=search_term)
+        profile = Profile(pk=search_term)
         try:
-            p.sync()
+            sync_profile(profile)
         except ConnectTimeout:
             pass

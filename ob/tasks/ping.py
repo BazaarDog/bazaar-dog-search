@@ -4,13 +4,16 @@ import aiohttp
 import asyncio
 import async_timeout
 import json
+import logging
 from pathlib import Path
 from urllib.parse import urljoin, urldefrag
 from ob.models import Profile
 from django.conf import settings
-from concurrent.futures._base import  TimeoutError
+from concurrent.futures._base import TimeoutError
 from django.utils.timezone import now
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 
 pinged_peers = {}
 
@@ -28,7 +31,7 @@ async def get_ping(peerID):
                                        auth=auth,
                                        ssl=False
                                        ) as response:
-                    #print('{} is {}'.format(peerID, await response.json()))
+                    #logger.info('{} is {}'.format(peerID, await response.json()))
                     try:
                         if response.status == 200:
                             pinged_peers[peerID] = (await response.json())['status'] == 'online'
@@ -67,7 +70,7 @@ def ping_query_set(peerIDs):
     online_nodes = list(d for d, s in pinged_peers.items() if s)
     on = Profile.objects.filter(peerID__in=online_nodes).update(online=True, pinged=now(), was_online=now())
     off = Profile.objects.filter(peerID__in=peerIDs).exclude(peerID__in=online_nodes).update(online=False, pinged=now())
-    print('there were {} peers online and {} peers offline'.format(on,off))
+    logger.info('there were {} peers online and {} peers offline'.format(on,off))
 
 
 def ping_offline():

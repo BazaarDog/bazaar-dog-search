@@ -1,11 +1,16 @@
-from ob.api.serializer import *
-from ob.api.filter import *
+from datetime import timedelta
+import logging
+from requests.exceptions import ConnectTimeout
+
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
-from datetime import timedelta
-from requests.exceptions import ConnectTimeout
+
 from ob.models import Listing
-from .common import try_sync_peer
+from ob.api.serializer import *
+from ob.api.filter import *
+from ob.api.query.common import try_sync_peer
+
+logger = logging.getLogger(__name__)
 
 
 def get_queryset(self):
@@ -51,11 +56,11 @@ def get_queryset(self):
             c = 'ALL'
         queryset = queryset.filter(contract_type=Listing.PHYSICAL_GOOD).filter(
             Q(free_shipping__icontains=c) | Q(free_shipping__icontains='ALL') | Q(
-                shippingoptions__regions__isnull=True))
+                shippingoptions__regions_array__isnull=True))
 
     if 'nsfw' in self.request.query_params:
         value = self.request.query_params['nsfw']
-        # print('get_query nsfw value is ' + str(value))
+        # logger.debug('get_query nsfw value is ' + str(value))
         if not value:
             return queryset.exclude(nsfw=True)
         elif value == 'Affirmative':

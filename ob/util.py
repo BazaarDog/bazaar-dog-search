@@ -1,12 +1,16 @@
+import json
+import logging
+import requests
+
 from django.conf import settings
 from django.db.models import F, Count
 from django.utils.timezone import now
+
 from ob.models import Profile, Listing, ExchangeRate
-import json
-import requests
 from ob.bootstrap.known_nodes import peerId_list
 
 from pathlib import Path
+logger = logging.getLogger(__name__)
 
 
 def get(url, timeout=settings.CRAWL_TIMEOUT):
@@ -17,7 +21,7 @@ def get(url, timeout=settings.CRAWL_TIMEOUT):
                                 auth=settings.OB_API_AUTH,
                                 verify=settings.OB_CERTIFICATE)
         else:
-            print(
+            logger.info(
                 "couldn't find ssl cert for a secure "
                 "connection to openbazaar-go server... ")
             raise Exception
@@ -27,7 +31,7 @@ def get(url, timeout=settings.CRAWL_TIMEOUT):
 
 
 def requests_post_wrap(url, data):
-    print(url)
+    logger.info(url)
     if 'https' in url:
         if Path(settings.OB_CERTIFICATE).is_file():
             return requests.post(url,
@@ -50,9 +54,9 @@ def bootstrap():
             try:
                 p.sync(testnet=False)
             except requests.exceptions.ReadTimeout:
-                print("read timeout")
+                logger.info("read timeout")
         else:
-            print('skipping profile')
+            logger.info('skipping profile')
 
 
 def moving_average_speed(profile):
@@ -61,7 +65,7 @@ def moving_average_speed(profile):
     new_rank = (profile.speed_rank + speed_rank) / 2.0
     Profile.objects.filter(pk=profile.peerID).update(speed_rank=new_rank,
                                                      attempt=now())
-    print("peerID " + profile.peerID + " timeout")
+    logger.info("peerID " + profile.peerID + " timeout")
 
 
 def get_exchange_rates():
@@ -95,12 +99,13 @@ def update_price_values():
             a = Listing.objects.filter(pricing_currency=c_symbol).update(
                 price_value=F('price') / float(c.base_unit) / float(c.rate))
         except ExchangeRate.DoesNotExist:
-            print(
+            logger.info(
                 'could not update price_values of ' + c_symbol + ' listings')
 
 
-def update_verified():
-    verified_url = 'https://search.ob1.io/verified_moderators'
+def update_verified(verified_url=None):
+    if not verified_url:
+        verified_url = 'https://search.ob1.io/verified_moderators'
     response = requests.get(verified_url)
     if response.status_code == 200:
         from ob.models import Profile

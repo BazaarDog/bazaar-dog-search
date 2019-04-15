@@ -1,6 +1,7 @@
 from datetime import timedelta
 import ipaddress
 import json
+import logging
 import os
 from random import randint
 import requests
@@ -17,7 +18,7 @@ from django.dispatch import receiver
 
 from urllib3.exceptions import SubjectAltNameWarning
 
-
+logger = logging.getLogger(__name__)
 
 requests.packages.urllib3.disable_warnings(SubjectAltNameWarning)
 
@@ -201,9 +202,9 @@ class Profile(models.Model):
                 peer_data = json.loads(peer_response.content.decode('utf-8'))
                 return peer_data['serializedRecord']
             else:
-                print('Error getting seralized record {}'.format(peer_response))
+                logger.info('Error getting seralized record {}'.format(peer_response))
         except IndexError:
-            print('index error getting serialized record')
+            logger.info('index error getting serialized record')
 
     # profile
 
@@ -215,14 +216,14 @@ class Profile(models.Model):
                         hours=settings.SHORTEST_UPDATE_HOURS):
                     return True
                 else:
-                    print("too soon")
+                    logger.info("too soon")
                     return False
             else:
                 Profile.objects.filter(pk=self.peerID).update(modified=now())
-                print("no change")
+                logger.info("no change")
                 return False
         else:
-            print("offline")
+            logger.info("offline")
             return False
 
     def get_neighbors(self):
@@ -235,7 +236,7 @@ class Profile(models.Model):
                 return peer_data
 
         except IndexError:
-            print('index error getting address')
+            logger.info('index error getting address')
 
 
     # profile
@@ -243,7 +244,7 @@ class Profile(models.Model):
         try:
             return get_profile_rank(self)
         except:
-            print("set a profile ranking function")
+            logger.info("set a profile ranking function")
             return randint(1, 1000)
 
     def __str__(self):
@@ -407,7 +408,7 @@ class Listing(models.Model):
         try:
             return get_listing_rank(self)
         except:
-            print("Warning, no listing ranking function")
+            logger.info("Warning, no listing ranking function")
             return randint(1, 1000)
 
     # Listing
@@ -431,7 +432,7 @@ class ListingReport(models.Model):
 
     def save(self, *args, **kwargs):
         if not hasattr(self, 'listing'):
-            print(self.peerID + ' ' + self.slug)
+            logger.info(self.peerID + ' ' + self.slug)
             self.listing = Listing.objects.filter(profile_id=self.peerID,
                                                   slug__icontains=self.slug)[0]
         if self.reason != 'OKAY':

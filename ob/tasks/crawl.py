@@ -1,13 +1,17 @@
-import random
-from django.db.models import Count
 from datetime import timedelta
-from django.utils.timezone import now
-from django.conf import settings
-from time import sleep
+import logging
+import random
 from requests.exceptions import ReadTimeout
+from time import sleep
+
+from django.db.models import Count
+from django.conf import settings
+from django.utils.timezone import now
 
 from ob.models import Profile, Listing
 from ob.tasks.sync_profile import sync_profile
+
+logger = logging.getLogger(__name__)
 
 
 def find_nodes():
@@ -29,10 +33,10 @@ def find_nodes():
                     new_count += 1
                     sync_profile(p)
                 else:
-                    print('skipping profile')
+                    logger.info('skipping profile')
     except ReadTimeout:
         pass
-    print("Successfully crawled got " + str(new_count) + " more peers")
+    logger.info("Successfully crawled got " + str(new_count) + " more peers")
 
 
 def sync_an_empty_peer(testnet=False):
@@ -47,10 +51,10 @@ def sync_an_empty_peer(testnet=False):
                 try:
                     p.sync(testnet)
                 except ReadTimeout:
-                    print("read timeout")
+                    logger.info("read timeout")
             else:
-                print('skipping profile')
-            print("Successfully crawled an empty peer")
+                logger.info('skipping profile')
+            logger.info("Successfully crawled an empty peer")
         sleep(60)
 
 
@@ -64,17 +68,17 @@ def sync_a_known_peer():
         random.seed(now())
         random_index = random.randint(0, count - 1)
         p = qs[random_index]
-        print(p.peerID + ' ' + p.network)
+        logger.info(p.peerID + ' ' + p.network)
         if p.should_update():
             try:
                 p.sync()
             except ReadTimeout:
-                print("read timeout")
+                logger.info("read timeout")
         else:
-            print('skipping profile')
-        print("Successfully crawled a known peer")
+            logger.info('skipping profile')
+        logger.info("Successfully crawled a known peer")
     else:
-        print("All caught up")
+        logger.info("All caught up")
 
 
 def sync_an_empty_listing(testnet=False):
@@ -90,10 +94,10 @@ def sync_an_empty_listing(testnet=False):
                 try:
                     l.sync(testnet)
                 except ReadTimeout:
-                    print("read timeout")
+                    logger.info("read timeout")
             else:
-                print('skipping profile')
-            print("Successfully crawled an empty listing")
+                logger.info('skipping profile')
+            logger.info("Successfully crawled an empty listing")
 
 
 def sync_a_listing(testnet=False):
@@ -110,8 +114,8 @@ def sync_a_listing(testnet=False):
                 try:
                     l.sync(testnet)
                 except ReadTimeout:
-                    print("read timeout")
+                    logger.info("read timeout")
             else:
-                print('skipping profile')
-            print("Successfully crawled a listing")
+                logger.info('skipping profile')
+            logger.info("Successfully crawled a listing")
         sleep(10)

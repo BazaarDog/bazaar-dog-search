@@ -1,11 +1,13 @@
 from distutils.util import strtobool
 from collections import OrderedDict
+import logging
 from ob.models import Profile
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from .util import build_options, build_checkbox
 from .common import get_nsfw_options, get_currency_type_options, get_clear_all_options, get_network_options
 
+logger = logging.getLogger(__name__)
 
 def get_profile_sort():
     return OrderedDict([
@@ -98,7 +100,7 @@ def get_profile_options(params):
         }),
     ]
     if settings.DEV:
-        from .param_dev import get_debug_options
+        from ob.api.param.dev import get_debug_options
         available_options += get_debug_options(params)
 
     options = OrderedDict(available_options)
@@ -108,7 +110,7 @@ def get_profile_options(params):
 
 def get_ua_options(params):
 
-    version = params['version'] if 'version' in params.keys() else ''
+    version = params.get('version')
 
     distinct_version = OrderedDict(
         [
@@ -186,7 +188,7 @@ def get_is_verified_options(params):
                 is_verified = ''
             else:
                 is_verified = ''
-                # print('moderator found:' + str(is_moderator))
+                # logger.debug('moderator found:' + str(is_moderator))
         except ValueError:
             is_verified = ''
     else:
@@ -210,7 +212,7 @@ def get_has_verified_options(params):
                 has_verified = ''
             else:
                 has_verified = ''
-                # print('moderator found:' + str(is_moderator))
+                # logger.debug('moderator found:' + str(is_moderator))
         except ValueError:
             has_verified = ''
     else:

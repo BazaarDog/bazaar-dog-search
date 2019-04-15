@@ -1,9 +1,12 @@
 import json
+import logging
 import requests
 from django.conf import settings
 
 from ob.models import Listing, ExchangeRate
-from ob.tasks.sync_listing import sync_listing
+
+
+logger = logging.getLogger(__name__)
 OB_HOST = settings.OB_MAINNET_HOST
 
 
@@ -16,11 +19,11 @@ def sync_listings(profile):
         from ob.tasks.sync_listing import sync_listing
         response = get(listing_url)
         if response.status_code == 200:
-            # print('BEGIN listing sync' + profile.peerID)
+            # logger.info('BEGIN listing sync' + profile.peerID)
             try:
                 for listing_data in json.loads(
                         response.content.decode('utf-8')):
-                    # print(profile.peerID + ': ' + listing_data['slug'])
+                    # logger.info(profile.peerID + ': ' + listing_data['slug'])
                     listing, listing_created = Listing.objects.get_or_create(
                         profile=profile,
                         slug=listing_data['slug'])
@@ -81,15 +84,15 @@ def sync_listings(profile):
                     sync_listing(listing)
 
             except json.decoder.JSONDecodeError:
-                print(
+                logger.info(
                     "Problem decoding json for listings of peer: " + profile.peerID)
             except TypeError:
                 profile.listing_set.update(active=False)
-                print("No listings " + profile.peerID)
+                logger.info("No listings " + profile.peerID)
 
             except KeyError:
-                print(
+                logger.info(
                     "Problem parsing json for listings of peer: " + profile.peerID)
 
     except requests.exceptions.ReadTimeout:
-        print("listing peerID " + profile.peerID + " timeout")
+        logger.info("listing peerID " + profile.peerID + " timeout")

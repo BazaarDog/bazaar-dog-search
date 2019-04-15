@@ -26,7 +26,7 @@ def get_queryset(self):
     if 'acceptedCurrencies' in self.request.query_params:
         c = self.request.query_params['acceptedCurrencies']
         queryset = queryset.filter(
-            Q(moderator_accepted_currencies__icontains=c) | Q(listing__accepted_currencies__icontains=c))
+            Q(moderator_accepted_currencies_array__icontains=c) | Q(listing__accepted_currencies_array__icontains=c))
     queryset = queryset.annotate(moderators_count=Count('listing__moderators', distinct=True))
 
     if 'q' in self.request.query_params:
