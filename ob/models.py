@@ -141,12 +141,11 @@ class Profile(models.Model):
     moderator = models.BooleanField(default=False)
     moderator_description = models.TextField(default='')
     moderator_terms = models.TextField(default='')
-    moderator_languages = models.TextField(default='')
-    moderator_languages_array = ArrayField(models.CharField(max_length=10),
-                                           null=True,
-                                           blank=True)
-    moderator_accepted_currencies_array = ArrayField(models.CharField(max_length=10),
-                                                     null=True, blank=True)
+    moderator_languages = ArrayField(models.CharField(max_length=10),
+                                     null=True,
+                                     blank=True)
+    moderator_accepted_currencies = ArrayField(models.CharField(max_length=10),
+                                               null=True, blank=True)
 
     moderator_fee_type = models.IntegerField(choices=MODERATOR_FEE_TYPE_CHOICES,
                                              default=0)
@@ -202,7 +201,8 @@ class Profile(models.Model):
                 peer_data = json.loads(peer_response.content.decode('utf-8'))
                 return peer_data['serializedRecord']
             else:
-                logger.info('Error getting seralized record {}'.format(peer_response))
+                logger.info(
+                    'Error getting seralized record {}'.format(peer_response))
         except IndexError:
             logger.info('index error getting serialized record')
 
@@ -237,7 +237,6 @@ class Profile(models.Model):
 
         except IndexError:
             logger.info('index error getting address')
-
 
     # profile
     def get_rank(self):
@@ -344,16 +343,18 @@ class Listing(models.Model):
     CONDITION_TYPE_DICT = dict(CONDITION_TYPE_CHOICES)
 
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    accepted_currencies_array = ArrayField(models.CharField(max_length=5), null=True, blank=True)
+    accepted_currencies = ArrayField(models.CharField(max_length=5),
+                                     null=True,
+                                     blank=True)
     free_shipping = ArrayField(models.CharField(max_length=80),
                                null=True,
                                blank=True)
-    tags_array = ArrayField(models.CharField(max_length=80),
+    tags = ArrayField(models.CharField(max_length=80),
+                      null=True,
+                      blank=True)
+    categories = ArrayField(models.CharField(max_length=80),
                             null=True,
                             blank=True)
-    categories_array = ArrayField(models.CharField(max_length=80),
-                                  null=True,
-                                  blank=True)
     hash = models.TextField(null=True)
     title = models.TextField(null=True)
     slug = models.SlugField(null=True, max_length=256)
@@ -462,7 +463,9 @@ class ShippingOptions(models.Model):
     name = models.TextField(null=True)
     option_type = models.IntegerField(choices=OPTION_TYPE_CHOICES, null=True,
                                       blank=True)
-    regions_array = ArrayField(models.CharField(max_length=80), null=True, blank=True)
+    regions = ArrayField(models.CharField(max_length=80),
+                         null=True,
+                         blank=True)
     service_name = models.TextField(null=True)
     service_price = models.TextField(null=True)
     service_estimated_delivery = models.TextField(null=True)
@@ -483,5 +486,5 @@ class ShippingOptions(models.Model):
                 c.service_estimated_delivery = data['services'][0][
                     'estimatedDelivery']
 
-        c.regions_array = data['regions']
+        c.regions = data['regions']
         return c

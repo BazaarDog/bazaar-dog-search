@@ -33,16 +33,16 @@ def sync_listing(listing, force=True):
                 listing.version = metadata['version']
                 listing.contract_type = getattr(Listing,
                                                 metadata['contractType'])
-                listing.accepted_currencies_array = metadata[
+                listing.accepted_currencies = metadata[
                     'acceptedCurrencies']
                 listing.pricing_currency = metadata['pricingCurrency']
 
                 item_details = listing_data['item']
                 listing.title = item_details['title']
                 if 'tags' in item_details:
-                    listing.tags_array = item_details['tags']
+                    listing.tags = item_details['tags']
                 if 'categories' in item_details:
-                    listing.categories_array = item_details['categories']
+                    listing.categories = item_details['categories']
                 if 'price' in item_details:
                     listing.price = item_details['price']
                     try:

@@ -20,9 +20,12 @@ class ProfileSearch(ProfilePaginateAPIView):
     ordering = Profile._meta.ordering
     filter_class = ProfileFilter
 
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, CustomSearchFilter,)
+    filter_backends = (DjangoFilterBackend,
+                       filters.OrderingFilter,
+                       CustomSearchFilter,)
     ordering_fields = ('__all__')
-    search_fields = ('name', 'about', 'short_description', 'peerID','moderator_accepted_currencies_array',)
+    search_fields = ('name', 'about', 'short_description',
+                     'peerID','moderator_accepted_currencies',)
     get_queryset = get_queryset_profile
 
 
@@ -34,10 +37,11 @@ class ListingSearch(ListingPaginateAPIView):
 
     filter_class = ListingFilter
 
-    filter_backends = (DjangoFilterBackend, filters.OrderingFilter, CustomSearchFilter, RelatedOrderingFilter,)
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter,
+                       CustomSearchFilter, RelatedOrderingFilter,)
     ordering_fields = ('__all__')
     search_fields = (
-        'description', 'tags_array', 'categories_array',
+        'description', 'tags', 'categories',
         'title', 'profile__peerID', 'profile__handle', 'profile__name',)
     get_queryset = get_queryset_listing
 

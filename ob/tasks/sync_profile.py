@@ -41,13 +41,13 @@ def sync_profile(profile):
             profile.moderator = profile_data['moderator']
             if 'moderatorInfo' in profile_data.keys():
                 mod_info = profile_data['moderatorInfo']
-                profile.moderator_description = (mod_info.get('description'))
-                profile.moderator_terms = (mod_info.get('termsAndConditions'))
-                profile.moderator_languages = (mod_info.get('languages'))
+                profile.moderator_description = mod_info.get('description')
+                profile.moderator_terms = mod_info.get('termsAndConditions')
+                profile.moderator_languages = mod_info.get('languages')
 
-                profile.moderator_languages_array = (mod_info.get('languages'))
+                profile.moderator_languages = mod_info.get('languages')
 
-                profile.moderator_accepted_currencies_array = (mod_info.get('acceptedCurrencies'))
+                profile.moderator_accepted_currencies = mod_info.get('acceptedCurrencies')
 
                 if 'fee' in mod_info.keys():
                     fee = mod_info['fee']

@@ -227,8 +227,8 @@ class ProfileFilter(df.FilterSet):
 
 class ListingFilter(df.FilterSet):
     acceptedCurrencies = df.Filter(
-        field_name='accepted_currencies_array', lookup_expr='icontains')
-    tags_array = df.Filter(field_name='tags_array',
+        field_name='accepted_currencies', lookup_expr='icontains')
+    tags = df.Filter(field_name='tags',
                            lookup_expr='icontains')
     categories = df.Filter(field_name='categories',
                            lookup_expr='icontains')

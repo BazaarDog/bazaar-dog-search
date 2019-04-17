@@ -14,13 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_queryset(self):
-
     if 'q' in self.request.query_params:
         search_term = self.request.query_params['q']
         if 'Qm' == search_term[:2] and len(search_term) >= 40:
             try_sync_peer(search_term)
 
-    if 'dust' in self.request.query_params and self.request.query_params['dust'] == 'true':
+    if 'dust' in self.request.query_params and self.request.query_params[
+        'dust'] == 'true':
         dust_param = [True, False]
     else:
         dust_param = [False]
@@ -28,8 +28,12 @@ def get_queryset(self):
     a_week_ago = now() - timedelta(hours=156)
     queryset = Listing.objects \
         .prefetch_related("moderators",
-                          Prefetch("images", queryset=ListingImage.objects.filter(index=0), to_attr="thumbnail"),
-                          Prefetch("profile__avatar", queryset=Image.objects.filter(), to_attr="avatar_prefetch")) \
+                          Prefetch("images",
+                                   queryset=ListingImage.objects.filter(
+                                       index=0), to_attr="thumbnail"),
+                          Prefetch("profile__avatar",
+                                   queryset=Image.objects.filter(),
+                                   to_attr="avatar_prefetch")) \
         .select_related('profile') \
         .filter(profile__vendor=True) \
         .filter(profile__was_online__gt=a_week_ago) \
@@ -45,18 +49,21 @@ def get_queryset(self):
     if 'shipping' in self.request.query_params:
         c = self.request.query_params['shipping']
         queryset = queryset.filter(
-            Q(shippingoptions__regions_array__icontains=c) | Q(shippingoptions__regions_array__icontains='ALL') | Q(
-                shippingoptions__regions_array__isnull=True))
+            Q(shippingoptions__regions__icontains=c) |
+            Q(shippingoptions__regions__icontains='ALL') |
+            Q(shippingoptions__regions__isnull=True))
 
-    if 'free_shipping_region' in self.request.query_params and self.request.query_params[
-        'free_shipping_region'] == 'true':
+    if 'free_shipping_region' in self.request.query_params and \
+                    self.request.query_params[
+                        'free_shipping_region'] == 'true':
         if self.request.query_params['shipping']:
             c = self.request.query_params['shipping']
         else:
             c = 'ALL'
         queryset = queryset.filter(contract_type=Listing.PHYSICAL_GOOD).filter(
-            Q(free_shipping__icontains=c) | Q(free_shipping__icontains='ALL') | Q(
-                shippingoptions__regions_array__isnull=True))
+            Q(free_shipping__icontains=c) |
+            Q(free_shipping__icontains='ALL') |
+            Q(shippingoptions__regions__isnull=True))
 
     if 'nsfw' in self.request.query_params:
         value = self.request.query_params['nsfw']

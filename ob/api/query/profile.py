@@ -7,7 +7,6 @@ from .common import try_sync_peer
 
 
 def get_queryset(self):
-
     a_week_ago = now() - timedelta(hours=156)
 
     queryset = Profile.objects.filter().prefetch_related(Prefetch(
@@ -26,8 +25,11 @@ def get_queryset(self):
     if 'acceptedCurrencies' in self.request.query_params:
         c = self.request.query_params['acceptedCurrencies']
         queryset = queryset.filter(
-            Q(moderator_accepted_currencies_array__icontains=c) | Q(listing__accepted_currencies_array__icontains=c))
-    queryset = queryset.annotate(moderators_count=Count('listing__moderators', distinct=True))
+            Q(moderator_accepted_currencies__icontains=c) |
+            Q(listing__accepted_currencies__icontains=c)
+        )
+    queryset = queryset.annotate(
+        moderators_count=Count('listing__moderators', distinct=True))
 
     if 'q' in self.request.query_params:
         search_term = self.request.query_params['q']
