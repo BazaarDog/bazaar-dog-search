@@ -9,7 +9,8 @@ class HumanizeMiddleware(MiddlewareMixin):
         # this redirects traffic not originating from ob to
         # a human readable website
         if not settings.DEV and not settings.DEBUG:
-            if "OpenBazaar" not in request.META.get('HTTP_USER_AGENT'):
+            ua = request.META.get('HTTP_USER_AGENT')
+            if ua and "OpenBazaar" not in ua:
                 return redirect('https://www.bazaar.dog/')
 
 
