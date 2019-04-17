@@ -5,9 +5,11 @@ from ob.models import Profile
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from .util import build_options, build_checkbox
-from .common import get_nsfw_options, get_currency_type_options, get_clear_all_options, get_network_options
+from .common import get_nsfw_options, get_currency_type_options, \
+    get_clear_all_options, get_network_options
 
 logger = logging.getLogger(__name__)
+
 
 def get_profile_sort():
     return OrderedDict([
@@ -36,7 +38,6 @@ def get_profile_sort():
 
 
 def get_profile_options(params):
-
     available_options = [
         ("acceptedCurrencies", {
             "type": "radio",
@@ -109,7 +110,6 @@ def get_profile_options(params):
 
 
 def get_ua_options(params):
-
     version = params.get('version')
 
     distinct_version = OrderedDict(
@@ -128,13 +128,9 @@ def get_ua_options(params):
 
 
 def get_has_moderator_options(params):
-
-    if 'moderator_count' in params.keys():
-        try:
-            moderator_count = int(params['moderator_count'])
-        except ValueError:
-            moderator_count = 0
-    else:
+    try:
+        moderator_count = int(params.get('moderator_count'))
+    except (ValueError, TypeError) as e:
         moderator_count = 0
 
     return [
@@ -154,30 +150,13 @@ def get_has_moderator_options(params):
 
 
 def get_is_moderator_options(params):
-
-    if 'is_moderator' in params.keys():
-        try:
-            if params['is_moderator'] == 'true':
-                is_moderator = True
-            elif params['is_moderator'] == 'false':
-                is_moderator = ''
-            elif params['is_moderator'] == '':
-                is_moderator = ''
-            else:
-                is_moderator = ''
-        except ValueError:
-            is_moderator = ''
-    else:
-        is_moderator = ''
-
+    is_moderator = True if params.get('is_moderator') == 'true' else ''
     is_moderator_choices = OrderedDict(
         [(True, _('Yes')), ('', _('All')), ])
-
     return build_options(is_moderator, is_moderator_choices)
 
 
 def get_is_verified_options(params):
-
     if 'is_verified' in params.keys():
         try:
             if params['is_verified'] == 'true':
@@ -201,7 +180,6 @@ def get_is_verified_options(params):
 
 
 def get_has_verified_options(params):
-
     if 'has_verified' in params.keys():
         try:
             if params['has_verified'] == 'true':
@@ -218,24 +196,29 @@ def get_has_verified_options(params):
     else:
         has_verified = ''
 
-    has_verified_choices = OrderedDict([(True, _('Has OB1 Verified Moderator')), ])
+    has_verified_choices = OrderedDict(
+        [(True, _('Has OB1 Verified Moderator')), ])
 
     return build_options(has_verified, has_verified_choices)
 
 
 def get_moderator_languages_options(params):
-
     if 'moderator_languages' in params.keys():
         lang = params['moderator_languages']
     else:
         lang = ''
 
     moderator_languages = OrderedDict([
-        ("", "All"), ("zh", "中文"), ("es", "Español"), ("en", "English"), ("hi", "हिन्दी"), ("ar", "العربية"),
-        ("pt", "português"), ("bg", "български"), ("ru", "русский"), ("ja", "日本語"), ("pa", "ਪੰਜਾਬੀ"),
-        ("de", "Deutsch"), ("ko", "한국어"), ("fr", "français"), ("tr", "Türkçe"), ("it", "italiano"),
-        ("pl", "polski"), ("ro", "română"), ("nl", "Nederlands"), ("da", "Dansk"), ("fi", "Suomi"), ("sv", "Svenska"),
-        ("ta", "தமிழ்"), ("el", "Ελληνικά"), ("cs", "čeština"), ("eu", "Euskara"), ("hr", "Hrvatski"),
+        ("", "All"), ("zh", "中文"), ("es", "Español"), ("en", "English"),
+        ("hi", "हिन्दी"), ("ar", "العربية"),
+        ("pt", "português"), ("bg", "български"), ("ru", "русский"),
+        ("ja", "日本語"), ("pa", "ਪੰਜਾਬੀ"),
+        ("de", "Deutsch"), ("ko", "한국어"), ("fr", "français"), ("tr", "Türkçe"),
+        ("it", "italiano"),
+        ("pl", "polski"), ("ro", "română"), ("nl", "Nederlands"),
+        ("da", "Dansk"), ("fi", "Suomi"), ("sv", "Svenska"),
+        ("ta", "தமிழ்"), ("el", "Ελληνικά"), ("cs", "čeština"),
+        ("eu", "Euskara"), ("hr", "Hrvatski"),
         ("mk", "македонски"), ("af", "Afrikaans")
     ])
 
@@ -243,7 +226,6 @@ def get_moderator_languages_options(params):
 
 
 def get_rating_options(params):
-
     try:
         rating = float(params['rating'])
     except ValueError:
@@ -262,7 +244,6 @@ def get_rating_options(params):
 
 
 def get_connection_options(params):
-
     try:
         connection = int(params['connection'])
     except ValueError:
@@ -271,4 +252,3 @@ def get_connection_options(params):
         connection = ''
 
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
-

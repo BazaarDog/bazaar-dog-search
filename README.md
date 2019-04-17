@@ -141,9 +141,7 @@ the price in a variable called `price_value` on the listing.
 
 ```
 
-ob.util.get_exchange_rates()
-
-ob.util.update_price_values()
+./manage.py values
 
 ```
 
@@ -162,7 +160,7 @@ Several functions are not provided to encourage innovation, for legal reasons, a
 * `get_profile_rank` returns the rank of a profile
 * `mark_scammers` will mark all listed profiles as scams, causing them not to appear. List excluded for legal reasons
 * `mark_dust` mark transactions as dust which fall below some percentage fee threshold.
-* `the_champions_of_decentralized_commerce` is a list of 'good nodes', which an operator may choose to change.
+* `node_list` is a list of 'good nodes', which an operator may choose to change.
 
 ### Crawling
 
@@ -189,4 +187,22 @@ Crawl:
 
 `./manage.py crawl`
 
-Future plans are dependent on PubSub (ipfs) features coming online in 2018.
+Update online nodes:
+
+The this command pings up-to 200 nodes marked as online in the database
+and a similar number of nodes marked as offline to see if their
+status has changed.
+
+`./manage.py online`
+
+
+
+# Testing
+
+### Caching test data
+
+    ./manage.py dumpdata ob --format=json --indent=4 > ob/fixtures/`date +%Y%m%d`.json
+    
+# Plan
+Future plans are dependent on gossipsub (ipfs) features coming online,
+ and openbazaard migrating off a fork of go-ipfs.

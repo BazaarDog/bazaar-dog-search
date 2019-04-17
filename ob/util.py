@@ -47,6 +47,7 @@ def requests_post_wrap(url, data):
                              data=data,
                              timeout=settings.CRAWL_TIMEOUT)
 
+
 def bootstrap():
     for peerId in peerId_list:
         p, pc = Profile.objects.get_or_create(pk=peerId)
@@ -96,8 +97,11 @@ def update_price_values():
     for c_symbol in distinct_currencies:
         try:
             c = ExchangeRate.objects.get(symbol=c_symbol)
-            a = Listing.objects.filter(pricing_currency=c_symbol).update(
-                price_value=F('price') / float(c.base_unit) / float(c.rate))
+            if c.rate:
+                a = Listing.objects.filter(pricing_currency=c_symbol).update(
+                    price_value=F('price') / float(c.base_unit) / float(c.rate))
+            else:
+                logging.warning("No rate for {}".format(c.symbol))
         except ExchangeRate.DoesNotExist:
             logger.info(
                 'could not update price_values of ' + c_symbol + ' listings')
