@@ -111,7 +111,6 @@ def get_profile_options(params):
 
 def get_ua_options(params):
     version = params.get('version')
-
     distinct_version = OrderedDict(
         [
             ('openbazaar-go:0.14', '0.14.*'),
@@ -123,7 +122,6 @@ def get_ua_options(params):
             ('', 'Any')
         ]
     )
-
     return build_options(version, distinct_version)
 
 
@@ -157,56 +155,21 @@ def get_is_moderator_options(params):
 
 
 def get_is_verified_options(params):
-    if 'is_verified' in params.keys():
-        try:
-            if params['is_verified'] == 'true':
-                is_verified = True
-            elif params['is_verified'] == 'false':
-                is_verified = ''
-            elif params['is_verified'] == '':
-                is_verified = ''
-            else:
-                is_verified = ''
-                # logger.debug('moderator found:' + str(is_moderator))
-        except ValueError:
-            is_verified = ''
-    else:
-        is_verified = ''
-
+    is_verified = True if params.get('is_verified') == 'true' else ''
     is_verified_choices = OrderedDict(
         [(True, _('Is an OB1 Verified Moderator')), ])
-
     return build_options(is_verified, is_verified_choices)
 
 
 def get_has_verified_options(params):
-    if 'has_verified' in params.keys():
-        try:
-            if params['has_verified'] == 'true':
-                has_verified = True
-            elif params['has_verified'] == 'false':
-                has_verified = ''
-            elif params['has_verified'] == '':
-                has_verified = ''
-            else:
-                has_verified = ''
-                # logger.debug('moderator found:' + str(is_moderator))
-        except ValueError:
-            has_verified = ''
-    else:
-        has_verified = ''
-
+    has_verified = True if params.get('has_verified') == 'true' else ''
     has_verified_choices = OrderedDict(
         [(True, _('Has OB1 Verified Moderator')), ])
-
     return build_options(has_verified, has_verified_choices)
 
 
 def get_moderator_languages_options(params):
-    if 'moderator_languages' in params.keys():
-        lang = params['moderator_languages']
-    else:
-        lang = ''
+    lang = params.get('moderator_languages')
 
     moderator_languages = OrderedDict([
         ("", "All"), ("zh", "中文"), ("es", "Español"), ("en", "English"),
@@ -221,16 +184,13 @@ def get_moderator_languages_options(params):
         ("eu", "Euskara"), ("hr", "Hrvatski"),
         ("mk", "македонски"), ("af", "Afrikaans")
     ])
-
     return build_options(lang, moderator_languages)
 
 
 def get_rating_options(params):
     try:
-        rating = float(params['rating'])
-    except ValueError:
-        rating = 0
-    except KeyError:
+        rating = float(params.get('rating'))
+    except (ValueError, KeyError):
         rating = 0
 
     return [
@@ -245,10 +205,7 @@ def get_rating_options(params):
 
 def get_connection_options(params):
     try:
-        connection = int(params['connection'])
-    except ValueError:
+        connection = int(params.get('connection'))
+    except (ValueError, KeyError):
         connection = ''
-    except KeyError:
-        connection = ''
-
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
