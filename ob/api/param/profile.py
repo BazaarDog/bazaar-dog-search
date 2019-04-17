@@ -189,8 +189,8 @@ def get_moderator_languages_options(params):
 
 def get_rating_options(params):
     try:
-        rating = float(params.get('rating'))
-    except (ValueError, KeyError):
+        rating = float(params.get('rating')) or 0
+    except (ValueError, TypeError):
         rating = 0
 
     return [
@@ -206,6 +206,6 @@ def get_rating_options(params):
 def get_connection_options(params):
     try:
         connection = int(params.get('connection'))
-    except (ValueError, KeyError):
+    except (ValueError, TypeError):
         connection = ''
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
