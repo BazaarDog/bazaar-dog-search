@@ -5,7 +5,7 @@ from requests.exceptions import ConnectTimeout
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
 
-from ob.models import Listing
+from ob.models.listing import Listing
 from ob.api.serializer import *
 from ob.api.filter import *
 from ob.api.query.common import try_sync_peer

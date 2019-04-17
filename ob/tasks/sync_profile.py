@@ -10,10 +10,13 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.utils.timezone import now
 
-from ob.models import Profile, ProfileSocial, ProfileAddress, Image
-from ob.util import get, moving_average_speed
+from ob.models.profile import Profile
+from ob.models.profile_address import ProfileAddress
+from ob.models.profile_social import ProfileSocial
+from ob.models.image import Image
 from ob.tasks.sync_ratings import sync_ratings
 from ob.tasks.sync_listings import sync_listings
+from ob.util import get, moving_average_speed
 
 logger = logging.getLogger(__name__)
 

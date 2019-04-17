@@ -2,7 +2,7 @@ from ob.api.serializer import *
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
 from datetime import timedelta
-from ob.models import Profile
+from ob.models.profile import Profile
 from .common import try_sync_peer
 
 

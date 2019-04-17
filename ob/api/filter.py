@@ -20,7 +20,8 @@ import django_filters as df
 from django_filters.widgets import BooleanWidget
 from distutils.util import strtobool
 
-from ob.models import Listing, Profile
+from ob.models.listing import Listing
+from ob.models.profile import Profile
 
 from .widgets import TruthyWidget, FalsyWidget
 
@@ -229,7 +230,7 @@ class ListingFilter(df.FilterSet):
     acceptedCurrencies = df.Filter(
         field_name='accepted_currencies', lookup_expr='icontains')
     tags = df.Filter(field_name='tags',
-                           lookup_expr='icontains')
+                     lookup_expr='icontains')
     categories = df.Filter(field_name='categories',
                            lookup_expr='icontains')
     rating = df.Filter(field_name='rating_average',

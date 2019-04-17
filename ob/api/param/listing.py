@@ -1,9 +1,12 @@
 from collections import OrderedDict
-from ob.models import Listing, Profile
+
 from django.conf import settings
 from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import ugettext_lazy as _
-from .util import build_options, build_checkbox
+
+from ob.models.listing import Listing
+from ob.models.profile import Profile
+from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
     get_clear_all_options, get_network_options
 from .static import country_list

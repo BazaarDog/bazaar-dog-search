@@ -3,7 +3,8 @@ import logging
 import requests
 from django.conf import settings
 
-from ob.models import Listing, ExchangeRate
+from ob.models.listing import Listing
+from ob.models.exchange_rate import ExchangeRate
 
 
 logger = logging.getLogger(__name__)

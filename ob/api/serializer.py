@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from ob.models import Listing, Profile, Image, ListingImage, ListingReport
+from ob.models.listing import Listing
+from ob.models.profile import Profile
+from ob.models.image import Image
+from ob.models.listing_image import ListingImage
+from ob.models.listing_report import ListingReport
 from .param.static import currency_list
 
 

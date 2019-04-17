@@ -199,6 +199,16 @@ status has changed.
 
 # Testing
 
+## Configuring test database
+
+The postgres user must have permission to create a test database on the fly. 
+
+    postgres=# ALTER USER bazaardog CREATEDB;
+
+### Running tests
+
+    coverage run manage_base.py test
+    
 ### Caching test data
 
     ./manage.py dumpdata ob --format=json --indent=4 > ob/fixtures/`date +%Y%m%d`.json

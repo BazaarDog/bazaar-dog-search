@@ -12,12 +12,9 @@ class Command(BaseCommand):
     help = 'bootstrap vendor'
 
     def handle(self, *args, **options):
-        import json
-        import requests
-        from time import sleep
         from custom import good_nodes
 
-        from ob.util import get_exchange_rates
+        from ob.util import get_exchange_rates, update_price_values, update_verified
         get_exchange_rates()
 
         qs = Profile.objects.filter(network='mainnet', online=True).exclude(name='')
@@ -28,13 +25,12 @@ class Command(BaseCommand):
                 if peerID not in known_pks:
                     logger.debug(peerID)
                     p, profile_created = Profile.objects.get_or_create(pk=peerID)
-                    #if profile_created or p.should_update():
                     sync_profile(p)
-                    #else:
-                    #    logger.debug('skipping profile')
+
         except ReadTimeout:
             pass
         logger.debug("Successfully bootstraped peers")
-
+        update_verified()
+        update_price_values()
         from django.utils.timezone import now
         Profile.objects.filter().update(was_online=now())

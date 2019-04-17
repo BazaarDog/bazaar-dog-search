@@ -6,8 +6,10 @@ from django.conf import settings
 from django.db.models import F, Count
 from django.utils.timezone import now
 
-from ob.models import Profile, Listing, ExchangeRate
 from ob.bootstrap.known_nodes import peerId_list
+from ob.models.profile import Profile
+from ob.models.listing import Listing
+from ob.models.exchange_rate import ExchangeRate
 
 from pathlib import Path
 logger = logging.getLogger(__name__)

@@ -1,10 +1,11 @@
-from distutils.util import strtobool
 from collections import OrderedDict
 import logging
-from ob.models import Profile
+
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
-from .util import build_options, build_checkbox
+
+from ob.models.profile import Profile
+from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
     get_clear_all_options, get_network_options
 

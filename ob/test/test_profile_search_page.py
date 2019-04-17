@@ -1,7 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from ob.models import Profile
+from ob.models.profile import Profile
+
 
 class ProfileTests(APITestCase):
     def test_profile_page(self):

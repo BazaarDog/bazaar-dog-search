@@ -1,7 +1,9 @@
-from django.utils.timezone import now
 from datetime import timedelta
 from requests.exceptions import ConnectTimeout
-from ob.models import Profile
+
+from django.utils.timezone import now
+
+from ob.models.profile import Profile
 from ob.tasks.sync_profile import sync_profile
 
 

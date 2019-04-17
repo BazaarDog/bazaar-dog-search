@@ -7,7 +7,8 @@ from django.conf import settings
 from django.db.utils import IntegrityError
 from django.utils.dateparse import parse_datetime
 
-from ob.models import Listing, ListingRating
+from ob.models.listing import Listing
+from ob.models.listing_rating import ListingRating
 from ob.util import get
 
 logger = logging.getLogger(__name__)

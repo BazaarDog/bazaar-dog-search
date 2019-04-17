@@ -9,8 +9,11 @@ from django.utils import timezone
 from django.utils.timezone import now
 
 from ob.util import get
-from ob.models import Listing, ShippingOptions, Profile, ExchangeRate, \
-    ListingImage
+from ob.models.listing import Listing
+from ob.models.shipping_options import ShippingOptions
+from ob.models.profile import Profile
+from ob.models.exchange_rate import ExchangeRate
+from ob.models.listing_image import ListingImage
 
 logger = logging.getLogger(__name__)
 

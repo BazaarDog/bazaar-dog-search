@@ -5,10 +5,10 @@ from requests.exceptions import ReadTimeout
 from time import sleep
 
 from django.db.models import Count
-from django.conf import settings
 from django.utils.timezone import now
 
-from ob.models import Profile, Listing
+from ob.models.profile import Profile
+from ob.models.listing import Listing
 from ob.tasks.sync_profile import sync_profile
 
 logger = logging.getLogger(__name__)
@@ -42,7 +42,8 @@ def find_nodes():
 def sync_an_empty_peer(testnet=False):
     network = ('testnet' if testnet else 'mainnet')
     while True:
-        count = Profile.objects.filter(name='', network=network).aggregate(count=Count('pk'))['count']
+        count = Profile.objects.filter(name='', network=network).aggregate(
+            count=Count('pk'))['count']
         random.seed(now())
         if count > 0:
             random_index = random.randint(0, count - 1)
@@ -61,7 +62,8 @@ def sync_an_empty_peer(testnet=False):
 def sync_a_known_peer():
     some_time_ago = now() - timedelta(hours=24)
     a_long_time_ago = now() - timedelta(days=14)
-    qs = Profile.objects.filter(modified__lt=some_time_ago, modified__gt=a_long_time_ago, online=True,
+    qs = Profile.objects.filter(modified__lt=some_time_ago,
+                                modified__gt=a_long_time_ago, online=True,
                                 network='mainnet').exclude(name='')
     count = qs.aggregate(count=Count('pk'))['count']
     if count > 0:
