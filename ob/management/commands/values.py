@@ -1,5 +1,7 @@
-from django.core.management.base import BaseCommand
 import logging
+
+from django.core.management.base import BaseCommand
+
 from ob.util import get_exchange_rates, update_price_values
 
 logger = logging.getLogger(__name__)

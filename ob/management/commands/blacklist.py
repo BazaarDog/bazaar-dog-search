@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
-from ob.models import Profile, ListingReport, ProfileAddress, Listing, Image
-from django.utils import timezone
-# import the logging library
 import logging
+
+from django.core.management.base import BaseCommand, CommandError
+
+from ob.models.profile import Profile
+from ob.models.listing_report import ListingReport as ListingR
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -35,8 +36,8 @@ class Command(BaseCommand):
             p.scam = True
             p.save()
         for listing in p.listing_set.all():
-            lr,lrc = ListingReport.objects.get_or_create(listing=listing,
-                                                reason=reason,
-                                                slug=listing.slug,
-                                                peerID=listing.profile_id)
+            lr, lrc = ListingR.objects.get_or_create(listing=listing,
+                                                     reason=reason,
+                                                     slug=listing.slug,
+                                                     peerID=listing.profile_id)
             lr.save()

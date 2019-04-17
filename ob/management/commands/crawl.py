@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from ob.models import Profile, ProfileAddress, Listing, Image
-from django.utils import timezone
-# import the logging library
+from ob.models.profile import Profile
+
 import logging
 
 from ob.tasks.sync_profile import sync_profile

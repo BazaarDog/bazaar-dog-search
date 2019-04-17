@@ -1,13 +1,12 @@
-from django.core.management.base import BaseCommand, CommandError
-from ob.models import Profile, ProfileAddress, Listing, Image
-from django.utils import timezone
-# import the logging library
 import logging
 
-from ob.tasks.sync_profile import sync_profile
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
+from django.core.management.base import BaseCommand, CommandError
+
 from ob.util import update_verified
+
+
+logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
     help = 'load verified'
@@ -25,5 +24,3 @@ class Command(BaseCommand):
 
         url = options.get('url')
         update_verified()
-
-
