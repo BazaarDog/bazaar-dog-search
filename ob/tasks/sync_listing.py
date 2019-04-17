@@ -33,76 +33,41 @@ def sync_listing(listing, force=True):
                 listing.version = metadata['version']
                 listing.contract_type = getattr(Listing,
                                                 metadata['contractType'])
-                listing.accepted_currencies = metadata[
-                    'acceptedCurrencies']
-                listing.pricing_currency = metadata['pricingCurrency']
+                listing.accepted_currencies = metadata.get(
+                    'acceptedCurrencies')
+                listing.pricing_currency = metadata.get('pricingCurrency')
 
-                item_details = listing_data['item']
-                listing.title = item_details['title']
-                if 'tags' in item_details:
-                    listing.tags = item_details['tags']
-                if 'categories' in item_details:
-                    listing.categories = item_details['categories']
-                if 'price' in item_details:
-                    listing.price = item_details['price']
-                    try:
-                        c = ExchangeRate.objects.get(
-                            symbol=listing.pricing_currency)
-                        listing.price_value = listing.price / float(
-                            c.base_unit) / float(c.rate)
-                    except ZeroDivisionError:
-                        listing.price_value = 0.0001
+                item_details = listing_data.get('item')
+                listing.title = item_details.get('title')
+                listing.tags = item_details.get('tags')
+                listing.categories = item_details.get('categories')
 
-                if 'description' in item_details.keys():
-                    listing.description = item_details['description']
+                listing.price = item_details.get('price')
+                listing.price_value = get_price_value(listing.price,
+                                                      listing.pricing_currency)
+
+                listing.description = item_details.get('description')
 
                 if item_details['condition']:
                     listing.condition_type = getattr(Listing,
-                                                     item_details['condition'].upper())
+                                                     item_details[
+                                                         'condition'].upper())
 
-                if "images" in item_details.keys():
-                    for i, iHashes in enumerate(item_details['images']):
-                        iHashes['index'] = i
-                        iHashes['listing'] = listing
-                        li, li_c = ListingImage.objects.get_or_create(
-                            **iHashes)
-                        li.save()
+                for i, iHashes in enumerate(item_details.get('images')):
+                    iHashes['index'] = i
+                    iHashes['listing'] = listing
+                    li, li_c = ListingImage.objects.get_or_create(
+                        **iHashes)
+                    li.save()
 
-                if "moderators" in listing_data:
+                mod_data = listing_data.get('moderators')
+                if mod_data:
+                    moderator_list = get_moderators(mod_data)
+                    listing.moderators.set(moderator_list)
 
-                    listed_moderators = listing_data['moderators']
-                    known_moderators = Profile.objects.filter(
-                        pk__in=listed_moderators)
-                    known_moderators_pks = [m.pk for m in known_moderators]
-                    new_moderators = [m for m in listed_moderators if
-                                      m not in known_moderators_pks]
-                    if len(new_moderators) > 0:
-                        for new_pk in new_moderators:
-                            try:
-                                Profile.objects.get(pk=new_pk)
-                            except Profile.DoesNotExist:
-                                new_mod, m_created = Profile.objects.get_or_create(
-                                    pk=new_pk)
-                                if m_created:
-                                    from ob.tasks.sync_profile import \
-                                        sync_profile
-                                    sync_profile(new_mod)
-
-                        moderators = Profile.objects.filter(
-                            pk__in=listed_moderators)
-                    else:
-                        moderators = known_moderators
-
-                    listing.moderators.set(list(moderators))
-
-                if "coupons" in listing_data:
-                    for c in listing_data['coupons']:
-                        pass
-
-                if "shippingOptions" in listing_data:
-                    for so in listing_data['shippingOptions']:
-                        s = ShippingOptions.create_from_json(listing, so)
-                        s.save()
+                for so in listing_data.get('shippingOptions'):
+                    s = ShippingOptions.create_from_json(listing, so)
+                    s.save()
 
                 listing.network = 'mainnet'
                 listing.save()
@@ -116,3 +81,36 @@ def sync_listing(listing, force=True):
                                              profile=listing.profile).update(
             attempt=now())
         logger.debug("timeout")
+
+
+def get_price_value(listing_price, listing_pricing_currency):
+    try:
+        c = ExchangeRate.objects.get(symbol=listing_pricing_currency)
+        return listing_price / float(
+            c.base_unit) / float(c.rate)
+    except ZeroDivisionError:
+        return 0.0001
+
+
+def get_moderators(listed_moderators):
+    known_moderators = Profile.objects.filter(pk__in=listed_moderators)
+    known_moderators_pks = [m.pk for m in known_moderators]
+    new_moderators = [m for m in listed_moderators if
+                      m not in known_moderators_pks]
+    if len(new_moderators) > 0:
+        for new_pk in new_moderators:
+            try:
+                Profile.objects.get(pk=new_pk)
+            except Profile.DoesNotExist:
+                new_mod, m_created = Profile.objects.get_or_create(
+                    pk=new_pk)
+                if m_created:
+                    from ob.tasks.sync_profile import sync_profile
+                    sync_profile(new_mod)
+
+        moderators = Profile.objects.filter(
+            pk__in=listed_moderators)
+    else:
+        moderators = known_moderators
+
+    return list(moderators)

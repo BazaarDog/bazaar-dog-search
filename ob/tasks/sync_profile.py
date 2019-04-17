@@ -67,13 +67,9 @@ def sync_profile(profile):
 
             if 'contactInfo' in profile_data.keys():
                 contact = profile_data['contactInfo']
-                profile.email = (
-                    contact['email'] if 'email' in contact.keys() else '')
-                profile.website = (
-                    contact[
-                        'website'] if 'website' in contact.keys() else '')
-                profile.phone = (contact[
-                                     'phoneNumber'] if 'phoneNumber' in contact.keys() else '')
+                profile.email = contact.get('email')
+                profile.website = contact.get('website')
+                profile.phone = contact.get('phoneNumber')
 
                 if 'social' in contact.keys():
                     for s in contact['social']:
