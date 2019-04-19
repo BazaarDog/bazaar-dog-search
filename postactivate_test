@@ -1,0 +1,10 @@
+# Random string for salting passwords, etc
+#
+# head -c 5000 /dev/urandom |tr -dc A-Z9|head -c${1:-81}
+#
+export SECRET_KEY="testing_12_testing_12_test_test..."
+
+export DATABASE_HOST=""
+export DATABASE_NAME="bazaardog"
+export DATABASE_USER="postgres"
+export DATABASE_PASSWORD=""
