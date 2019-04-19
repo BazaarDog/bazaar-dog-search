@@ -3,14 +3,22 @@ sudo: false
 python:
   - "3.6"
   - "3.7-dev"  # 3.7 development branch
-# command to install dependencies
+services:
+  - postgresql
+
+addons:
+  postgresql: "10.6"
+  apt:
+    packages:
+      - postgresql-10-postgis-2.4
+      - postgresql-client-10
 env:
   - DJANGO_VERSION=2.1.5
 install:
   - pip install -r requirements.txt
   - pip install coveralls coverage
 script:
-  - source postactivate_sample
-  - coverage run manage_base.py test
+  - source postactivate_test
+  - coverage run manage_test.py test
 after_success:
   - coveralls
