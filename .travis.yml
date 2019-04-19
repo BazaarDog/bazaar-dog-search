@@ -6,12 +6,6 @@ python:
 services:
   - postgresql
 
-addons:
-  postgresql: "10.6"
-  apt:
-    packages:
-      - postgresql-10-postgis-2.4
-      - postgresql-client-10
 env:
   - DJANGO_VERSION=2.1.5
 install:
@@ -19,6 +13,6 @@ install:
   - pip install coveralls coverage
 script:
   - source postactivate_test
-  - coverage run manage_test.py test
+  - coverage run manage_base.py test
 after_success:
   - coveralls
