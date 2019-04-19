@@ -25,55 +25,8 @@ def sync_listing(listing, force=True):
         r = get(listing_detail_url)
         if r.status_code == 200:
             data = json.loads(r.content.decode('utf-8'))
-            listing_data = data['listing']
-            signature = data['signature']
-            if listing.signature == signature and force is False:
-                listing.save()
-            else:
-                listing.signature = signature
-                listing.slug = listing_data['slug']
-                metadata = listing_data['metadata']
-                listing.version = metadata['version']
-                listing.contract_type = getattr(Listing,
-                                                metadata['contractType'])
-                listing.accepted_currencies = metadata.get(
-                    'acceptedCurrencies')
-                listing.pricing_currency = metadata.get('pricingCurrency')
 
-                item_details = listing_data.get('item')
-                listing.title = item_details.get('title')
-                listing.tags = item_details.get('tags')
-                listing.categories = item_details.get('categories')
-
-                listing.price = item_details.get('price')
-                listing.price_value = get_price_value(listing.price,
-                                                      listing.pricing_currency)
-
-                listing.description = item_details.get('description')
-
-                if item_details['condition']:
-                    listing.condition_type = getattr(Listing,
-                                                     item_details[
-                                                         'condition'].upper())
-
-                for i, iHashes in enumerate(item_details.get('images')):
-                    iHashes['index'] = i
-                    iHashes['listing'] = listing
-                    li, li_c = ListingImage.objects.get_or_create(
-                        **iHashes)
-                    li.save()
-
-                mod_data = listing_data.get('moderators')
-                if mod_data:
-                    moderator_list = get_moderators(mod_data)
-                    listing.moderators.set(moderator_list)
-
-                for so in listing_data.get('shippingOptions'):
-                    s = ShippingOptions.create_from_json(listing, so)
-                    s.save()
-
-                listing.network = 'mainnet'
-                listing.save()
+            parse_listing(listing, data)
         else:
             logger.debug('Error: {}'.format(r.status_code))
 
@@ -84,6 +37,58 @@ def sync_listing(listing, force=True):
                                              profile=listing.profile).update(
             attempt=now())
         logger.debug("timeout")
+
+
+def parse_listing(listing, data, force=True):
+    listing_data = data['listing']
+    signature = data['signature']
+    if listing.signature == signature and force is False:
+        listing.save()
+    else:
+        listing.signature = signature
+        listing.slug = listing_data['slug']
+        metadata = listing_data['metadata']
+        listing.version = metadata['version']
+        listing.contract_type = getattr(Listing,
+                                        metadata['contractType'])
+        listing.accepted_currencies = metadata.get(
+            'acceptedCurrencies')
+        listing.pricing_currency = metadata.get('pricingCurrency')
+
+        item_details = listing_data.get('item')
+        listing.title = item_details.get('title')
+        listing.tags = item_details.get('tags')
+        listing.categories = item_details.get('categories')
+
+        listing.price = item_details.get('price')
+        listing.price_value = get_price_value(listing.price,
+                                              listing.pricing_currency)
+
+        listing.description = item_details.get('description')
+
+        if item_details['condition']:
+            listing.condition_type = getattr(Listing,
+                                             item_details[
+                                                 'condition'].upper())
+
+        for i, iHashes in enumerate(item_details.get('images')):
+            iHashes['index'] = i
+            iHashes['listing'] = listing
+            li, li_c = ListingImage.objects.get_or_create(
+                **iHashes)
+            li.save()
+
+        mod_data = listing_data.get('moderators')
+        if mod_data:
+            moderator_list = get_moderators(mod_data)
+            listing.moderators.set(moderator_list)
+
+        for so in listing_data.get('shippingOptions'):
+            s = ShippingOptions.create_from_json(listing, so)
+            s.save()
+
+        listing.network = 'mainnet'
+        listing.save()
 
 
 def get_price_value(listing_price, listing_pricing_currency):

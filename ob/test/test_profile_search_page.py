@@ -1,15 +1,21 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
-from ob.models.profile import Profile
+from rest_framework.test import RequestsClient
 
 
-class ProfileTests(APITestCase):
+class ProfileTests(RequestsClient):
+    fixtures = ['20190417.json']
+
+    def setUp(self):
+        # Test definitions as before.
+        pass
+
     def test_profile_page(self):
         """
         Ensure we can create a new account object.
         """
         url = reverse('api-public:profile-page')
-        data = {'q': 'This'}
+        data = {'q': 'OpenBazaar'}
         response = self.client.get(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        print(str(response))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -69,11 +69,16 @@ def ping_many(peerIDs):
 def ping_query_set(peerIDs):
     pinged_peers = ping_many(peerIDs)
     online_nodes = list(d for d, s in pinged_peers.items() if s)
-    on = Profile.objects.filter(peerID__in=online_nodes).update(online=True,
-                                                                pinged=now(),
-                                                                was_online=now())
-    off = Profile.objects.filter(peerID__in=peerIDs).exclude(
-        peerID__in=online_nodes).update(online=False, pinged=now())
+    on = Profile.objects \
+        .filter(peerID__in=online_nodes) \
+        .update(online=True,
+                pinged=now(),
+                was_online=now())
+    off = Profile.objects \
+        .filter(peerID__in=peerIDs) \
+        .exclude(
+        peerID__in=online_nodes) \
+        .update(online=False, pinged=now())
     logger.info(
         'there were {} peers online and {} peers offline'.format(on, off))
 
@@ -81,25 +86,25 @@ def ping_query_set(peerIDs):
 def ping_offline():
     some_time_ago = now() - timedelta(minutes=100)
     a_long_time_ago = now() - timedelta(days=28)
-    qs = Profile.objects.filter(online=False,
-                                modified__gt=a_long_time_ago,
-                                pinged__lt=some_time_ago).values_list('pk',
-                                                                      flat=True).order_by(
-        '?')
-    qs = list(qs)[
-         :300]  # vector length should be an argument, didn't play well with AWS lambda
+    qs = Profile.objects \
+        .filter(online=False,
+                modified__gt=a_long_time_ago,
+                pinged__lt=some_time_ago) \
+        .values_list('pk', flat=True) \
+        .order_by('?')
+    qs = list(qs)[:300]
     if len(qs) > 0:
         ping_query_set(qs)
 
 
 def ping_online(number=200):
-    some_time_ago = now() - timedelta(
-        minutes=60)  # try not to hit nodes online in last hour
-    qs = Profile.objects.filter(online=True,
-                                pinged__lt=some_time_ago).values_list('pk',
-                                                                      flat=True).order_by(
-        '?')  # [:number]
-    qs = list(qs)[
-         :100]  # vector length should be an argument, didn't play well with AWS lambda
+    some_time_ago = now() - timedelta(minutes=60)
+    qs = Profile.objects \
+        .filter(online=True,
+                pinged__lt=some_time_ago) \
+        .values_list('pk',
+                     flat=True) \
+        .order_by('?')
+    qs = list(qs)[:100]
     if len(qs) > 0:
         ping_query_set(qs)
