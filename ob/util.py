@@ -65,7 +65,7 @@ def bootstrap():
 def moving_average_speed(profile):
     # Keep track of how quickly a peer resolves
     speed_rank = settings.CRAWL_TIMEOUT * 1e6
-    new_rank = (profile.speed_rank + speed_rank) / 2.0
+    new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
     Profile.objects.filter(pk=profile.peerID).update(speed_rank=new_rank,
                                                      attempt=now())
     logger.info("peerID " + profile.peerID + " timeout")
