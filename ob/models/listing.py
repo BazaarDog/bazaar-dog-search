@@ -56,7 +56,7 @@ class Listing(models.Model):
     CONTRACT_TYPE_DICT = dict(CONTRACT_TYPE_CHOICES)
     CONDITION_TYPE_DICT = dict(CONDITION_TYPE_CHOICES)
 
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     accepted_currencies = ArrayField(models.CharField(max_length=5),
                                      null=True,
                                      blank=True)

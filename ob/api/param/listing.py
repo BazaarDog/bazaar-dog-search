@@ -93,20 +93,8 @@ def get_listing_options(params):
 def get_moderator_verified_options(params):
     # Build verified moderator options
 
-    if 'moderator_verified' in params.keys():
-        try:
-            if params['moderator_verified'] == 'true':
-                moderator_verified = True
-            elif params['moderator_verified'] == 'false':
-                moderator_verified = ''
-            elif params['moderator_verified'] == '':
-                moderator_verified = ''
-            else:
-                moderator_verified = ''
-        except ValueError:
-            moderator_verified = ''
-    else:
-        moderator_verified = ''
+    moderator_verified = True if params.get(
+        'moderator_verified') == 'true' else ''
 
     moderator_verified_choices = dict([(True, 'OB1 Verified Moderator'), ])
 
@@ -115,13 +103,9 @@ def get_moderator_verified_options(params):
 
 def get_moderator_options(params):
     # Build number of moderator options
-
-    if 'moderator_count' in params.keys():
-        try:
-            moderator_count = int(params['moderator_count'])
-        except ValueError:
-            moderator_count = 0
-    else:
+    try:
+        moderator_count = int(params.get('moderator_count'))
+    except (ValueError, TypeError):
         moderator_count = 0
 
     moderator_options = [
@@ -167,8 +151,8 @@ def get_free_shipping_options(params):
 
 def get_contract_type_options(params):
     try:
-        contract = int(params['contract_type'])
-    except (ValueError, KeyError):
+        contract = int(params.get('contract_type'))
+    except (ValueError, TypeError):
         contract = ''
 
     return build_options(contract, Listing.CONTRACT_TYPE_DICT)
@@ -176,8 +160,8 @@ def get_contract_type_options(params):
 
 def get_condition_type_options(params):
     try:
-        condition = int(params['condition_type'])
-    except (ValueError, KeyError):
+        condition = int(params.get('condition_type'))
+    except (ValueError, TypeError):
         condition = ''
 
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
@@ -185,8 +169,8 @@ def get_condition_type_options(params):
 
 def get_rating_options(params):
     try:
-        rating = float(params['rating'])
-    except (ValueError, KeyError):
+        rating = float(params.get('rating'))
+    except (ValueError, TypeError):
         rating = 0
 
     return [

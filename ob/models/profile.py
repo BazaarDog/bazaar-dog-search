@@ -11,6 +11,8 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
 from ob.models.image import Image
+from ob.models.listing_rating import ListingRating
+
 
 try:
     from obscure import get_listing_rank, get_profile_rank
