@@ -41,7 +41,7 @@ def get_profile_sort():
 def get_profile_options(params):
     available_options = [
         ("acceptedCurrencies", {
-            "type": "radio",
+            "type": "checkbox",
             "label": _("Accepted Currencies"),
             "options": get_currency_type_options(params)
         }),
@@ -117,9 +117,9 @@ def get_ua_options(params):
             ('openbazaar-go:0.14', '0.14.*'),
             ('openbazaar-go:0.13', '0.13.*'),
             ('openbazaar-go:0.12', '0.12.*'),
-            ('openbazaar-go:0.11', '0.11.*'),
-            ('openbazaar-go:0.10', '0.10.*'),
-            ('openbazaar-go:0.9', '0.9.*'),
+            # ('openbazaar-go:0.11', '0.11.*'),
+            # ('openbazaar-go:0.10', '0.10.*'),
+            # ('openbazaar-go:0.9', '0.9.*'),
             ('', 'Any')
         ]
     )

@@ -38,8 +38,8 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfileBadgeSerializer(serializers.ModelSerializer):
-    avatarHashes = serializers.SerializerMethodField()
 
+    avatarHashes = serializers.SerializerMethodField()
     # shortDescription = serializers.CharField(source='short_description')
 
     class Meta:
@@ -61,14 +61,14 @@ class ListingSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
-
-    # freeShipping = serializers.CharField(source='free_shipping')
+    freeShipping = serializers.CharField(source='free_shipping')
 
     class Meta:
-        # exclude = ('condition_type', 'pricing_currency','contract_type','rating_average','rating_count',)
+        # exclude = ('condition_type', 'pricing_currency','contract_type',
+        # 'rating_average','rating_count',)
         fields = ('thumbnail', 'contractType', 'acceptedCurrencies',
                   'price', 'averageRating', 'ratingCount', 'slug', 'nsfw',
-                  'title')  # ,'freeShipping')
+                  'title', 'freeShipping', 'hash')
         model = Listing
 
     # def get_freeShipping(self,o):
@@ -77,9 +77,7 @@ class ListingSerializer(serializers.ModelSerializer):
     def get_thumbnail(self, o):
         try:
             return ImageMedSerializer(o.thumbnail[0]).data
-        except ListingImage.DoesNotExist:
-            return ""
-        except IndexError:
+        except (ListingImage.DoesNotExist, IndexError):
             return ""
 
     def get_price(self, o):

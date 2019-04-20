@@ -91,13 +91,9 @@ def get_listing_options(params):
 
 
 def get_moderator_verified_options(params):
-    # Build verified moderator options
-
     moderator_verified = True if params.get(
         'moderator_verified') == 'true' else ''
-
     moderator_verified_choices = dict([(True, 'OB1 Verified Moderator'), ])
-
     return build_options(moderator_verified, moderator_verified_choices)
 
 
@@ -122,16 +118,14 @@ def get_moderator_options(params):
 
 
 def get_region(params):
-    return params.get('shipping') if 'shipping' in params.keys() else 'any'
+    return params.get('shipping') if params.get('shipping') else 'any'
 
 
 def get_region_options(params):
     region = get_region(params)
-
     distinct_region = OrderedDict(
         country_list
     )
-
     return build_options(region, distinct_region)
 
 
@@ -154,7 +148,6 @@ def get_contract_type_options(params):
         contract = int(params.get('contract_type'))
     except (ValueError, TypeError):
         contract = ''
-
     return build_options(contract, Listing.CONTRACT_TYPE_DICT)
 
 
@@ -163,7 +156,6 @@ def get_condition_type_options(params):
         condition = int(params.get('condition_type'))
     except (ValueError, TypeError):
         condition = ''
-
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
 
 

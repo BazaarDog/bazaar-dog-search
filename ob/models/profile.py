@@ -136,8 +136,6 @@ class Profile(models.Model):
         except IndexError:
             logger.info('index error getting serialized record')
 
-    # profile
-
     def should_update(self):
 
         if self.online:
@@ -168,16 +166,13 @@ class Profile(models.Model):
         except IndexError:
             logger.info('index error getting address')
 
-    # profile
+
     def get_rank(self):
         try:
             return get_profile_rank(self)
         except:
             logger.info("set a profile ranking function")
             return randint(1, 1000)
-
-    def __str__(self):
-        return self.peerID
 
     def ping(self):
         try:
@@ -207,3 +202,6 @@ class Profile(models.Model):
         self.listing_count = self.listing_set.count()
         self.moderated_items_count = self.moderated_items.count()
         super(Profile, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.peerID
