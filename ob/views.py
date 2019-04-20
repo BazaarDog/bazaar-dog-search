@@ -4,35 +4,35 @@ import base64
 from django.conf import settings
 
 listing_icons = {
-    'debug': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAG1BMVE' \
-             b'X//wAAAAAzMwBmZgD//zOZmQDMzADMzDOZmTNXxfsYAAAACXBIWXMA' \
-             b'AAsTAAALEwEAmpwYAAAAB3RJTUUH4gMJCx41I1cxbgAAALtJREFUKM' \
-             b'/t0k0OgjAQBeAGSt06RdClFQ9ArHFd8GcNngAlegHj/R1BzQCzceHO' \
-             b'2ZB8eem8AkL851cTVJz6KadqwqlM2INZlRHbYTygvd2UxSAHALojay' \
-             b'xlUEmxWihckiECOfZUbKM2SrOZNuGtQZr14TNzssu8UTui5ctgSnvl' \
-             b'rVpI+/0xOgLXuUSjS9lRJe+IMxdA0Vumr8ILc/rG5E6YGB+VR7KHy2' \
+    'debug': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAG1BMVE'
+             b'X//wAAAAAzMwBmZgD//zOZmQDMzADMzDOZmTNXxfsYAAAACXBIWXMA'
+             b'AAsTAAALEwEAmpwYAAAAB3RJTUUH4gMJCx41I1cxbgAAALtJREFUKM'
+             b'/t0k0OgjAQBeAGSt06RdClFQ9ArHFd8GcNngAlegHj/R1BzQCzceHO'
+             b'2ZB8eem8AkL851cTVJz6KadqwqlM2INZlRHbYTygvd2UxSAHALojay'
+             b'xlUEmxWihckiECOfZUbKM2SrOZNuGtQZr14TNzssu8UTui5ctgSnvl'
+             b'rVpI+/0xOgLXuUSjS9lRJe+IMxdA0Vumr8ILc/rG5E6YGB+VR7KHy2'
              b'rR1j/SOyTW2mfqHHMfoq6+/n8e/oUU2qrAu5AAAAAASUVORK5CYII=',
-    'devop': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE' \
-             b'Uz//8AAAAAMzMAZmYzzMwzmZk9wIupAAAAAWJLR0QAiAUdSAAAAAlw' \
-             b'SFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDCQsuLnZ0znEAAACkSU' \
-             b'RBVCjP7ZIxFsIgEEQJbHqXhF7MBfLEA6CYnnj/w7gJ0bcQmhR2bvnf' \
-             b'MDMLCPGfX03ra1SNNQqnqsVwgJpqh71v625z3EFE1BmhmmCJMoMggE' \
-             b'IazOk9KpOknDbadmGFnCr8zpll2Q/MKswbw55TmajDsexPUsB8rS0p' \
-             b'oyAmgoaOxCJMP4XsZHFjdkn3kmlhul5S/RfXDc65RfXoaw8R/OH/8w' \
+    'devop': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE'
+             b'Uz//8AAAAAMzMAZmYzzMwzmZk9wIupAAAAAWJLR0QAiAUdSAAAAAlw'
+             b'SFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDCQsuLnZ0znEAAACkSU'
+             b'RBVCjP7ZIxFsIgEEQJbHqXhF7MBfLEA6CYnnj/w7gJ0bcQmhR2bvnf'
+             b'MDMLCPGfX03ra1SNNQqnqsVwgJpqh71v625z3EFE1BmhmmCJMoMggE'
+             b'IazOk9KpOknDbadmGFnCr8zpll2Q/MKswbw55TmajDsexPUsB8rS0p'
+             b'oyAmgoaOxCJMP4XsZHFjdkn3kmlhul5S/RfXDc65RfXoaw8R/OH/8w'
              b'agEhAN51rfnQAAAABJRU5ErkJggg==',
-    'onion': b"iVBORw0KGgoAAAANSUhEUgAAACoAAAAqAgMAAAC4rSHIAAAADFBMVE" \
-             b"UODAxwWXCqh6n/yv1d/+DfAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA" \
-             b"B3RJTUUH4gIRDBYPgAAikQAAAJJJREFUGNNj+A8HHxiGGvvffgT7bz" \
-             b"2SuD2SenkkdjwSWx+r+qspcDP/MTBA7foOpJkh7PmP/h+AsdsvApVA" \
-             b"2QcYJ8DZFxiAgB3C/gBi80PYP0BsfQj7D5AZUA9h/wWyH8D8BTTlA4" \
-             b"w9gUH+wX4Iu4GB+6+MPVT8g/3/PxDxf0sY7P9/haj/Ihq6//9lpPCZ" \
+    'onion': b"iVBORw0KGgoAAAANSUhEUgAAACoAAAAqAgMAAAC4rSHIAAAADFBMVE"
+             b"UODAxwWXCqh6n/yv1d/+DfAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA"
+             b"B3RJTUUH4gIRDBYPgAAikQAAAJJJREFUGNNj+A8HHxiGGvvffgT7bz"
+             b"2SuD2SenkkdjwSWx+r+qspcDP/MTBA7foOpJkh7PmP/h+AsdsvApVA"
+             b"2QcYJ8DZFxiAgB3C/gBi80PYP0BsfQj7D5AZUA9h/wWyH8D8BTTlA4"
+             b"w9gUH+wX4Iu4GB+6+MPVT8g/3/PxDxf0sY7P9/haj/Ihq6//9lpPCZ"
              b"jScMAQuZj3KzxzFIAAAAAElFTkSuQmCC",
-    'plain': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqAgMAAAC4rSHIAAAADFBMVE' \
-             b'UHBwdfX1+ZmZn+/v43scdGAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA' \
-             b'B3RJTUUH4gMJCxsm2p6E9QAAAJNJREFUGNNj+A8HHxiGGvvffgT7bz' \
-             b'2SuD2Sen0kdjx2cST1TyvgZv5jYIDa9f3/FwZmCHv+p/8HYOzuS/8Z' \
-             b'YOwDjBPg7AsMQMAOYX8Bsfkh7B8gtj6E/QfInFAPYQMtYngA8xfQlA' \
-             b'8w9gIG/Qf7IewGBu6/svZQ8S/2//9AxZcy2P//CVH/RTR0///LSOEz' \
+    'plain': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqAgMAAAC4rSHIAAAADFBMVE'
+             b'UHBwdfX1+ZmZn+/v43scdGAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA'
+             b'B3RJTUUH4gMJCxsm2p6E9QAAAJNJREFUGNNj+A8HHxiGGvvffgT7bz'
+             b'2SuD2Sen0kdjx2cST1TyvgZv5jYIDa9f3/FwZmCHv+p/8HYOzuS/8Z'
+             b'YOwDjBPg7AsMQMAOYX8Bsfkh7B8gtj6E/QfInFAPYQMtYngA8xfQlA'
+             b'8w9gIG/Qf7IewGBu6/svZQ8S/2//9AxZcy2P//CVH/RTR0///LSOEz'
              b'G08YAgCBS5Aw0fodwAAAAABJRU5ErkJggg=='
 }
 
