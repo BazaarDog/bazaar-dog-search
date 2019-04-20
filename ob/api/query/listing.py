@@ -9,7 +9,7 @@ from ob.models.listing import Listing
 from ob.models.shipping_options import ShippingOptions
 from ob.api.serializer import *
 from ob.api.filter import *
-from ob.api.query.common import check_peer
+from ob.api.query.common import check_peer, get_nsfw_filter_queryset
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +57,7 @@ def get_queryset(self):
             Q(shippingoptions__regions__isnull=True))
 
     nsfw = self.request.query_params.get('nsfw')
-    # logger.debug('get_query nsfw value is ' + str(value))
-    if not nsfw:
-        return queryset.exclude(nsfw=True)
-    elif nsfw == 'Affirmative':
-        return queryset.filter(nsfw=True)
-    elif nsfw == 'true' or nsfw is True:
-        return queryset
-    else:
-        return queryset.exclude(nsfw=True)
+    queryset = get_nsfw_filter_queryset(queryset, nsfw)
+
+    return queryset
+

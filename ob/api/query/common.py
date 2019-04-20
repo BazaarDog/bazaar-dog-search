@@ -30,3 +30,13 @@ def try_sync_peer(search_term):
             sync_profile(profile)
         except ConnectTimeout:
             pass
+
+
+def get_nsfw_filter_queryset(queryset, nsfw):
+
+    if nsfw == 'Affirmative':
+        return queryset.filter(nsfw=True)
+    elif nsfw == 'true' or nsfw is True:
+        return queryset
+    else:
+        return queryset.exclude(nsfw=True)

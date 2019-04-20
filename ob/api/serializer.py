@@ -7,6 +7,19 @@ from ob.models.listing_report import ListingReport
 from .param.static import currency_list
 
 
+class StringArrayField(serializers.ListField):
+    """
+    String representation of an array field.
+    """
+    def to_representation(self, obj):
+        obj = super().to_representation(obj)
+        return ",".join([str(element) for element in obj])
+
+    def to_internal_value(self, data):
+        data = data.split(",")  # convert string to list
+        return super().to_internal_value(self, data)
+
+
 class ListingReportSerializer(serializers.ModelSerializer):
     listing = serializers.PrimaryKeyRelatedField(read_only=True)
 
@@ -61,18 +74,17 @@ class ListingSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField()
     averageRating = serializers.FloatField(source='rating_average')
     ratingCount = serializers.FloatField(source='rating_count')
-    freeShipping = serializers.CharField(source='free_shipping')
+    freeShipping = serializers.ListField(source='free_shipping')
 
     class Meta:
         # exclude = ('condition_type', 'pricing_currency','contract_type',
         # 'rating_average','rating_count',)
         fields = ('thumbnail', 'contractType', 'acceptedCurrencies',
                   'price', 'averageRating', 'ratingCount', 'slug', 'nsfw',
-                  'title', 'freeShipping', 'hash')
+                  'title', 'hash',
+                  'freeShipping'
+                  )
         model = Listing
-
-    # def get_freeShipping(self,o):
-    #    return o.free_shipping[1:-1].replace("'","").split(",")
 
     def get_thumbnail(self, o):
         try:
@@ -97,13 +109,14 @@ class ProfileAsListingSerializer(serializers.ModelSerializer):
     slug = serializers.SerializerMethodField()
 
     class Meta:
-        fields = ('peerID', 'price', 'thumbnail', 'title', 'ratingCount', 'averageRating', 'slug', 'nsfw',)
+        fields = ('peerID', 'price', 'thumbnail', 'title', 'ratingCount',
+                  'averageRating', 'slug', 'nsfw',)
         model = Profile
 
     def get_slug(self, o):
         return "%20"
 
-    # prevent it client from barfing on undefined?
+    # prevent client from erroring on undefined?
     def get_moderators(self, o):
         return []
 

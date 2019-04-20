@@ -3,11 +3,13 @@ from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
 from datetime import timedelta
 from ob.models.profile import Profile
-from .common import check_peer
+from .common import check_peer, get_nsfw_filter_queryset
 
 
 def get_queryset(self):
-    a_week_ago = now() - timedelta(hours=156)
+    a_week_ago = now() - timedelta(days=7)
+
+    check_peer(self.request.query_params)
 
     queryset = Profile.objects.filter().prefetch_related(Prefetch(
         "avatar",
@@ -31,17 +33,8 @@ def get_queryset(self):
     queryset = queryset.annotate(
         moderators_count=Count('listing__moderators', distinct=True))
 
-    check_peer(self.request.query_params)
-
-    nsfw = self.request.query_params['nsfw']
-    if not nsfw:
-        return queryset.exclude(nsfw=True)
-    elif nsfw == 'Affirmative':
-        return queryset.filter(nsfw=True)
-    elif nsfw == 'true' or nsfw is True:
-        return queryset
-    else:
-        return queryset.exclude(nsfw=True)
+    nsfw = self.request.query_params.get('nsfw')
+    queryset = get_nsfw_filter_queryset(queryset, nsfw)
 
     return queryset
 

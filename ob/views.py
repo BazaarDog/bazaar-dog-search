@@ -12,7 +12,7 @@ listing_icons = {
              b'xlUEmxWihckiECOfZUbKM2SrOZNuGtQZr14TNzssu8UTui5ctgSnvl'
              b'rVpI+/0xOgLXuUSjS9lRJe+IMxdA0Vumr8ILc/rG5E6YGB+VR7KHy2'
              b'rR1j/SOyTW2mfqHHMfoq6+/n8e/oUU2qrAu5AAAAAASUVORK5CYII=',
-    'devop': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE'
+    'stage': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE'
              b'Uz//8AAAAAMzMAZmYzzMwzmZk9wIupAAAAAWJLR0QAiAUdSAAAAAlw'
              b'SFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDCQsuLnZ0znEAAACkSU'
              b'RBVCjP7ZIxFsIgEEQJbHqXhF7MBfLEA6CYnnj/w7gJ0bcQmhR2bvnf'
@@ -47,7 +47,7 @@ profile_icons = {
              b'zgPnP4uJkqEFCg7bLiBXItOYBwSEV0NQJilHOzXJECkdpLnaKIYSH1'
              b'1ImiSQ6+9KpsoB6tQPob5MZynwlxilrsO0Cu/OWUDLBwnww1vmrtet'
              b'Tz821Xt6p/u9I3oLsjGyZscpMAAAAASUVORK5CYII=',
-    'devop': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE'
+    'stage': b'iVBORw0KGgoAAAANSUhEUgAAACoAAAAqBAMAAAA37dRoAAAAElBMVE'
              b'Uz//8AAAAzzMwAMzMzmZkAZmZdC+ZMAAAAAWJLR0QAiAUdSAAAAAlw'
              b'SFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+IDCQsuHcmkr2cAAAAdaV'
              b'RYdENvbW1lbnQAAAAAAENyZWF0ZWQgd2l0aCBHSU1QZC5lBwAAAMNJ'
@@ -81,7 +81,7 @@ def get_key():
     if settings.DEBUG is True:
         key = 'debug'
     elif settings.DEV is True:
-        key = 'devop'
+        key = 'stage'
     elif settings.ONION is True:
         key = 'onion'
     else:
@@ -89,13 +89,14 @@ def get_key():
     return key
 
 
-def image(request):
-    data = listing_icons[get_key()]
+def http_png_response(data):
     return HttpResponse(base64.decodebytes(data),
                         content_type="image/png")
+
+
+def image(request):
+    return http_png_response(listing_icons[get_key()])
 
 
 def profile_image(request):
-    data = profile_icons[get_key()]
-    return HttpResponse(base64.decodebytes(data),
-                        content_type="image/png")
+    return http_png_response(profile_icons[get_key()])
