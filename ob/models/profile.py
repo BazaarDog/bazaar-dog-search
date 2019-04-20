@@ -140,7 +140,7 @@ class Profile(models.Model):
 
     def should_update(self):
 
-        if self.online or True:
+        if self.online:
             if self.serialized_record is not self.get_seralized_record():
                 if self.attempt < now() - timedelta(
                         hours=settings.SHORTEST_UPDATE_HOURS):

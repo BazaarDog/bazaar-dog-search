@@ -185,8 +185,8 @@ def get_rating_options(params):
 
 def get_connection_options(params):
     try:
-        connection = int(params['connection'])
-    except (ValueError, KeyError):
+        connection = int(params.get('connection'))
+    except (ValueError, ValueError):
         connection = ''
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
