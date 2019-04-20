@@ -1,6 +1,7 @@
 import os
 import logging
 
+from django.conf import settings
 from django.db import models
 from ob.models.listing import Listing
 from ob.models.profile import Profile
@@ -21,15 +22,17 @@ class ListingReport(models.Model):
             logger.info(self.peerID + ' ' + self.slug)
             self.listing = Listing.objects.filter(profile_id=self.peerID,
                                                   slug__icontains=self.slug)[0]
-        if self.reason != 'OKAY':
-            Listing.objects.filter(profile_id=self.peerID,
-                                   slug__icontains=self.slug).update(nsfw=True)
-
-        if os.getenv('SCAM_OBSCURE_WORD') and self.reason == os.getenv(
-                'SCAM_OBSCURE_WORD'):
-            Profile.objects.filter(peerID=self.peerID).update(scam=True)
-        if os.getenv('ILLEGAL_OBSCURE_WORD') and self.reason == os.getenv(
-                'ILLEGAL_OBSCURE_WORD'):
-            Profile.objects.filter(peerID=self.peerID).update(
-                illegal_in_us=True)
+        if self.reason:
+            if self.reason == settings.NSFW:
+                # Update the listing
+                Listing.objects.filter(profile_id=self.peerID,
+                                       slug__icontains=self.slug)\
+                    .update(nsfw=True)
+            elif self.reason == settings.SCAM:
+                # Update the profile
+                Profile.objects.filter(peerID=self.peerID).update(scam=True)
+            elif self.reason == settings.ILLEGAL:
+                # Update the profile
+                Profile.objects.filter(peerID=self.peerID).update(
+                    illegal_in_us=True)
         super(ListingReport, self).save(*args, **kwargs)

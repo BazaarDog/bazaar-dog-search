@@ -18,11 +18,11 @@ from ob.views import image, profile_image
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 
-app_name="bazaar-dog"
+app_name = "bazaar-dog"
 
 urlpatterns = [
-    url(r'^logo.png',image),
-    url(r'^logo_profile.png',profile_image),
+    url(r'^logo.png', image, name='logo'),
+    url(r'^logo_profile.png', profile_image, name='profile-logo'),
 
 ]
 
@@ -30,9 +30,9 @@ urlpatterns += i18n_patterns(
     url(r'', include('ob.api.urls', namespace='api-public')),
 )
 
-
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+                      url(r'^__debug__/', include(debug_toolbar.urls)),
+                  ] + urlpatterns

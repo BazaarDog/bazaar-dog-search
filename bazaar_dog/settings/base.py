@@ -6,24 +6,26 @@ import string
 
 
 def get_random_str(str_len):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(str_len))
+    return ''.join(
+        random.SystemRandom().choice(string.ascii_uppercase + string.digits) for
+        _ in range(str_len))
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
     SECRET_KEY = get_random_str(80)
 
-
-# This is a non-standard variable to make some bells turn on and off, not much danger.
+# This is a non-standard variable to make some bells turn on and off,
+# not much danger.
 DEV = False
 
 # WARNING: don't run with debug turned on in production!
-DEBUG = False  # Rather than change this setting, it is recommended to override it in a child config
+DEBUG = False  # Rather than change this setting,
+#  it is recommended to override it in a child config
 
 ONION = False
 
@@ -36,7 +38,8 @@ CRAWL_TIMEOUT = 128  # seconds
 SHORTEST_UPDATE_HOURS = 3  # don't hit nodes more than once every X hours
 
 OB_USE_SSL = os.getenv('OB_USE_SSL', 'True')
-DEFAULT_CERT_PATH = '/home/' + os.getenv('USER') + '/.openbazaar/ssl/OpenBazaar.crt'
+DEFAULT_CERT_PATH = '/home/' + os.getenv(
+    'USER') + '/.openbazaar/ssl/OpenBazaar.crt'
 OB_CERTIFICATE = os.getenv('OB_CERTIFICATE', DEFAULT_CERT_PATH)
 
 # Don't use ssl if explicitly set not to.
@@ -71,6 +74,9 @@ SITE_URL = 'http://admin.bazaar.dog'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'admin.bazaar.dog', ]
 
+ILLEGAL = os.getenv('ILLEGAL_OBSCURE_WORD', 'Illegal')
+SCAM = os.getenv('SCAM_OBSCURE_WORD', 'Fraudulent')
+NSFW = os.getenv('NSFW_OBSCURE_WORD', 'Offensive')
 # Application definition
 
 INSTALLED_APPS = [
@@ -128,7 +134,8 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': (
+    'django_filters.rest_framework.DjangoFilterBackend',),
     'PAGINATE_BY_PARAM': 'count',
     'ORDERING_PARAM': 'sortBy',
     'URL_FORMAT_OVERRIDE': 'json',
@@ -160,15 +167,18 @@ DATABASES = {
     },
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
 # Internationalization
