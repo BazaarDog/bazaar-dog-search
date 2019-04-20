@@ -7,8 +7,9 @@ services:
   - postgresql
 
 env:
+  global:
+    - CC_TEST_REPORTER_ID=d5bd85e76afe873ee7770d0c0a5013d4ee57023157bb80bcfd84c3fee06de2cb
   - DJANGO_VERSION=2.1.5
-  - CC_TEST_REPORTER_ID=d5bd85e76afe873ee7770d0c0a5013d4ee57023157bb80bcfd84c3fee06de2cb
 install:
   - pip install -r requirements.txt
   - pip install coveralls coverage
