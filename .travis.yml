@@ -8,11 +8,18 @@ services:
 
 env:
   - DJANGO_VERSION=2.1.5
+  - CC_TEST_REPORTER_ID=d5bd85e76afe873ee7770d0c0a5013d4ee57023157bb80bcfd84c3fee06de2cb
 install:
   - pip install -r requirements.txt
   - pip install coveralls coverage
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
   - source postactivate_test
   - coverage run manage_base.py test
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 after_success:
   - coveralls
