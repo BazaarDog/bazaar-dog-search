@@ -122,7 +122,7 @@ def get_moderator_options(params):
 
 
 def get_region(params):
-    return params['shipping'] if 'shipping' in params.keys() else 'any'
+    return params.get('shipping') if 'shipping' in params.keys() else 'any'
 
 
 def get_region_options(params):
@@ -137,7 +137,7 @@ def get_region_options(params):
 
 def get_free_shipping_options(params):
     try:
-        free_shipping = True if params['free_shipping_region'] == 'true' else ''
+        free_shipping = True if params.get('free_shipping_region') == 'true' else ''
     except MultiValueDictKeyError:
         free_shipping = ''
     region = get_region(params)
@@ -186,15 +186,14 @@ def get_rating_options(params):
 def get_connection_options(params):
     try:
         connection = int(params.get('connection'))
-    except (ValueError, ValueError):
+    except (ValueError, TypeError):
         connection = ''
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
 
 def get_dust_options(params):
     try:
-        dust = True if params['dust'] == 'true' else False
-
+        dust = True if params.get('dust') == 'true' else False
     except (ValueError, KeyError):
         dust = ''
     dust_str = _('> ~{p}% Bitcoin Fee').format(p=settings.DUST_FEE_PERCENT)

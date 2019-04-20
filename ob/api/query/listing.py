@@ -9,24 +9,19 @@ from ob.models.listing import Listing
 from ob.models.shipping_options import ShippingOptions
 from ob.api.serializer import *
 from ob.api.filter import *
-from ob.api.query.common import try_sync_peer
+from ob.api.query.common import check_peer
 
 logger = logging.getLogger(__name__)
 
 
 def get_queryset(self):
-    if 'q' in self.request.query_params:
-        search_term = self.request.query_params['q']
-        if 'Qm' == search_term[:2] and len(search_term) >= 40:
-            try_sync_peer(search_term)
 
-    if 'dust' in self.request.query_params and self.request.query_params[
-        'dust'] == 'true':
-        dust_param = [True, False]
-    else:
-        dust_param = [False]
+    check_peer(self.request.query_params)
 
-    a_week_ago = now() - timedelta(hours=156)
+    dust_param = [True, False] if \
+        self.request.query_params.get('dust') == 'true' else [False]
+
+    a_week_ago = now() - timedelta(days=7)
     queryset = Listing.objects \
         .prefetch_related("moderators",
                           Prefetch("images",
@@ -47,35 +42,27 @@ def get_queryset(self):
 
     queryset = queryset.annotate(moderators_count=Count('moderators'))
 
-    if 'shipping' in self.request.query_params:
-        c = self.request.query_params['shipping']
+    shipping = self.request.query_params.get('shipping')
+    if shipping:
         queryset = queryset.filter(
-            Q(shippingoptions__regions__icontains=c) |
+            Q(shippingoptions__regions__icontains=shipping) |
             Q(shippingoptions__regions__icontains='ALL') |
             Q(shippingoptions__regions__isnull=True))
 
-    if 'free_shipping_region' in self.request.query_params and \
-                    self.request.query_params[
-                        'free_shipping_region'] == 'true':
-        if self.request.query_params['shipping']:
-            c = self.request.query_params['shipping']
-        else:
-            c = 'ALL'
+    if self.request.query_params.get('free_shipping_region') == 'true':
+        c = self.request.query_params.get('shipping') or 'ALL'
         queryset = queryset.filter(contract_type=Listing.PHYSICAL_GOOD).filter(
             Q(free_shipping__icontains=c) |
             Q(free_shipping__icontains='ALL') |
             Q(shippingoptions__regions__isnull=True))
 
-    if 'nsfw' in self.request.query_params:
-        value = self.request.query_params['nsfw']
-        # logger.debug('get_query nsfw value is ' + str(value))
-        if not value:
-            return queryset.exclude(nsfw=True)
-        elif value == 'Affirmative':
-            return queryset.filter(nsfw=True)
-        elif value == 'true' or value is True:
-            return queryset
-        else:
-            return queryset.exclude(nsfw=True)
+    nsfw = self.request.query_params.get('nsfw')
+    # logger.debug('get_query nsfw value is ' + str(value))
+    if not nsfw:
+        return queryset.exclude(nsfw=True)
+    elif nsfw == 'Affirmative':
+        return queryset.filter(nsfw=True)
+    elif nsfw == 'true' or nsfw is True:
+        return queryset
     else:
         return queryset.exclude(nsfw=True)

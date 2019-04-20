@@ -7,6 +7,13 @@ from ob.models.profile import Profile
 from ob.tasks.sync_profile import sync_profile
 
 
+def check_peer(query_params):
+    if 'q' in query_params:
+        search_term = query_params['q']
+        if 'Qm' == search_term[:2] and len(search_term) >= 40:
+            try_sync_peer(search_term)
+
+
 def try_sync_peer(search_term):
     try:
         profile = Profile.objects.get(pk=search_term)
