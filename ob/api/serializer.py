@@ -7,19 +7,6 @@ from ob.models.listing_report import ListingReport
 from .param.static import currency_list
 
 
-class StringArrayField(serializers.ListField):
-    """
-    String representation of an array field.
-    """
-    def to_representation(self, obj):
-        obj = super().to_representation(obj)
-        return ",".join([str(element) for element in obj])
-
-    def to_internal_value(self, data):
-        data = data.split(",")  # convert string to list
-        return super().to_internal_value(self, data)
-
-
 class ListingReportSerializer(serializers.ModelSerializer):
     listing = serializers.PrimaryKeyRelatedField(read_only=True)
 

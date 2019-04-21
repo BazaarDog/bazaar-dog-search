@@ -46,14 +46,8 @@ def parse_listing(listing, data, force=True):
         listing.save()
     else:
         listing.signature = signature
-        listing.slug = listing_data['slug']
-        metadata = listing_data['metadata']
-        listing.version = metadata['version']
-        listing.contract_type = getattr(Listing,
-                                        metadata['contractType'])
-        listing.accepted_currencies = metadata.get(
-            'acceptedCurrencies')
-        listing.pricing_currency = metadata.get('pricingCurrency')
+        listing.slug = listing_data.get('slug')
+        listing.parse_metadata(listing_data)
 
         item_details = listing_data.get('item')
         listing.title = item_details.get('title')
@@ -74,6 +68,7 @@ def parse_listing(listing, data, force=True):
         for i, iHashes in enumerate(item_details.get('images')):
             iHashes['index'] = i
             iHashes['listing'] = listing
+            print(iHashes)
             li, li_c = ListingImage.objects.get_or_create(
                 **iHashes)
             li.save()

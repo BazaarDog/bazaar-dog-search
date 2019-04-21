@@ -6,15 +6,14 @@ from .util import build_options
 
 def get_debug_options(params):
 
-    if 'locale' in params.keys():
-        locale = params['locale']
-    else:
-        locale = ''
-    translation_languages = OrderedDict([('', _('Default'))] + settings.LANGUAGES)
+    locale = params.get('locale')
+    translation_languages = OrderedDict(
+        [('', _('Default'))] + settings.LANGUAGES)
     translation_languages_options = build_options(locale, translation_languages)
 
-    if 'online' in params.keys():
-        if params['online'] == 'true':
+    if params.get('online'):
+        online_raw = params.get('online')
+        if online_raw == 'true':
             online = True
         else:
             online = False

@@ -126,6 +126,14 @@ class Listing(models.Model):
             logger.info("Warning, no listing ranking function")
             return randint(1, 1000)
 
+    def parse_metadata(self, listing_data):
+        metadata = listing_data.get('metadata')
+        self.version = metadata.get('version')
+        self.contract_type = getattr(Listing,
+                                     metadata.get('contractType'))
+        self.accepted_currencies = metadata.get('acceptedCurrencies')
+        self.pricing_currency = metadata.get('pricingCurrency')
+
     # Listing
     def save(self, *args, **kwargs):
         self.rating_count = self.ratings.all().count()

@@ -51,14 +51,12 @@ def sync_profile(profile):
             profile = sync_profile_mod_info_contact(profile,
                                                     contact) if contact else profile
 
-            if 'fee' in mod_info.keys():
+            if mod_info:
                 fee = mod_info.get('fee')
                 feeType = mod_info.get('feeType')
                 if feeType:
                     profile.moderator_fee_type = getattr(Profile, feeType)
-                profile.moderator_fee_percentage = (
-                    fee[
-                        'percentage'] if 'percentage' in fee.keys() else '')
+                profile.moderator_fee_percentage = fee.get('percentage')
                 try:
                     profile.moderator_fee_fixed_currency = fee['fixedFee'][
                         'currencyCode']
@@ -72,18 +70,17 @@ def sync_profile(profile):
 
             profile.pub_date = now()
 
-            if "avatarHashes" in profile_data.keys():
-                a, a_created = Image.objects.get_or_create(
-                    **profile_data['avatarHashes'])
-                profile.avatar = a
-            if "headerHashes" in profile_data.keys():
-                h, h_created = Image.objects.get_or_create(
-                    **profile_data['headerHashes'])
-                profile.header = h
+            profile.avatar = get_image(
+                profile_data.get('avatarHashes')
+            )
 
-            if "stats" in profile_data.keys():
-                stats = profile_data['stats']
-                profile.follower_count = (stats.get('followerCount'))
+            profile.header = get_image(
+                profile_data.get('headerHashes')
+            )
+
+            stats = profile_data.get('stats')
+            if stats:
+                profile.follower_count = stats.get('followerCount')
                 # Don't trust the ratings from stats
                 # profile.rating_count =
                 # profile.rating_average =
@@ -102,9 +99,44 @@ def sync_profile(profile):
             if peer_info_response.status_code == 200:
                 peer_info_data = json.loads(
                     peer_info_response.content.decode('utf-8'))
-                for a in peer_info_data.get('Addrs'):
-                    profile = get_profile_address(profile, a)
-                profile.connection_type = get_profile_connection_type(profile)
+                if 'Addrs' in peer_info_data.keys():
+                    for k in peer_info_data['Addrs']:
+                        tmp_ip_type = ''
+
+                        if 'onion' in k:
+                            tmp_ip_type = 'PUBLIC'
+                            t = ProfileAddress.TOR
+                        else:
+                            temp_addr = ipaddress.ip_address(
+                                k.split('/')[2])
+                            if temp_addr.is_global:
+                                tmp_ip_type = 'PUBLIC'
+                                t = (
+                                    ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6)
+                            else:
+                                tmp_ip_type = 'PRIVATE'
+                        try:
+                            # print(k)
+                            if tmp_ip_type == 'PUBLIC':
+                                pa = ProfileAddress(address=k, profile=profile,
+                                                    address_type=t)
+                                pa.save()
+                        except IntegrityError:
+                            print(
+                                "integrity error saving address while scraping")
+
+                    if profile.addresses.filter(
+                            address_type=2).exists() and profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 1
+                    elif not profile.addresses.filter(
+                            address_type=2).exists() and profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 0
+                    elif profile.addresses.filter(
+                            address_type=2).exists() and not profile.addresses.filter(
+                        address_type__in=[0, 1]).exists():
+                        profile.connection_type = 2
             else:
                 code = peer_info_response.status_code
                 logger.debug("{} fetching {}".format(code, peer_info_url))
@@ -132,6 +164,13 @@ def sync_profile(profile):
 
     except requests.exceptions.ReadTimeout:
         moving_average_speed(profile)
+
+
+def get_image(hash):
+    if hash:
+        a, a_created = Image.objects.get_or_create(
+            **hash)
+        return a
 
 
 def sync_profile_mod_info(profile, mod_info):
@@ -187,14 +226,13 @@ def get_profile_address(profile, address):
         logger.debug(
             "integrity error saving address while scraping")
 
-    return profile
+
 
 
 def get_profile_connection_type(profile):
     c = None
-    if profile.addresses.filter(
-            address_type=2).exists() and profile.addresses \
-            .filter(address_type__in=[0, 1]).exists():
+    if profile.addresses.filter(address_type=2).exists() and \
+            profile.addresses.filter(address_type__in=[0, 1]).exists():
         c = 1
     elif not profile.addresses \
             .filter(address_type=2).exists() and profile.addresses \
