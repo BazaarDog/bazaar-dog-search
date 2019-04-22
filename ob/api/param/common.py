@@ -4,6 +4,12 @@ from .util import build_options, build_multi_options
 from django.utils.translation import ugettext_lazy as _
 
 
+def try_param_or_zero(params, attrib, return_type=int):
+    try:
+        return return_type(params.get(attrib))
+    except (ValueError, TypeError):
+        return 0
+
 def get_clear_all_options():
     return [
         {"value": True,

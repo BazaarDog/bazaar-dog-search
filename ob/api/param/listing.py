@@ -8,7 +8,7 @@ from ob.models.listing import Listing
 from ob.models.profile import Profile
 from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
-    get_clear_all_options, get_network_options
+    get_clear_all_options, get_network_options, try_param_or_zero
 from .static import country_list
 
 
@@ -98,12 +98,7 @@ def get_moderator_verified_options(params):
 
 
 def get_moderator_options(params):
-    # Build number of moderator options
-    try:
-        moderator_count = int(params.get('moderator_count'))
-    except (ValueError, TypeError):
-        moderator_count = 0
-
+    moderator_count = try_param_or_zero(params, 'moderator_count')
     moderator_options = [
         {
             "value": v,
@@ -144,27 +139,17 @@ def get_free_shipping_options(params):
 
 
 def get_contract_type_options(params):
-    try:
-        contract = int(params.get('contract_type'))
-    except (ValueError, TypeError):
-        contract = ''
+    contract = try_param_or_zero(params, 'contract_type')
     return build_options(contract, Listing.CONTRACT_TYPE_DICT)
 
 
 def get_condition_type_options(params):
-    try:
-        condition = int(params.get('condition_type'))
-    except (ValueError, TypeError):
-        condition = ''
+    condition = try_param_or_zero(params, 'condition_type')
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
 
 
 def get_rating_options(params):
-    try:
-        rating = float(params.get('rating'))
-    except (ValueError, TypeError):
-        rating = 0
-
+    rating = try_param_or_zero(params, 'rating', float)
     return [
         {
             "value": v,
@@ -176,10 +161,7 @@ def get_rating_options(params):
 
 
 def get_connection_options(params):
-    try:
-        connection = int(params.get('connection'))
-    except (ValueError, TypeError):
-        connection = ''
+    connection = try_param_or_zero(params, 'connection')
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
 
