@@ -2,12 +2,9 @@ import ipaddress
 import json
 import logging
 import requests
-from urllib3.exceptions import SubjectAltNameWarning
 
 from django.conf import settings
-from django.dispatch import receiver
 from django.db.utils import IntegrityError
-from django.utils import timezone
 from django.utils.timezone import now
 
 from ob.models.profile import Profile
@@ -77,35 +74,31 @@ def sync_profile(profile):
                 profile.follower_count = stats.get('followerCount')
             profile.user_agent = get_user_agent(profile.peerID)
 
-            profile.connection_type = get_connection_type(profile)
+            profile.connedtion_type = get_profile_connection_type(profile)
 
-            else:
-            code = peer_info_response.status_code
-            logger.debug("{} fetching {}".format(code, peer_info_url))
-
-        profile.save()
-        profile.listing_set.update(active=False)
-        if profile.vendor:
-            sync_listings(profile)
-            sync_ratings(profile)
-        else:
+            profile.save()
             profile.listing_set.update(active=False)
-        profile.save()
-    else:
-    code = profile_response.status_code
-    logger.debug('{} fetching {}'.format(code, profile_url))
-    speed_rank = settings.CRAWL_TIMEOUT * 1e6
+            if profile.vendor:
+                sync_listings(profile)
+                sync_ratings(profile)
+            else:
+                profile.listing_set.update(active=False)
+            profile.save()
+        else:
+            code = profile_response.status_code
+            logger.debug('{} fetching {}'.format(code, profile_url))
+            speed_rank = settings.CRAWL_TIMEOUT * 1e6
 
-    # 10 try incremental moving average, no model signals
-    new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
-    Profile.objects.filter(pk=profile.peerID) \
-        .update(speed_rank=new_rank)
+            # 10 try incremental moving average, no model signals
+            new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
+            Profile.objects.filter(pk=profile.peerID) \
+                .update(speed_rank=new_rank)
 
-except json.decoder.JSONDecodeError:
-logger.warning("Problem decoding json for peer: " + profile.peerID)
+    except json.decoder.JSONDecodeError:
+        logger.warning("Problem decoding json for peer: " + profile.peerID)
 
-except requests.exceptions.ReadTimeout:
-moving_average_speed(profile)
+    except requests.exceptions.ReadTimeout:
+        moving_average_speed(profile)
 
 
 def get_image(hash):
@@ -193,44 +186,46 @@ def get_profile_connection_type(profile):
     return c
 
 
-def get_connection_type(profile):
+def get_profile_connection(profile):
     peer_info_url = OB_INFO_URL + profile.peerID
     peer_info_response = get(peer_info_url)
     if peer_info_response.status_code == 200:
-        peer_data = peer_info_response.content.decode('utf-8')
-        peer_info_data = json.loads(peer_data)
-
-        for k in peer_info_data.get('Addrs'):
-            if 'onion' in k:
-                tmp_ip_type = 'PUBLIC'
-                t = ProfileAddress.TOR
-            else:
-                temp_addr = ipaddress.ip_address(
-                    k.split('/')[2])
-                if temp_addr.is_global:
+        peer_info_data = json.loads(
+            peer_info_response.content.decode('utf-8'))
+        if 'Addrs' in peer_info_data.keys():
+            for k in peer_info_data['Addrs']:
+                if 'onion' in k:
                     tmp_ip_type = 'PUBLIC'
-                    t = ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6
+                    t = ProfileAddress.TOR
                 else:
-                    tmp_ip_type = 'PRIVATE'
-            try:
-                if tmp_ip_type == 'PUBLIC':
-                    pa = ProfileAddress(address=k, profile=profile,
-                                        address_type=t)
-                    pa.save()
-            except IntegrityError:
-                logger.debug(
-                    "integrity error saving address while scraping")
+                    temp_addr = ipaddress.ip_address(
+                        k.split('/')[2])
+                    if temp_addr.is_global:
+                        tmp_ip_type = 'PUBLIC'
+                        t = ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6
+                    else:
+                        tmp_ip_type = 'PRIVATE'
+                try:
+                    if tmp_ip_type == 'PUBLIC':
+                        pa = ProfileAddress(address=k, profile=profile,
+                                            address_type=t)
+                        pa.save()
+                except IntegrityError:
+                    print(
+                        "integrity error saving address while scraping")
 
-        if profile.addresses.filter(
-                address_type=2).exists() and profile.addresses.filter(
-            address_type__in=[0, 1]).exists():
-            ct = 1
-        elif not profile.addresses.filter(
-                address_type=2).exists() and profile.addresses.filter(
-            address_type__in=[0, 1]).exists():
-            ct = 0
-        elif profile.addresses.filter(
-                address_type=2).exists() and not profile.addresses.filter(
-            address_type__in=[0, 1]).exists():
-            ct = 2
-        return ct
+            if profile.addresses.filter(
+                    address_type=2).exists() and profile.addresses.filter(
+                address_type__in=[0, 1]).exists():
+                profile.connection_type = 1
+            elif not profile.addresses.filter(
+                    address_type=2).exists() and profile.addresses.filter(
+                address_type__in=[0, 1]).exists():
+                profile.connection_type = 0
+            elif profile.addresses.filter(
+                    address_type=2).exists() and not profile.addresses.filter(
+                address_type__in=[0, 1]).exists():
+                profile.connection_type = 2
+    else:
+        code = peer_info_response.status_code
+        logger.debug("{} fetching {}".format(code, peer_info_url))

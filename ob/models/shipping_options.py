@@ -28,18 +28,14 @@ class ShippingOptions(models.Model):
     @classmethod
     def create_from_json(cls, parent, data):
 
-        option = getattr(ShippingOptions, data['type'])
         c, ccreated = cls.objects.get_or_create(listing=parent,
-                                                name=data['name'])
+                                                name=data.get('name'))
+        option = getattr(ShippingOptions, data.get('type'))
         c.option_type = option
-        if len(data['services']) == 1:
-            if 'name' in data['services'][0].keys():
-                c.service_name = data['services'][0]['name']
-            if 'price' in data['services'][0].keys():
-                c.service_price = data['services'][0]['price']
-            if 'estimatedDelivery' in data['services'][0].keys():
-                c.service_estimated_delivery = data['services'][0][
-                    'estimatedDelivery']
-
-        c.regions = data['regions']
+        services = data.get('services')
+        if services:
+            c.service_name = services[0].get('name')
+            c.service_price = services[0].get('price')
+            c.service_estimated_delivery = services[0].get('estimatedDelivery')
+        c.regions = data.get('regions')
         return c
