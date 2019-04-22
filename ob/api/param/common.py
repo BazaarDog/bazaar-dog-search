@@ -10,6 +10,11 @@ def try_param_or_zero(params, attrib, return_type=int):
     except (ValueError, TypeError):
         return 0
 
+
+def try_true_or_none(params, attrib):
+    return True if params.get(attrib) == 'true' else ''
+
+
 def get_clear_all_options():
     return [
         {"value": True,

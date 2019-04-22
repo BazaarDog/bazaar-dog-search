@@ -8,7 +8,8 @@ from ob.models.listing import Listing
 from ob.models.profile import Profile
 from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
-    get_clear_all_options, get_network_options, try_param_or_zero
+    get_clear_all_options, get_network_options, try_param_or_zero, \
+    try_true_or_none
 from .static import country_list
 
 
@@ -91,8 +92,7 @@ def get_listing_options(params):
 
 
 def get_moderator_verified_options(params):
-    moderator_verified = True if params.get(
-        'moderator_verified') == 'true' else ''
+    moderator_verified = try_true_or_none(params, 'moderator_verified')
     moderator_verified_choices = dict([(True, 'OB1 Verified Moderator'), ])
     return build_options(moderator_verified, moderator_verified_choices)
 
@@ -126,7 +126,7 @@ def get_region_options(params):
 
 def get_free_shipping_options(params):
     try:
-        free_shipping = True if params.get('free_shipping_region') == 'true' else ''
+        free_shipping = try_true_or_none(params, 'free_shipping_region')
     except MultiValueDictKeyError:
         free_shipping = ''
     region = get_region(params)

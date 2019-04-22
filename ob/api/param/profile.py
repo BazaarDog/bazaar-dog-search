@@ -7,7 +7,7 @@ from django.conf import settings
 from ob.models.profile import Profile
 from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
-    get_clear_all_options, get_network_options
+    get_clear_all_options, get_network_options, try_true_or_none
 
 logger = logging.getLogger(__name__)
 
@@ -149,21 +149,21 @@ def get_has_moderator_options(params):
 
 
 def get_is_moderator_options(params):
-    is_moderator = True if params.get('is_moderator') == 'true' else ''
+    is_moderator = try_true_or_none(params, 'is_moderator')
     is_moderator_choices = OrderedDict(
         [(True, _('Yes')), ('', _('All')), ])
     return build_options(is_moderator, is_moderator_choices)
 
 
 def get_is_verified_options(params):
-    is_verified = True if params.get('is_verified') == 'true' else ''
+    is_verified = try_true_or_none(params, 'is_verified')
     is_verified_choices = OrderedDict(
         [(True, _('Is an OB1 Verified Moderator')), ])
     return build_options(is_verified, is_verified_choices)
 
 
 def get_has_verified_options(params):
-    has_verified = True if params.get('has_verified') == 'true' else ''
+    has_verified = try_true_or_none(params, 'has_verified')
     has_verified_choices = OrderedDict(
         [(True, _('Has OB1 Verified Moderator')), ])
     return build_options(has_verified, has_verified_choices)
