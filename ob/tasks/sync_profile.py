@@ -48,8 +48,9 @@ def sync_profile(profile):
                                             mod_info) if mod_info else profile
 
             contact = profile_data.get('contactInfo')
-            profile = sync_profile_mod_info_contact(profile,
-                                                    contact) if contact else profile
+            if contact:
+                profile = sync_profile_mod_info_contact(profile, contact)
+                add_profile_social_info(profile, contact)
 
             if mod_info:
                 fee = mod_info.get('fee')
@@ -84,15 +85,7 @@ def sync_profile(profile):
                 # Don't trust the ratings from stats
                 # profile.rating_count =
                 # profile.rating_average =
-
-            user_agent_url = IPNS_HOST + profile.peerID + '/user_agent'
-            user_agent_response = get(user_agent_url)
-            if user_agent_response.status_code == 200:
-                profile.user_agent = user_agent_response.content.decode(
-                    'utf-8')
-            else:
-                profile.user_agent = 'Error : ' + str(
-                    user_agent_response.status_code)
+            profile.user_agent = get_user_agent(profile.peerID)
 
             peer_info_url = OB_INFO_URL + profile.peerID
             peer_info_response = get(peer_info_url)
@@ -151,12 +144,12 @@ def sync_profile(profile):
             profile.save()
         else:
             code = profile_response.status_code
-            logger.debug('{} fetching {}'.format(code,profile_url))
+            logger.debug('{} fetching {}'.format(code, profile_url))
             speed_rank = settings.CRAWL_TIMEOUT * 1e6
 
             # 10 try incremental moving average, no model signals
             new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
-            Profile.objects.filter(pk=profile.peerID)\
+            Profile.objects.filter(pk=profile.peerID) \
                 .update(speed_rank=new_rank)
 
     except json.decoder.JSONDecodeError:
@@ -185,20 +178,28 @@ def sync_profile_mod_info_contact(profile, contact):
     profile.email = contact.get('email')
     profile.website = contact.get('website')
     profile.phone = contact.get('phoneNumber')
-
-    if 'social' in contact.keys():
-        for s in contact['social']:
-            try:
-                sa, sa_created = ProfileSocial.objects.get_or_create(
-                    social_type=s['type'],
-                    username=s['username'],
-                    proof=s['proof'],
-                    profile=profile
-                )
-                sa.save()
-            except:
-                pass
     return profile
+
+
+def get_user_agent(peer_id):
+    user_agent_url = IPNS_HOST + peer_id + '/user_agent'
+    user_agent_response = get(user_agent_url)
+    if user_agent_response.status_code == 200:
+        ua = user_agent_response.content.decode('utf-8')
+    else:
+        ua = 'Error : {}'.format(user_agent_response.status_code)
+    return ua
+
+
+def add_profile_social_info(profile, contact):
+    for s in contact.get('social'):
+        sa, sa_created = ProfileSocial.objects.get_or_create(
+            social_type=s['type'],
+            username=s['username'],
+            proof=s['proof'],
+            profile=profile
+        )
+        sa.save()
 
 
 def get_profile_address(profile, address):
@@ -225,8 +226,6 @@ def get_profile_address(profile, address):
     except IntegrityError:
         logger.debug(
             "integrity error saving address while scraping")
-
-
 
 
 def get_profile_connection_type(profile):
