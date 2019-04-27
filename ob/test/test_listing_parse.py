@@ -9,7 +9,7 @@ from ob.tasks.sync_listing import parse_listing
 
 
 class ListingTests(TestCase):
-    fixtures = ['20190417.json']
+    fixtures = ['datadump.json']
 
     def setUp(self):
         pass

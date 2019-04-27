@@ -4,7 +4,7 @@ from rest_framework.test import RequestsClient
 from ob.models.listing import Listing
 
 class ListingTests(RequestsClient):
-    fixtures = ['20190417.json']
+    fixtures = ['datadump.json']
 
     def setUp(self):
         pass

@@ -4,7 +4,7 @@ from ob.models.profile import Profile
 from ob.models.listing import Listing
 
 class CutomTest(TestCase):
-    fixtures = ['20190417.json']
+    fixtures = ['datadump.json']
 
     def setUp(self):
         pass

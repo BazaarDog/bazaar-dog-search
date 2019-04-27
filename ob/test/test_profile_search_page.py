@@ -4,7 +4,7 @@ from rest_framework.test import RequestsClient
 
 
 class ProfileTests(RequestsClient):
-    fixtures = ['20190417.json']
+    fixtures = ['datadump.json']
 
     def setUp(self):
         # Test definitions as before.
