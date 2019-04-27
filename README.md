@@ -13,10 +13,13 @@ The goal is to have a search provider that can be deployed with a few commands.
 
 ## requirements
 
+**Before going to far down this path it is worth noting
+that some deployment solution will be developed going forward
+to make the following easier to deploy, most likely docker-compose**
 
 ```
 # debian-based system requirements
-sudo apt-get install python3-pip git sqlite3
+sudo apt-get install python3-pip git 
 ```
 
 ## configuring crawler node
@@ -81,8 +84,8 @@ In the future, these variables will likely move to an ansible-vault type configu
 
 ### Bootstrapping
 
-A management command is provided to bootstrap a node. It uses a list of peers stored in [custom.py](custom.py) in
-the variable `the_champions_of_decentralized_commerce`.
+A management command is provided to bootstrap a node. It uses a list of peers stored in [bootstrap/known_nodes.py](bootstrap/known_nodes.py) in
+the variable `good_nodes`.
 
 It can be run from the project directory in the python virtual environment a management command:
 
