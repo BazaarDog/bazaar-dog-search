@@ -140,33 +140,6 @@ def add_profile_social_info(profile, contact):
         )
         sa.save()
 
-
-def get_profile_address(profile, address):
-    if 'onion' in address:
-        tmp_ip_type = 'PUBLIC'
-        t = ProfileAddress.TOR
-    else:
-        temp_addr = ipaddress.ip_address(
-            address.split('/')[2])
-        if temp_addr.is_global:
-            tmp_ip_type = 'PUBLIC'
-            t = ProfileAddress.IPV4 if temp_addr.version == 4 \
-                else ProfileAddress.IPV6
-        else:
-            tmp_ip_type = 'PRIVATE'
-    try:
-        if tmp_ip_type == 'PUBLIC':
-            t = ProfileAddress.IPV4 if temp_addr.version == 4 \
-                else ProfileAddress.IPV6
-
-            pa = ProfileAddress(address=address, profile=profile,
-                                address_type=t)
-            pa.save()
-    except IntegrityError:
-        logger.debug(
-            "integrity error saving address while scraping")
-
-
 def get_profile_connection_type(profile):
     if profile.has_tor():
         if profile.has_clearnet():
@@ -186,30 +159,26 @@ def get_profile_connection(profile):
     peer_info_url = OB_INFO_URL + profile.peerID
     peer_info_response = get(peer_info_url)
     if peer_info_response.status_code == 200:
-        peer_info_data = json.loads(
-            peer_info_response.content.decode('utf-8'))
-        if 'Addrs' in peer_info_data.keys():
-            for k in peer_info_data['Addrs']:
-                if 'onion' in k:
-                    tmp_ip_type = 'PUBLIC'
-                    t = ProfileAddress.TOR
-                else:
-                    temp_addr = ipaddress.ip_address(
-                        k.split('/')[2])
-                    if temp_addr.is_global:
-                        tmp_ip_type = 'PUBLIC'
-                        t = ProfileAddress.IPV4 if temp_addr.version == 4 else ProfileAddress.IPV6
-                    else:
-                        tmp_ip_type = 'PRIVATE'
-                try:
-                    if tmp_ip_type == 'PUBLIC':
-                        pa = ProfileAddress(address=k, profile=profile,
-                                            address_type=t)
-                        pa.save()
-                except IntegrityError:
-                    print(
-                        "integrity error saving address while scraping")
+        add_data = json.loads(peer_info_response.content.decode('utf-8'))
+        get_profile_address_type(add_data, profile)
 
     else:
         code = peer_info_response.status_code
         logger.debug("{} fetching {}".format(code, peer_info_url))
+
+
+def get_profile_address_type(add_data, profile):
+    for k in add_data.get('Addrs') or []:
+        if 'onion' in k:
+            t = ProfileAddress.TOR
+        else:
+            temp_addr = ipaddress.ip_address(k.split('/')[2])
+            if temp_addr.is_global:
+                if temp_addr.version == 4:
+                    t = ProfileAddress.IPV4
+                else:
+                    t = ProfileAddress.IPV6
+        if t in ProfileAddress.ADDRESS_TYPE_DICT:
+            pa = ProfileAddress(address=k, profile=profile,
+                                address_type=t)
+            pa.save()
