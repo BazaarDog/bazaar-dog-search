@@ -6,94 +6,98 @@ from django.conf import settings
 from ob.models.listing import Listing
 from ob.models.exchange_rate import ExchangeRate
 
-
 logger = logging.getLogger(__name__)
 OB_HOST = settings.OB_MAINNET_HOST
 
 
 def sync_listings(profile):
-
     listing_url = OB_HOST + 'listings/' + profile.peerID
 
     try:
         from ob.util import get
-        from ob.tasks.sync_listing import sync_listing
+        from ob.tasks.sync_listing import sync_listing as sync_listing_deep
         response = get(listing_url)
         if response.status_code == 200:
-            # logger.info('BEGIN listing sync' + profile.peerID)
             try:
-                for listing_data in json.loads(
-                        response.content.decode('utf-8')):
-                    # logger.info(profile.peerID + ': ' + listing_data['slug'])
-                    listing, listing_created = Listing.objects.get_or_create(
-                        profile=profile,
-                        slug=listing_data['slug'])
-
-                    if listing_created:
-                        listing.hash = listing_data['hash']
-                        listing.title = listing_data['title']
-                        listing.description = listing_data['description']
-                        if listing.listingreport_set.count() == 0:
-                            listing.nsfw = listing_data['nsfw']
-                        # Don't take ratings here
-
-                        listing.price = listing_data['price']['amount']
-                        listing.pricing_currency = listing_data['price'][
-                            'currencyCode']
-                        c, fx_created = ExchangeRate.objects.get_or_create(
-                            symbol=listing.pricing_currency)
-                        try:
-                            listing.price_value = listing.price / float(
-                                c.base_unit) / float(c.rate)
-                        except ZeroDivisionError:
-                            listing.price_value = 0.0001
-                        listing.network = ('mainnet')
-
-                        if "SERVICE" in listing_data['contractType']:
-                            listing.contract_type = Listing.SERVICE
-                        elif "DIGITAL_GOOD" in listing_data['contractType']:
-                            listing.contract_type = Listing.DIGITAL_GOOD
-                        elif "PHYSICAL_GOOD" in listing_data[
-                            'contractType']:
-                            listing.contract_type = Listing.PHYSICAL_GOOD
-                        elif "CROWD_FUND" in listing_data['contractType']:
-                            listing.contract_type = Listing.CROWD_FUND
-                        elif "CRYPTOCURRENCY" in listing_data[
-                            'contractType']:
-                            listing.contract_type = Listing.CRYPTOCURRENCY
-                        if 'averageRating' in listing_data.keys():
-                            listing.rating_average_stale = listing_data[
-                                'averageRating']
-                        if 'ratingCount' in listing_data.keys():
-                            listing.rating_count_stale = listing_data[
-                                'ratingCount']
-                        if 'freeShipping' in listing_data.keys():
-                            listing.free_shipping = listing_data[
-                                'freeShipping']
-                        listing.active = True
-                    else:
-                        if 'averageRating' in listing_data.keys():
-                            listing.rating_average_stale = listing_data[
-                                'averageRating']
-                        if 'ratingCount' in listing_data.keys():
-                            listing.rating_count_stale = listing_data[
-                                'ratingCount']
-                        if 'freeShipping' in listing_data.keys():
-                            listing.free_shipping = listing_data[
-                                'freeShipping']
-                        listing.active = True
-                    sync_listing(listing)
+                for data in json.loads(response.content.decode('utf-8')):
+                    listing = sync_listing_fast(data, profile)
+                    listing.save()
+                    sync_listing_deep(listing)
 
             except json.decoder.JSONDecodeError:
                 logger.info(
-                    "Problem decoding json for listings of peer: " + profile.peerID)
-            except TypeError:
-                profile.listing_set.update(active=False)
-                logger.info("No listings " + profile.peerID)
-
-            except KeyError:
-                logger.info(
-                    "Problem parsing json for listings of peer: " + profile.peerID)
-
+                    "Problem decoding json for listings of peer: " +
+                    profile.peerID
+                )
+        else:
+            code = response.status_code
+            logger.debug('{} fetching {}'.format(code, listing_url))
     except requests.exceptions.ReadTimeout:
         logger.info("listing peerID " + profile.peerID + " timeout")
+
+
+def sync_listing_fast(listing_data, profile):
+    # logger.info(profile.peerID + ': ' + listing_data['slug'])
+    l, listing_created = Listing.objects.get_or_create(
+        profile=profile,
+        slug=listing_data.get('slug')
+    )
+
+    if listing_created:
+        l.hash = listing_data.get('hash')
+        l.title = listing_data.get('title')
+        l.description = listing_data.get('description')
+        l.rating_average_stale = listing_data.get('averageRating')
+        l.rating_count_stale = listing_data.get('ratingCount')
+        l.free_shipping = listing_data('freeShipping')
+        l.active = True
+        l.network = 'mainnet'
+
+        # Don't override manual nsfw data
+        if l.listingreport_set.count() == 0:
+            l.nsfw = listing_data.get('nsfw')
+
+        l.price, l.pricing_currency, l.price_value = get_price(
+            listing_data.get('price')
+        )
+
+        l.contract_type = get_contract_type(listing_data.get('contractType'))
+
+    else:
+        l.rating_average_stale = listing_data.get('averageRating')
+        l.rating_count_stale = listing_data.get('ratingCount')
+        l.free_shipping = listing_data.get('freeShipping')
+        l.active = True
+    return l
+
+
+def get_contract_type(contract_type):
+    if contract_type:
+        if hasattr(Listing, contract_type) and \
+                isinstance(
+                    getattr(Listing, contract_type),
+                    int
+                ):
+            return getattr(Listing, contract_type)
+
+
+def get_price(price_data):
+    price, pricing_currency, price_value = 0, 0, 0
+    if price_data:
+        price = price_data.get('amount')
+        pricing_currency = price_data.get('currencyCode')
+        c, fx_created = ExchangeRate.objects.get_or_create(
+            symbol=pricing_currency)
+        if fx_created:
+            from ob.util import get_exchange_rates
+            get_exchange_rates()
+        price_value = get_price_value(price, c)
+
+    return price, pricing_currency, price_value
+
+
+def get_price_value(price, c):
+    try:
+        return price / float(c.base_unit) / float(c.rate)
+    except ZeroDivisionError:
+        return 0.0001
