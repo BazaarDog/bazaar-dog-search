@@ -44,7 +44,7 @@ def get_queryset(self):
 
     currencies = self.request.query_params.getlist('acceptedCurrencies')
     if currencies:
-        cq_list = [Q(accepted_currencies__contains=c) for c in currencies]
+        cq_list = [Q(accepted_currencies__contains=[c]) for c in currencies]
         queryset = queryset.filter(reduce(Q.__or__, cq_list))
 
     shipping = self.request.query_params.get('shipping')
