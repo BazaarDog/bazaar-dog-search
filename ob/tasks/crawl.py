@@ -36,7 +36,7 @@ def find_nodes():
                     logger.info('skipping profile')
     except ReadTimeout:
         pass
-    logger.info("Successfully crawled got " + str(new_count) + " more peers")
+    logger.info("Got " + str(new_count) + " more peers")
 
 
 def sync_an_empty_peer(testnet=False):
@@ -56,7 +56,6 @@ def sync_an_empty_peer(testnet=False):
             else:
                 logger.info('skipping profile')
             logger.info("Successfully crawled an empty peer")
-        sleep(60)
 
 
 def sync_a_known_peer():
