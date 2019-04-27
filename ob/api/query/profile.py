@@ -1,5 +1,6 @@
 from datetime import timedelta
 import operator
+from functools import reduce
 
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
@@ -29,15 +30,20 @@ def get_queryset(self):
 
     currencies = self.request.query_params.getlist('acceptedCurrencies')
     if currencies:
-        cq_list = [Q(accepted_currencies__contains=[c]) for c in currencies]
-        print(cq_list)
-        queryset = queryset.filter(reduce(operator.and_, cq_list))
+        cq_list = [
+            Q(moderator_accepted_currencies__icontains=c) for c in currencies
+        ] + [
+            Q(listing__accepted_currencies__icontains=c) for c in currencies
+        ]
 
-    currencies = self.request.query_params.get('acceptedCurrencies')
-    if currencies:
-        queryset = queryset.filter(
-            Q(moderator_accepted_currencies__icontains=currencies) |
-            Q(listing__accepted_currencies__icontains=currencies))
+        print(cq_list)
+        queryset = queryset.filter(reduce(Q.__or__, cq_list))
+
+    # currencies = self.request.query_params.get('acceptedCurrencies')
+    # if currencies:
+    #     queryset = queryset.filter(
+    #         Q(moderator_accepted_currencies__icontains=currencies) |
+    #         Q(listing__accepted_currencies__icontains=currencies))
 
     queryset = queryset.annotate(
         moderators_count=Count('listing__moderators', distinct=True))
