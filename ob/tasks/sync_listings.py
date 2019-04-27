@@ -5,6 +5,7 @@ from django.conf import settings
 
 from ob.models.listing import Listing
 from ob.models.exchange_rate import ExchangeRate
+from ob.models.util import get
 
 logger = logging.getLogger(__name__)
 OB_HOST = settings.OB_MAINNET_HOST
@@ -14,7 +15,6 @@ def sync_listings(profile):
     listing_url = OB_HOST + 'listings/' + profile.peerID
 
     try:
-        from ob.util import get
         from ob.tasks.sync_listing import sync_listing as sync_listing_deep
         response = get(listing_url)
         if response.status_code == 200:

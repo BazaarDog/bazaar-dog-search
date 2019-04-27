@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ob.models.image import Image
 from ob.models.listing_rating import ListingRating
+from ob.models.util import get
 
 try:
     from obscure import get_listing_rank, get_profile_rank
@@ -122,7 +123,7 @@ class Profile(models.Model):
         ordering = ['-rank']
 
     def get_seralized_record(self):
-        from ob.util import get
+
         try:
             profile_url = OB_HOST + self.peerID
             peer_response = get(profile_url)
@@ -155,7 +156,6 @@ class Profile(models.Model):
 
     def get_neighbors(self):
         try:
-            from ob.util import get
             closestpeers_url = OB_HOST + 'closestpeers/' + self.peerID
             peer_response = get(closestpeers_url)
             if peer_response.status_code == 200:
@@ -175,7 +175,6 @@ class Profile(models.Model):
     def ping(self):
         try:
             health_url = OB_HOST + 'status/' + self.peerID
-            from ob.util import get
             peer_response = get(health_url, timeout=5)
             try:
                 return json.loads(peer_response.content.decode('utf-8'))[

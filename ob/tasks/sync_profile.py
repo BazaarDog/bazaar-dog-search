@@ -13,7 +13,7 @@ from ob.models.profile_social import ProfileSocial
 from ob.models.image import Image
 from ob.tasks.sync_ratings import sync_ratings
 from ob.tasks.sync_listings import sync_listings
-from ob.util import get
+from ob.models.util import get
 
 logger = logging.getLogger(__name__)
 

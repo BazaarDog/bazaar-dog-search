@@ -9,7 +9,7 @@ from django.utils.dateparse import parse_datetime
 
 from ob.models.listing import Listing
 from ob.models.listing_rating import ListingRating
-from ob.util import get
+from ob.models.util import get
 
 logger = logging.getLogger(__name__)
 

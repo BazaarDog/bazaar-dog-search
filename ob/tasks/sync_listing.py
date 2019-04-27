@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.utils.timezone import now
 
-from ob.util import get
+from ob.models.util import get
 from ob.models.listing import Listing
 from ob.models.shipping_options import ShippingOptions
 from ob.models.profile import Profile
