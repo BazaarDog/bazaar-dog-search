@@ -36,18 +36,12 @@ class Command(BaseCommand):
         response = requests.get(peers_url)
         if response.status_code == 200:
             for peerID in json.loads(response.content.decode('utf-8')):
-                if only_new:
-                    crawl_this_node = peerID not in all_pks
-                else:
-                    crawl_this_node = True
-
-                if crawl_this_node:
-                    try:
-                        p = Profile.objects.get(pk=peerID)
-                        sync_profile(p)
-                    except Profile.DoesNotExist:
-                        p = Profile(pk=peerID)
-                        p.save()
-                        sync_profile(p)
+                if not only_new or peerID not in all_pks:
+                    p, p_created = Profile.objects.get_or_create(pk=peerID)
+                    sync_profile(p)
         else:
-            return None
+            logger.info(
+                "bad response obtaining peers: {}".format(
+                    response.status_code
+                )
+            )
