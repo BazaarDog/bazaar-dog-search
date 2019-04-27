@@ -174,10 +174,7 @@ def get_profile_address_type(add_data, profile):
         else:
             temp_addr = ipaddress.ip_address(k.split('/')[2])
             if temp_addr.is_global:
-                if temp_addr.version == 4:
-                    t = ProfileAddress.IPV4
-                else:
-                    t = ProfileAddress.IPV6
+                t = temp_addr.version == 4
         if t in ProfileAddress.ADDRESS_TYPE_DICT:
             pa = ProfileAddress(address=k, profile=profile,
                                 address_type=t)

@@ -28,50 +28,75 @@ def sync_ratings(profile):
     ratings_urls = [url + f for f in rating_files]
     for rating_url in ratings_urls:
         try:
-            response = get(rating_url)
-            if response.status_code == 200:
-                logger.debug('BEGIN rating sync ' + profile.peerID)
-                try:
-                    rating_data = json.loads(
-                        response.content.decode('utf-8'))
-                    listing_slug = \
-                        rating_data['ratingData']['vendorSig']['metadata'][
-                            'listingSlug']
-                    try:
-                        listing = Listing.objects.get(profile=profile,
-                                                      slug=listing_slug)
-                        r_pk = rating_data['ratingData']['ratingKey']
-                        try:
-                            lr, lr_c = ListingRating.objects.get_or_create(
-                                profile=profile,
-                                listing=listing,
-                                pk=r_pk)
-                            rating = rating_data['ratingData']
-                            lr.overall = rating.get("overall")
-                            lr.quality = rating.get("quality")
-                            lr.description = rating.get("description")
-                            lr.delivery_speed = rating.get("deliverySpeed")
-                            lr.customer_service = rating.get("customerService")
-                            lr.timestamp = parse_datetime(
-                                rating.get("timestamp"))
-                            lr.review = rating.get("review")
-                            lr.save()
-                        except IntegrityError as err:
-                            logger.debug("DB Integrity Error: {0}".format(err))
-                            # listing.save()
-                    except TypeError:
-                        logger.debug("bad json in listing " + profile.peerID)
-                    except Listing.MultipleObjectsReturned:
-                        logger.debug(
-                            "Ignoring multiple items with same slug " + profile.peerID)
-                    except Listing.DoesNotExist:
-                        logger.debug(
-                            "Ignoring rating for listing we couldn't find: " + profile.peerID)
-                except json.decoder.JSONDecodeError:
-                    logger.debug(
-                        "Problem decoding json for listings of peer: " + profile.peerID)
+            sync_one_rating(rating_url, profile)
         except requests.exceptions.ReadTimeout:
             logger.debug("listing peerID " + profile.peerID + " timeout")
 
     for l in profile.listing_set.all():
         l.save()
+
+
+def sync_one_rating(rating_url, profile):
+    response = get(rating_url)
+    if response.status_code == 200:
+        logger.debug('BEGIN rating sync ' + profile.peerID)
+        try:
+            rating_data = json.loads(response.content.decode('utf-8'))
+            listing_slug, r_pk = get_listing_slug(rating_data)
+            try:
+                listing = Listing.objects.get(profile=profile,
+                                              slug=listing_slug)
+                try:
+                    update_rating(profile, listing, r_pk, rating_data)
+                except IntegrityError as err:
+                    logger.debug("DB Integrity Error: {0}".format(err))
+                    # listing.save()
+            except Listing.DoesNotExist:
+                logger.debug("Ignoring rating for listing we don't have:"
+                             "{peer}"
+                             "{slug}".format(profile.peerID, listing_slug))
+        except TypeError:
+            logger.debug("ignoring rating")
+        except json.decoder.JSONDecodeError:
+            logger.debug(
+                "Problem decoding json for listings of peer: " + profile.peerID)
+
+
+def update_rating(profile, listing, r_pk, rating_data):
+    lr, lr_c = ListingRating.objects.get_or_create(
+        profile=profile,
+        listing=listing,
+        pk=r_pk)
+    rating = rating_data['ratingData']
+    lr.overall = rating.get("overall")
+    lr.quality = rating.get("quality")
+    lr.description = rating.get("description")
+    lr.delivery_speed = rating.get("deliverySpeed")
+    lr.customer_service = rating.get("customerService")
+    lr.timestamp = parse_datetime(
+        rating.get("timestamp"))
+    lr.review = rating.get("review")
+    lr.save()
+
+
+def get_listing_slug(rating_data):
+    data = rating_data.get('ratingData')
+    if data:
+        sig = data.get('vendorSig')
+        r_pk = data.get('ratingKey')
+    else:
+        logger.info("rating had no ratingData")
+    if sig:
+        meta = sig.get('metadata')
+    else:
+        logger.info("rating had no metadata")
+    if meta:
+        slug = meta.get('listingSlug')
+    else:
+        logger.info("ragin had no slug")
+    if slug and r_pk:
+        return slug, r_pk
+    elif not slug:
+        logger.info("couldn't find listing slug")
+    elif not r_pk:
+        logger.info("couldn't get rating key")
