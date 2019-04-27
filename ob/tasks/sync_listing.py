@@ -78,7 +78,7 @@ def parse_listing(listing, data, force=True):
             moderator_list = get_moderators(mod_data)
             listing.moderators.set(moderator_list)
 
-        for so in listing_data.get('shippingOptions'):
+        for so in listing_data.get('shippingOptions') or []:
             s = ShippingOptions.create_from_json(listing, so)
             s.save()
 

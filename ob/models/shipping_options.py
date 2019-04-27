@@ -39,3 +39,6 @@ class ShippingOptions(models.Model):
             c.service_estimated_delivery = services[0].get('estimatedDelivery')
         c.regions = data.get('regions')
         return c
+
+    class Meta:
+        unique_together = ('listing', 'name')

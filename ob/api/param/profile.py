@@ -39,16 +39,20 @@ def get_profile_sort():
 
 
 def get_profile_options(params):
+    print(params)
+    currency_type = params.getlist('acceptedCurrencies') or []
     available_options = [
         ("acceptedCurrencies", {
             "type": "checkbox",
             "label": _("Accepted Currencies"),
-            "options": get_currency_type_options(params)
+            "options": get_currency_type_options(currency_type)
         }),
         ("is_verified", {
             "type": "checkbox",
             "label": _("Verification"),
-            "options": get_is_verified_options(params)
+            "options": get_is_verified_options(
+                params.get('moderator_verified')
+            )
         }),
         ("is_moderator", {
             "type": "radio",
@@ -83,17 +87,17 @@ def get_profile_options(params):
         ("nsfw", {
             "type": "radio",
             "label": _("Adult Content"),
-            "options": get_nsfw_options(params)
+            "options": get_nsfw_options(params.get('nsfw'))
         }),
         ("connection", {
             "type": "radio",
             "label": _("Connection Type"),
-            "options": get_connection_options(params)
+            "options": get_connection_options(params.get('connection'))
         }),
         ("network", {
             "type": "radio",
             "label": _("Network"),
-            "options": get_network_options(params)
+            "options": get_network_options(params.get('network'))
         }),
         ("clear_all", {
             "type": "checkbox",
@@ -127,11 +131,7 @@ def get_ua_options(params):
 
 
 def get_has_moderator_options(params):
-    try:
-        moderator_count = int(params.get('moderator_count'))
-    except (ValueError, TypeError) as e:
-        moderator_count = 0
-
+    moderator_count = params.get('moderator_count')
     return [
         {
             "value": v,
@@ -149,23 +149,24 @@ def get_has_moderator_options(params):
 
 
 def get_is_moderator_options(params):
-    is_moderator = try_true_or_none(params, 'is_moderator')
+    is_moderator = try_true_or_none(params.get('is_moderator'))
     is_moderator_choices = OrderedDict(
         [(True, _('Yes')), ('', _('All')), ])
     return build_options(is_moderator, is_moderator_choices)
 
 
-def get_is_verified_options(params):
-    is_verified = try_true_or_none(params, 'is_verified')
+def get_is_verified_options(p):
+    is_verified = try_true_or_none(p)
     is_verified_choices = OrderedDict(
         [(True, _('Is an OB1 Verified Moderator')), ])
     return build_options(is_verified, is_verified_choices)
 
 
 def get_has_verified_options(params):
-    has_verified = try_true_or_none(params, 'has_verified')
+    has_verified = try_true_or_none(params.get('has_verified'))
     has_verified_choices = OrderedDict(
-        [(True, _('Has OB1 Verified Moderator')), ])
+        [(True, _('Has OB1 Verified Moderator')), ]
+    )
     return build_options(has_verified, has_verified_choices)
 
 
@@ -200,13 +201,13 @@ def get_rating_options(params):
             "label": "{:.2f}".format(v) + ' >=',
             "checked": v == rating,
             "default": False
-        } for v in [5.0, 4.95, 4.9, 4.8, 4.5, 4.0, 0.0]
+        } for v in [5.0, 4.95, 4.9, 4.6, 0.0]
     ]
 
 
-def get_connection_options(params):
+def get_connection_options(p):
     try:
-        connection = int(params.get('connection'))
+        connection = int(p)
     except (ValueError, TypeError):
         connection = ''
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)

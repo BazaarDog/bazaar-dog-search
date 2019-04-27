@@ -13,7 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 from ob.models.image import Image
 from ob.models.listing_rating import ListingRating
 
-
 try:
     from obscure import get_listing_rank, get_profile_rank
 except ImportError:
@@ -166,7 +165,6 @@ class Profile(models.Model):
         except IndexError:
             logger.info('index error getting address')
 
-
     def get_rank(self):
         try:
             return get_profile_rank(self)
@@ -193,6 +191,7 @@ class Profile(models.Model):
             'rating_average']
         self.rating_average = (r_avg if r_avg else 0)
         self.rating_dot = (r_avg * self.rating_count if r_avg else 0)
+
         if self.listing_set.filter(nsfw=True).count():
             self.nsfw = True
         else:
@@ -200,8 +199,24 @@ class Profile(models.Model):
 
         self.rank = self.get_rank()
         self.listing_count = self.listing_set.count()
+
         self.moderated_items_count = self.moderated_items.count()
         super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.peerID
+
+    def moving_average_speed(self, speed_rank):
+        # Keep track of how quickly a peer resolves
+        new_rank = (self.speed_rank * 0.1) + (speed_rank * 0.9)
+        Profile.objects.filter(pk=self.peerID).update(speed_rank=new_rank,
+                                                      attempt=now())
+        logger.info("peerID " + self.peerID + " timeout")
+
+    def has_tor(self):
+        return self.addresses.filter(address_type=self.TOR).exists()
+
+    def has_clearnet(self):
+        return self.addresses.filter(
+            address_type__in=[self.DUAL, self.CLEAR]
+        ).exists()

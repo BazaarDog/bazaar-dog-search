@@ -62,15 +62,6 @@ def bootstrap():
             logger.info('skipping profile')
 
 
-def moving_average_speed(profile):
-    # Keep track of how quickly a peer resolves
-    speed_rank = settings.CRAWL_TIMEOUT * 1e6
-    new_rank = (profile.speed_rank * 0.1) + (speed_rank * 0.9)
-    Profile.objects.filter(pk=profile.peerID).update(speed_rank=new_rank,
-                                                     attempt=now())
-    logger.info("peerID " + profile.peerID + " timeout")
-
-
 def get_exchange_rates():
     rates_url = settings.OB_MAINNET_HOST + 'exchangerates/BCH'
     response = requests.get(rates_url,

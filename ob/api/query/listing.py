@@ -1,6 +1,6 @@
 from datetime import timedelta
 import logging
-from requests.exceptions import ConnectTimeout
+import operator
 
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
@@ -41,6 +41,11 @@ def get_queryset(self):
     # .filter(active=True) \ this is redundant with vendor=True
 
     queryset = queryset.annotate(moderators_count=Count('moderators'))
+
+    currencies = self.request.query_params.getlist('acceptedCurrencies')
+    if currencies:
+        cq_list = [Q(accepted_currencies__contains=[c]) for c in currencies]
+        queryset = queryset.filter(reduce(operator.or_, cq_list))
 
     shipping = self.request.query_params.get('shipping')
     if shipping:

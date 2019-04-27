@@ -1,7 +1,10 @@
-from ob.api.serializer import *
+from datetime import timedelta
+import operator
+
 from django.db.models import Q, Prefetch, Count
 from django.utils.timezone import now
-from datetime import timedelta
+
+from ob.api.serializer import *
 from ob.models.profile import Profile
 from .common import check_peer, get_nsfw_filter_queryset
 
@@ -23,6 +26,12 @@ def get_queryset(self):
         .exclude(scam=True) \
         .filter(was_online__gt=a_week_ago) \
         .exclude(illegal_in_us=True)
+
+    currencies = self.request.query_params.getlist('acceptedCurrencies')
+    if currencies:
+        cq_list = [Q(accepted_currencies__contains=[c]) for c in currencies]
+        print(cq_list)
+        queryset = queryset.filter(reduce(operator.and_, cq_list))
 
     currencies = self.request.query_params.get('acceptedCurrencies')
     if currencies:

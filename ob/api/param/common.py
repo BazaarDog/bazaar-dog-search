@@ -4,15 +4,22 @@ from .util import build_options, build_multi_options
 from django.utils.translation import ugettext_lazy as _
 
 
-def try_param_or_zero(params, attrib, return_type=int):
+def try_param_or_zero(value, return_type=int):
     try:
-        return return_type(params.get(attrib))
+        return return_type(value)
     except (ValueError, TypeError):
         return 0
 
 
-def try_true_or_none(params, attrib):
-    return True if params.get(attrib) == 'true' else ''
+def try_int_or_zero(s):
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return 0
+
+
+def try_true_or_none(p):
+    return True if p == 'true' else ''
 
 
 def get_clear_all_options():
@@ -25,14 +32,14 @@ def get_clear_all_options():
     ]
 
 
-def get_currency_type_options(params):
-    currencies = params.getlist('acceptedCurrencies') or []
+def get_currency_type_options(p):
+    currencies = p
     distinct_currency = currency_list
     return build_multi_options(currencies, distinct_currency)
 
 
-def get_nsfw_options(params):
-    nsfw_param = params.get('nsfw')
+def get_nsfw_options(p):
+    nsfw_param = p
     nsfw_options = {
         'true': True,
         'Affirmative': 'Affirmative',
@@ -53,8 +60,8 @@ def get_nsfw_options(params):
     return build_options(nsfw, nsfw_choices)
 
 
-def get_network_options(params):
-    network = params.get('network') or 'mainnet'
+def get_network_options(p):
+    network = p or 'mainnet'
     network_choices = OrderedDict(
         [('mainnet', _("Main Network")), ('testnet', _("Test Network")), ])
     return build_options(network, network_choices)

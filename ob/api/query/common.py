@@ -5,6 +5,7 @@ from django.utils.timezone import now
 
 from ob.models.profile import Profile
 from ob.tasks.sync_profile import sync_profile
+from ob.tasks.sync_listing import sync_listing
 
 
 def check_peer(query_params):
@@ -17,17 +18,21 @@ def check_peer(query_params):
 def try_sync_peer(search_term):
     try:
         profile = Profile.objects.get(pk=search_term)
-        if now() - timedelta(hours=1) >= profile.modified:
+        if now() - timedelta(minutes=3) >= profile.modified:
             try:
                 sync_profile(profile)
+                for l in profile.listing_set.all():
+                    sync_listing(l)
             except ConnectTimeout:
                 pass
         else:
             pass
     except Profile.DoesNotExist:
-        profile = Profile(pk=search_term)
+        profile, created = Profile.objects.get_or_create(pk=search_term)
         try:
             sync_profile(profile)
+            for l in profile.listing_set.all():
+                sync_listing(l)
         except ConnectTimeout:
             pass
 

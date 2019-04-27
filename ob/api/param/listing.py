@@ -9,36 +9,46 @@ from ob.models.profile import Profile
 from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
     get_clear_all_options, get_network_options, try_param_or_zero, \
-    try_true_or_none
+    try_true_or_none, try_int_or_zero
 from .static import country_list
 
 
 def get_listing_options(params):
+    region = params.get('shipping') if params.get('shipping') else 'any'
+    currency_type = params.getlist('acceptedCurrencies') or []
     available_options = [
         ("acceptedCurrencies", {
             "type": "checkbox",
             "label": _("Accepted Currencies"),
-            "options": get_currency_type_options(params)
+            "options": get_currency_type_options(currency_type)
         }),
         ("moderator_verified", {
             "type": "checkbox",
             "label": _("Verified Moderator"),
-            "options": get_moderator_verified_options(params)
+            "options": get_moderator_verified_options(
+                params.get('moderator_verified')
+            )
         }),
         ("moderator_count", {
             "type": "radio",
             "label": _("Moderators Available"),
-            "options": get_moderator_options(params)
+            "options": get_moderator_options(
+                params.get('moderator_count')
+            )
         }),
         ("nsfw", {
             "type": "radio",
             "label": _("Adult Content"),
-            "options": get_nsfw_options(params)
+            "options": get_nsfw_options(
+                params.get('nsfw')
+            )
         }),
         ("condition_type", {
             "type": "radio",
             "label": _("Condition"),
-            "options": get_condition_type_options(params)
+            "options": get_condition_type_options(
+                params.get('condition_type')
+            )
         }),
         ("rating", {
             "type": "radio",
@@ -48,27 +58,30 @@ def get_listing_options(params):
         ("contract_type", {
             "type": "radio",
             "label": _("Type"),
-            "options": get_contract_type_options(params)
+            "options": get_contract_type_options(params.get('contract_type'))
         }),
         ("shipping", {
             "type": "dropdown",
             "label": _("Ships to"),
-            "options": get_region_options(params)
+            "options": get_region_options(params.get('shipping', default='any'))
         }),
         ("free_shipping_region", {
             "type": "checkbox",
             "label": _("Ships Free"),
-            "options": get_free_shipping_options(params)
+            "options": get_free_shipping_options(
+                params.get('free_shipping_region'),
+                params.get('region', 'any')
+            )
         }),
         ("connection", {
             "type": "radio",
             "label": _("Connection Type (Alpha)"),
-            "options": get_connection_options(params)
+            "options": get_connection_options(params.get('connection'))
         }),
         ("network", {
             "type": "radio",
             "label": _("Network"),
-            "options": get_network_options(params)
+            "options": get_network_options(params.get('network'))
         }),
         ("dust", {
             "type": "checkbox",
@@ -91,14 +104,14 @@ def get_listing_options(params):
     return options
 
 
-def get_moderator_verified_options(params):
-    moderator_verified = try_true_or_none(params, 'moderator_verified')
+def get_moderator_verified_options(p):
+    moderator_verified = try_true_or_none(p)
     moderator_verified_choices = dict([(True, 'OB1 Verified Moderator'), ])
     return build_options(moderator_verified, moderator_verified_choices)
 
 
-def get_moderator_options(params):
-    moderator_count = try_param_or_zero(params, 'moderator_count')
+def get_moderator_options(p):
+    moderator_count = try_int_or_zero(p)
     moderator_options = [
         {
             "value": v,
@@ -112,24 +125,20 @@ def get_moderator_options(params):
     return moderator_options
 
 
-def get_region(params):
-    return params.get('shipping') if params.get('shipping') else 'any'
 
 
-def get_region_options(params):
-    region = get_region(params)
+def get_region_options(p):
     distinct_region = OrderedDict(
         country_list
     )
-    return build_options(region, distinct_region)
+    return build_options(p, distinct_region)
 
 
-def get_free_shipping_options(params):
+def get_free_shipping_options(free, region):
     try:
-        free_shipping = try_true_or_none(params, 'free_shipping_region')
+        free_shipping = try_true_or_none(free)
     except MultiValueDictKeyError:
         free_shipping = ''
-    region = get_region(params)
     if region and region.lower() != 'any':
         to_str = _('to {place}').format(place=region.title().replace('_', ' '))
         free_shipping_choices = OrderedDict([(True, to_str), ])
@@ -138,18 +147,18 @@ def get_free_shipping_options(params):
     return build_options(free_shipping, free_shipping_choices)
 
 
-def get_contract_type_options(params):
-    contract = try_param_or_zero(params, 'contract_type')
+def get_contract_type_options(p):
+    contract = try_int_or_zero(p)
     return build_options(contract, Listing.CONTRACT_TYPE_DICT)
 
 
-def get_condition_type_options(params):
-    condition = try_param_or_zero(params, 'condition_type')
+def get_condition_type_options(p):
+    condition = try_int_or_zero(p)
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
 
 
 def get_rating_options(params):
-    rating = try_param_or_zero(params, 'rating', float)
+    rating = try_param_or_zero(params.get('rating'), float)
     return [
         {
             "value": v,
@@ -160,8 +169,8 @@ def get_rating_options(params):
     ]
 
 
-def get_connection_options(params):
-    connection = try_param_or_zero(params, 'connection')
+def get_connection_options(p):
+    connection = try_int_or_zero(p)
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
 

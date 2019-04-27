@@ -181,8 +181,7 @@ class CustomSearchFilter(BaseFilterBackend):
 
 
 class ProfileFilter(df.FilterSet):
-    acceptedCurrencies = df.Filter(field_name='moderator_accepted_currencies',
-                                   lookup_expr='icontains')
+
     rating = df.Filter(field_name='rating_average', lookup_expr='gte')
     version = df.Filter(field_name='user_agent', lookup_expr='icontains')
     moderator_languages = df.Filter(field_name='moderator_languages',
@@ -227,8 +226,7 @@ class ProfileFilter(df.FilterSet):
 
 
 class ListingFilter(df.FilterSet):
-    acceptedCurrencies = df.Filter(
-        field_name='accepted_currencies', lookup_expr='icontains')
+
     tags = df.Filter(field_name='tags',
                      lookup_expr='icontains')
     categories = df.Filter(field_name='categories',
