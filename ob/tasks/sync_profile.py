@@ -169,17 +169,17 @@ def get_profile_address(profile, address):
 
 def get_profile_connection_type(profile):
     c = None
-    if profile.has_tor() and profile.has_clearnet():
-        c = Profile.DUAL
-    elif not profile.has_tor() and profile.has_clearnet():
+    if profile.has_tor():
+        if profile.has_clearnet():
+            c = Profile.DUAL
+        else:
+            c = Profile.TOR
+    elif profile.has_clearnet():
         c = Profile.CLEAR
-    elif profile.has_tor() and not profile.has_clearnet():
-        c = Profile.TOR
     return c
 
 
 def get_profile_follower_count(profile_data):
-
     if profile_data.get('stats'):
         return profile_data.get('stats').get('followerCount')
 
@@ -215,5 +215,3 @@ def get_profile_connection(profile):
     else:
         code = peer_info_response.status_code
         logger.debug("{} fetching {}".format(code, peer_info_url))
-
-
