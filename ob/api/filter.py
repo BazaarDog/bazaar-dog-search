@@ -183,7 +183,7 @@ class CustomSearchFilter(BaseFilterBackend):
 class ProfileFilter(df.FilterSet):
 
     rating = df.Filter(field_name='rating_average', lookup_expr='gte')
-    version = df.Filter(field_name='user_agent', lookup_expr='icontains')
+    user_agent = df.Filter(field_name='user_agent', lookup_expr='icontains')
     moderator_languages = df.Filter(field_name='moderator_languages',
                                     lookup_expr='contains')
     has_email = df.Filter(field_name='email', lookup_expr='isnull',

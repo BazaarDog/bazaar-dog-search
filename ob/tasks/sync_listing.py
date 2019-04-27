@@ -2,10 +2,6 @@ import json
 import logging
 import requests
 
-from django.conf import settings
-from django.dispatch import receiver
-from django.db.utils import IntegrityError
-from django.utils import timezone
 from django.utils.timezone import now
 
 from ob.models.util import get

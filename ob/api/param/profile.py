@@ -79,7 +79,7 @@ def get_profile_options(params):
             "label": _("Vendor Rating"),
             "options": get_rating_options(params)
         }),
-        ("version", {
+        ("user_agent", {
             "type": "radio",
             "label": _("Server Version"),
             "options": get_ua_options(params)
@@ -115,7 +115,7 @@ def get_profile_options(params):
 
 
 def get_ua_options(params):
-    version = params.get('version')
+    version = params.get('user_agent')
     distinct_version = OrderedDict(
         [
             ('openbazaar-go:0.14', '0.14.*'),
