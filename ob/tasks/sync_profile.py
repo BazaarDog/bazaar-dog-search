@@ -168,15 +168,13 @@ def get_profile_address(profile, address):
 
 
 def get_profile_connection_type(profile):
-    c = None
     if profile.has_tor():
         if profile.has_clearnet():
-            c = Profile.DUAL
+            return Profile.DUAL
         else:
-            c = Profile.TOR
+            return Profile.TOR
     elif profile.has_clearnet():
-        c = Profile.CLEAR
-    return c
+        return Profile.CLEAR
 
 
 def get_profile_follower_count(profile_data):
