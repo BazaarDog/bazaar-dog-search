@@ -6,6 +6,10 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+class ObNodeSSLError(Exception):
+    pass
+
+
 def get(url, timeout=settings.CRAWL_TIMEOUT):
     if 'https' in url:
         if Path(settings.OB_CERTIFICATE).is_file():
@@ -17,7 +21,6 @@ def get(url, timeout=settings.CRAWL_TIMEOUT):
             logger.info(
                 "couldn't find ssl cert for a secure "
                 "connection to openbazaar-go server... ")
-            raise Exception
+            pass
     else:
-        return requests.get(url,
-                            timeout=settings.CRAWL_TIMEOUT)
+        return requests.get(url, timeout=settings.CRAWL_TIMEOUT)

@@ -1,7 +1,7 @@
 import ipaddress
 import json
 import logging
-import requests
+from requests.exceptions import ConnectionError, ReadTimeout
 
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -13,7 +13,7 @@ from ob.models.profile_social import ProfileSocial
 from ob.models.image import Image
 from ob.tasks.sync_ratings import sync_ratings
 from ob.tasks.sync_listings import sync_listings
-from ob.models.util import get
+from ob.models.util import get, ObNodeSSLError
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,12 @@ def sync_profile(profile):
             )
             new_speed_rank = profile_response.elapsed.microseconds
             profile.moving_average_speed(new_speed_rank)
-            parse_profile(profile, profile_data)
+            profile = parse_profile(profile, profile_data)
+            if profile.vendor:
+                sync_listings(profile)
+                sync_ratings(profile)
+            else:
+                profile.listing_set.update(active=False)
         else:
             code = profile_response.status_code
             logger.debug('{} fetching {}'.format(code, profile_url))
@@ -42,7 +47,7 @@ def sync_profile(profile):
     except json.decoder.JSONDecodeError:
         logger.warning("Problem decoding json for peer: " + profile.peerID)
 
-    except requests.exceptions.ReadTimeout:
+    except ReadTimeout:
         profile.moving_average_speed(settings.CRAWL_TIMEOUT * 1e6)
 
 
@@ -77,11 +82,7 @@ def parse_profile(profile, profile_data):
     profile.connection_type = get_profile_connection_type(profile)
 
     profile.save()
-    if profile.vendor:
-        sync_listings(profile)
-        sync_ratings(profile)
-    else:
-        profile.listing_set.update(active=False)
+    return profile
 
 
 def get_image(hash):
@@ -124,8 +125,10 @@ def get_user_agent(peer_id):
     user_agent_url = IPNS_HOST + peer_id + '/user_agent'
     try:
         user_agent_response = get(user_agent_url)
-    except requests.exceptions.ConnectionError:
+    except ConnectionError:
         return 'Error : timeout'
+    except ObNodeSSLError:
+        return 'Error : couldn\'t establish SSL to ob node'
     if user_agent_response.status_code == 200:
         ua = user_agent_response.content.decode('utf-8')
     else:
