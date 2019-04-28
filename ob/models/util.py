@@ -3,6 +3,7 @@ import requests
 
 from django.conf import settings
 from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
@@ -18,9 +19,7 @@ def get(url, timeout=settings.CRAWL_TIMEOUT):
                                 auth=settings.OB_API_AUTH,
                                 verify=settings.OB_CERTIFICATE)
         else:
-            logger.info(
-                "couldn't find ssl cert for a secure "
-                "connection to openbazaar-go server... ")
-            pass
+            raise ObNodeSSLError("couldn't find ssl cert for a secure "
+                                 "connection to openbazaar-go server... ")
     else:
         return requests.get(url, timeout=settings.CRAWL_TIMEOUT)

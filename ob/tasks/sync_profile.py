@@ -125,15 +125,16 @@ def get_user_agent(peer_id):
     user_agent_url = IPNS_HOST + peer_id + '/user_agent'
     try:
         user_agent_response = get(user_agent_url)
-    except ConnectionError:
+        if user_agent_response.status_code == 200:
+            ua = user_agent_response.content.decode('utf-8')
+        else:
+            ua = 'Error : {}'.format(user_agent_response.status_code)
+        return ua
+    except (ReadTimeout, ConnectionError):
         return 'Error : timeout'
     except ObNodeSSLError:
-        return 'Error : couldn\'t establish SSL to ob node'
-    if user_agent_response.status_code == 200:
-        ua = user_agent_response.content.decode('utf-8')
-    else:
-        ua = 'Error : {}'.format(user_agent_response.status_code)
-    return ua
+        return 'Error : ob cert error'
+
 
 
 def add_profile_social_info(profile, contact):
