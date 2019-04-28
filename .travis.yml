@@ -14,4 +14,4 @@ script:
   - source postactivate_test
   - coverage run manage_base.py test
 after_success:
-  - coveralls
+  - coveralls --source bazaardog/* --omit ~/virtualenv/*
