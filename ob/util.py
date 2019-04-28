@@ -15,27 +15,6 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
-
-
-
-def requests_post_wrap(url, data):
-    logger.info(url)
-    if 'https' in url:
-        if Path(settings.OB_CERTIFICATE).is_file():
-            return requests.post(url,
-                                 data=data,
-                                 timeout=settings.CRAWL_TIMEOUT,
-                                 auth=settings.OB_API_AUTH,
-                                 verify=settings.OB_CERTIFICATE
-                                 )
-        else:
-            raise Exception
-    else:
-        return requests.post(url,
-                             data=data,
-                             timeout=settings.CRAWL_TIMEOUT)
-
-
 def bootstrap():
     for peerId in peerId_list:
         p, pc = Profile.objects.get_or_create(pk=peerId)
