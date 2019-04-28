@@ -23,7 +23,15 @@ def do_dog_follow(self, testnet=False):
 
 
 def mark_dust():
-    pass
+    update_count = Listing.objects \
+        .filter(price_value__lt=0.001,
+                accepted_currencies__icontains='BTC')\
+        .exclude(accepted_currencies__icontains='BCH')\
+        .exclude(accepted_currencies__icontains='ETH')\
+        .exclude(accepted_currencies__icontains='LTC')\
+        .exclude(accepted_currencies__icontains='ZEC')\
+        .update(dust=True)
+    print("{} listings marked as dust".format(update_count))
 
 
 good_nodes = [

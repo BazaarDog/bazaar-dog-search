@@ -13,10 +13,7 @@ from ob.models.profile import Profile
 
 logger = logging.getLogger(__name__)
 
-try:
-    from obscure import get_listing_rank, get_profile_rank
-except ImportError:
-    from custom import get_listing_rank, get_profile_rank
+
 
 OB_HOST = settings.OB_MAINNET_HOST
 
@@ -120,6 +117,10 @@ class Listing(models.Model):
 
     #
     def get_rank(self):
+        try:
+            from obscure import get_listing_rank
+        except ImportError:
+            from custom import get_listing_rank
         try:
             return get_listing_rank(self)
         except:

@@ -22,13 +22,15 @@ def get_endpoint_name(is_profile=False):
         # Is Onion
         True:
             {
-                True: ugettext("𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌") + " {" + ugettext("𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰") + "}",
+                True: ugettext("𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌") + " {" + ugettext(
+                    "𝔓𝔯𝔬𝔣𝔦𝔩𝔢𝔰") + "}",
                 False: ugettext("𝕭𝖆𝖟𝖆𝖆𝖗 𝕯𝖔𝖌")
             },
         # Is Clearnet
         False:
             {
-                True: ugettext("Bazaar Dog") + " (" + ugettext("Profiles") + ")",
+                True: ugettext("Bazaar Dog") + " (" + ugettext(
+                    "Profiles") + ")",
                 False: ugettext("Bazaar Dog")
             },
     }
@@ -46,7 +48,7 @@ class CustomPaginateMixin(PageNumberPagination):
     page_query_param = 'p'
     page_size_query_param = 'ps'
     max_page_size = 480
-    
+
     def paginate_queryset(self, queryset, request, view=None):
         """
         Paginate a queryset if required, either returning a
@@ -106,7 +108,6 @@ class CustomPaginateMixin(PageNumberPagination):
 
 
 class ListingResultsSetPagination(CustomPaginateMixin):
-
     def get_paginated_response(self, data):
 
         q = self.request.query_params.get('q')
@@ -133,11 +134,11 @@ class ListingPaginateAPIView(generics.ListAPIView):
 
 
 class ProfileResultsSetPagination(CustomPaginateMixin):
-
     def get_paginated_response(self, data):
 
         if self.request.query_params.get('clear_all') == 'true':
-            return redirect(settings.SITE_URL + "/profile/", query_string=False)
+            return redirect(reverse('api-public:profile-page'),
+                            query_string=False)
 
         options = get_profile_options(self.request.query_params)
         sort_by = get_profile_sort()

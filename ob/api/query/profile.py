@@ -35,8 +35,6 @@ def get_queryset(self):
         ] + [
             Q(listing__accepted_currencies__icontains=c) for c in currencies
         ]
-
-        print(cq_list)
         queryset = queryset.filter(reduce(Q.__or__, cq_list))
 
     # currencies = self.request.query_params.get('acceptedCurrencies')

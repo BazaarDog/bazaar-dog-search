@@ -14,10 +14,6 @@ from ob.models.image import Image
 from ob.models.listing_rating import ListingRating
 from ob.models.util import get
 
-try:
-    from obscure import get_listing_rank, get_profile_rank
-except ImportError:
-    from custom import get_listing_rank, get_profile_rank
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +162,10 @@ class Profile(models.Model):
             logger.info('index error getting address')
 
     def get_rank(self):
+        try:
+            from obscure import get_profile_rank
+        except ImportError:
+            from custom import get_profile_rank
         try:
             return get_profile_rank(self)
         except:

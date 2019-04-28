@@ -39,7 +39,6 @@ def get_profile_sort():
 
 
 def get_profile_options(params):
-    print(params)
     currency_type = params.getlist('acceptedCurrencies') or []
     available_options = [
         ("acceptedCurrencies", {

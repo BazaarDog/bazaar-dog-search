@@ -58,13 +58,13 @@ def parse_listing(listing, data, force=True):
 
         if item_details['condition']:
             listing.condition_type = getattr(Listing,
-                                             item_details[
-                                                 'condition'].upper())
+                                             item_details
+                                             .get('condition')
+                                             .upper())
 
         for i, iHashes in enumerate(item_details.get('images')):
             iHashes['index'] = i
             iHashes['listing'] = listing
-            print(iHashes)
             li, li_c = ListingImage.objects.get_or_create(
                 **iHashes)
             li.save()

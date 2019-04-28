@@ -210,8 +210,6 @@ class ProfileFilter(df.FilterSet):
 
     class Meta:
         model = Profile
-        exclude = ()
-        order_by = True
         filter_overrides = {
             ArrayField: {
                 'filter_class': df.CharFilter,
@@ -220,6 +218,8 @@ class ProfileFilter(df.FilterSet):
                 },
             },
         }
+        exclude = ['nsfw']
+        order_by = True
 
     def filter_listing_by_moderator_count(self, queryset, name, value):
         return queryset.filter(moderators_count__gte=value)
@@ -247,7 +247,7 @@ class ListingFilter(df.FilterSet):
 
     class Meta:
         model = Listing
-        exclude = ()
+        exclude = ['nsfw']
         order_by = True
         filter_overrides = {
             ArrayField: {
