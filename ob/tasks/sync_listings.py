@@ -1,6 +1,7 @@
 import json
 import logging
-import requests
+from requests.exceptions import ConnectionError, ReadTimeout
+
 from django.conf import settings
 
 from ob.models.listing import Listing
@@ -32,7 +33,8 @@ def sync_listings(profile):
         else:
             code = response.status_code
             logger.debug('{} fetching {}'.format(code, listing_url))
-    except requests.exceptions.ReadTimeout:
+
+    except (ReadTimeout, ConnectionError):
         logger.info("listing peerID " + profile.peerID + " timeout")
 
 
@@ -49,7 +51,7 @@ def sync_listing_fast(listing_data, profile):
         l.description = listing_data.get('description')
         l.rating_average_stale = listing_data.get('averageRating')
         l.rating_count_stale = listing_data.get('ratingCount')
-        l.free_shipping = listing_data('freeShipping')
+        l.free_shipping = listing_data.get('freeShipping')
         l.active = True
         l.network = 'mainnet'
 

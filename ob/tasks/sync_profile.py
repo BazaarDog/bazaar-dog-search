@@ -33,7 +33,7 @@ def sync_profile(profile):
             )
             new_speed_rank = profile_response.elapsed.microseconds
             profile.moving_average_speed(new_speed_rank)
-            sync_profile_data(profile, profile_data)
+            parse_profile(profile, profile_data)
         else:
             code = profile_response.status_code
             logger.debug('{} fetching {}'.format(code, profile_url))
@@ -46,7 +46,7 @@ def sync_profile(profile):
         profile.moving_average_speed(settings.CRAWL_TIMEOUT * 1e6)
 
 
-def sync_profile_data(profile, profile_data):
+def parse_profile(profile, profile_data):
     profile.about = profile_data.get('about')
     profile.name = profile_data.get('name')
     profile.location = profile_data.get('location')
@@ -122,7 +122,10 @@ def sync_profile_contact_info(profile, contact):
 
 def get_user_agent(peer_id):
     user_agent_url = IPNS_HOST + peer_id + '/user_agent'
-    user_agent_response = get(user_agent_url)
+    try:
+        user_agent_response = get(user_agent_url)
+    except requests.exceptions.ConnectionError:
+        return 'Error : timeout'
     if user_agent_response.status_code == 200:
         ua = user_agent_response.content.decode('utf-8')
     else:
@@ -140,6 +143,7 @@ def add_profile_social_info(profile, contact):
         )
         sa.save()
 
+
 def get_profile_connection_type(profile):
     if profile.has_tor():
         if profile.has_clearnet():
@@ -148,6 +152,8 @@ def get_profile_connection_type(profile):
             return Profile.TOR
     elif profile.has_clearnet():
         return Profile.CLEAR
+    else:
+        return Profile.OFFLINE
 
 
 def get_profile_follower_count(profile_data):

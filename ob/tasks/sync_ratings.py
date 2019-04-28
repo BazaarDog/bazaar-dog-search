@@ -1,7 +1,7 @@
 import json
 import logging
 from lxml import etree as lxmletree
-import requests
+from requests.exceptions import ConnectionError, ReadTimeout
 
 from django.conf import settings
 from django.db.utils import IntegrityError
@@ -19,21 +19,23 @@ IPNS_HOST = settings.IPNS_MAINNET_HOST
 def sync_ratings(profile):
     parser = lxmletree.HTMLParser()
     url = IPNS_HOST + profile.peerID + '/ratings/'
+    try:
+        r = get(url)
+        tree = lxmletree.fromstring(r.content, parser)
 
-    r = get(url)
-    tree = lxmletree.fromstring(r.content, parser)
+        rating_files = tree.xpath('//table/tr/td[contains(.,"Qm")]/a/text()')
 
-    rating_files = tree.xpath('//table/tr/td[contains(.,"Qm")]/a/text()')
+        ratings_urls = [url + f for f in rating_files]
+        for rating_url in ratings_urls:
+            try:
+                sync_one_rating(rating_url, profile)
+            except (ConnectionError, ReadTimeout):
+                logger.debug("listing peerID " + profile.peerID + " timeout")
 
-    ratings_urls = [url + f for f in rating_files]
-    for rating_url in ratings_urls:
-        try:
-            sync_one_rating(rating_url, profile)
-        except requests.exceptions.ReadTimeout:
-            logger.debug("listing peerID " + profile.peerID + " timeout")
-
-    for l in profile.listing_set.all():
-        l.save()
+        for l in profile.listing_set.all():
+            l.save()
+    except (ConnectionError, ReadTimeout):
+        logger.info("read timeout on ratings")
 
 
 def sync_one_rating(rating_url, profile):
