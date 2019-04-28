@@ -113,7 +113,7 @@ class ListingResultsSetPagination(CustomPaginateMixin):
         options = get_listing_options(self.request.query_params)
         sort_by = get_sort()
         if self.request.query_params.get('clear_all') == 'true':
-            return redirect(settings.SITE_URL)
+            return redirect(settings.SITE_URL, query_string=False)
 
         locale = self.request.query_params.get('locale')
         if locale:
@@ -137,12 +137,11 @@ class ProfileResultsSetPagination(CustomPaginateMixin):
     def get_paginated_response(self, data):
 
         if self.request.query_params.get('clear_all') == 'true':
-            return redirect(settings.SITE_URL + "/profile/")
+            return redirect(settings.SITE_URL + "/profile/", query_string=False)
 
         options = get_profile_options(self.request.query_params)
         sort_by = get_profile_sort()
         q = self.request.query_params.get('q')
-
         locale = self.request.query_params.get('locale')
         if locale:
             self.request.LANGUAGE_CODE = get_translation(locale)

@@ -9,7 +9,7 @@ from ob.models.profile import Profile
 from .util import build_options
 from .common import get_nsfw_options, get_currency_type_options, \
     get_clear_all_options, get_network_options, try_param_or_zero, \
-    try_true_or_none, try_int_or_zero
+    try_true_or_none, try_int_or_zero, try_int_or_blank
 from .static import country_list
 
 
@@ -148,12 +148,12 @@ def get_free_shipping_options(free, region):
 
 
 def get_contract_type_options(p):
-    contract = try_int_or_zero(p)
+    contract = try_int_or_blank(p)
     return build_options(contract, Listing.CONTRACT_TYPE_DICT)
 
 
 def get_condition_type_options(p):
-    condition = try_int_or_zero(p)
+    condition = try_int_or_blank(p)
     return build_options(condition, Listing.CONDITION_TYPE_DICT)
 
 
@@ -170,7 +170,7 @@ def get_rating_options(params):
 
 
 def get_connection_options(p):
-    connection = try_int_or_zero(p)
+    connection = try_int_or_blank(p)
     return build_options(connection, Profile.CONNECTION_TYPE_DICT)
 
 

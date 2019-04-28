@@ -17,6 +17,11 @@ def try_int_or_zero(s):
     except (ValueError, TypeError):
         return 0
 
+def try_int_or_blank(s):
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return ''
 
 def try_true_or_none(p):
     return True if p == 'true' else ''
