@@ -1,9 +1,9 @@
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import RequestsClient
+from rest_framework.test import APITestCase
 
 
-class ProfileTests(RequestsClient):
+class ProfileTests(APITestCase):
     fixtures = ['datadump.json']
 
     def setUp(self):
@@ -18,4 +18,4 @@ class ProfileTests(RequestsClient):
         data = {'q': 'OpenBazaar'}
         response = self.client.get(url, data, format='json')
         print(str(response))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

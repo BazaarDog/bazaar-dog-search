@@ -7,4 +7,4 @@ def _json_object_hook(d):
 
 
 def json2obj(data):
-    return json.loads(data, object_hook=_json_object_hook)
+    return json.loads(data.decode('utf-8'), object_hook=_json_object_hook)

@@ -3,6 +3,7 @@ from custom import get_profile_rank, get_listing_rank
 from ob.models.profile import Profile
 from ob.models.listing import Listing
 
+
 class CutomTest(TestCase):
     fixtures = ['datadump.json']
 
