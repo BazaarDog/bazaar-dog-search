@@ -136,7 +136,6 @@ def get_user_agent(peer_id):
         return 'Error : ob cert error'
 
 
-
 def add_profile_social_info(profile, contact):
     for s in contact.get('social') or []:
         sa, sa_created = ProfileSocial.objects.get_or_create(

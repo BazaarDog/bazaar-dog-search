@@ -1,4 +1,5 @@
 from django.test.testcases import TestCase
+
 from ob.models.exchange_rate import ExchangeRate
 from ob.models.listing import Listing
 from ob.util import update_price_values

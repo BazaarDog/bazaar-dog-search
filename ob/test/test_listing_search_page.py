@@ -1,21 +1,11 @@
-from collections import namedtuple
-import json
-
 from django.urls import reverse
 from django.utils.timezone import now
 from datetime import timedelta
+
 from rest_framework import status
 from rest_framework.test import RequestsClient
 
 from ob.models.listing import Listing
-
-
-def _json_object_hook(d):
-    return namedtuple('X', d.keys())(*d.values())
-
-
-def json2obj(data):
-    return json.loads(data, object_hook=_json_object_hook)
 
 
 class ListingTests(RequestsClient):

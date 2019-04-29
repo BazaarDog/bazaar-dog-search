@@ -12,6 +12,7 @@ from ob.models.listing import Listing
 from ob.models.exchange_rate import ExchangeRate
 
 from pathlib import Path
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,8 +71,11 @@ def update_verified(verified_url=None):
         verified_url = 'https://search.ob1.io/verified_moderators'
     response = requests.get(verified_url)
     if response.status_code == 200:
-        from ob.models import Profile
+        from ob.models.profile import Profile
         verified_data = json.loads(response.content.decode('utf-8'))
         verified_pks = [p['peerID'] for p in verified_data['moderators']]
         Profile.objects.filter().update(verified=False)
-        Profile.objects.filter(pk__in=verified_pks).update(verified=True)
+        r = Profile.objects.filter(pk__in=verified_pks).update(verified=True)
+        return r, verified_url
+    else:
+        logger.error("Error getting verified vendors from ")
