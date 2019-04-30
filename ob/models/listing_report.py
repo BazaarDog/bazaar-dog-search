@@ -26,7 +26,7 @@ class ListingReport(models.Model):
             if self.reason == settings.NSFW:
                 # Update the listing
                 Listing.objects.filter(profile_id=self.peerID,
-                                       slug__icontains=self.slug)\
+                                       slug__icontains=self.slug) \
                     .update(nsfw=True)
             elif self.reason == settings.SCAM:
                 # Update the profile
