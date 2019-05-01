@@ -17,6 +17,19 @@ class ListingReportTests(APITestCase):
         # Test definitions as before.
         pass
 
+    def test_listing_report_post_random(self):
+        """
+        Ensure we can accept a random reason
+        """
+        url = reverse('api-public:report-listing')
+        data = {
+            "peerID": "QmPyweNFHayJgBRqYaoBatmnfeonxtuVZvQjtWymzmwkav",
+            "slug": "vintage-dress-physical-w-options",
+            "reason": "asdfasdf"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_listing_report_post_illegal(self):
         """ 
         Ensure the vendor is marked illegal

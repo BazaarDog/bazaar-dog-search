@@ -13,6 +13,8 @@ from .serializer import ListingReportSerializer, ProfileWrapSerializer, \
 
 
 class Report(generics.CreateAPIView):
+    permission_classes = []
+    authentication_classes = []
     model = ListingReport
     serializer_class = ListingReportSerializer
 

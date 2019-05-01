@@ -48,6 +48,6 @@ def get_queryset(self):
 
     nsfw = self.request.query_params.get('nsfw')
     queryset = get_nsfw_filter_queryset(queryset, nsfw)
-
+    print(queryset)
     return queryset
 

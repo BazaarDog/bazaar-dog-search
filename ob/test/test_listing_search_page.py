@@ -11,7 +11,7 @@ from ob.models.listing import Listing
 from .util import json2obj
 
 
-class ListingTests(APITestCase):
+class ListingSearchTests(APITestCase):
     fixtures = ['datadump.json']
 
     def setUp(self):

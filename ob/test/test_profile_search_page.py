@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class ProfileTests(APITestCase):
+class ProfileSearchTests(APITestCase):
     fixtures = ['datadump.json']
 
     def setUp(self):
@@ -15,7 +15,10 @@ class ProfileTests(APITestCase):
         Ensure we can create a new account object.
         """
         url = reverse('api-public:profile-page')
-        data = {'q': 'OpenBazaar'}
-        response = self.client.get(url, data, format='json')
+        data = {'q': '*'}
+        response = self.client.get(url,
+                                   data,
+                                   format='json',
+                                   HTTP_USER_AGENT='OpenBazaar')
         print(str(response))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
