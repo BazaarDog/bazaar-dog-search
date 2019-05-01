@@ -8,6 +8,10 @@ from ob.models.profile import Profile
 
 logger = logging.getLogger(__name__)
 
+actions = {
+    settings.NSFW:
+}
+
 
 class ListingReport(models.Model):
     slug = models.TextField(default='', null=True)
@@ -17,22 +21,33 @@ class ListingReport(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+
     def save(self, *args, **kwargs):
+
+        # This is a hack to handle the case where a report is sourced from the
+        # profile listing search result
         if not hasattr(self, 'listing'):
             logger.info(self.peerID + ' ' + self.slug)
             self.listing = Listing.objects.filter(profile_id=self.peerID,
-                                                  slug__icontains=self.slug)[0]
+                                                  slug=self.slug)[0]
         if self.reason:
-            if self.reason == settings.NSFW:
-                # Update the listing
-                Listing.objects.filter(profile_id=self.peerID,
-                                       slug__icontains=self.slug) \
-                    .update(nsfw=True)
-            elif self.reason == settings.SCAM:
-                # Update the profile
-                Profile.objects.filter(peerID=self.peerID).update(scam=True)
-            elif self.reason == settings.ILLEGAL:
-                # Update the profile
-                Profile.objects.filter(peerID=self.peerID).update(
-                    illegal_in_us=True)
+            self.handle_report()
+
         super(ListingReport, self).save(*args, **kwargs)
+
+    def handle_report(self):
+        actions = {settings.NSFW: self.mark_listing_nsfw(),
+                   settings.SCAM: self.mark_peer_scam(),
+                   settings.ILLEGAL: self.mark_peer_illegal()}
+        if self.reason in actions:
+            actions[self.reason]()
+
+    def mark_listing_nsfw(self):
+        Listing.objects.filter(profile_id=self.peerID,
+                               slug=self.slug).update(nsfw=True)
+
+    def mark_peer_scam(self):
+        Profile.objects.filter(peerID=self.peerID).update(scam=True)
+
+    def mark_peer_illegal(self):
+        Profile.objects.filter(peerID=self.peerID).update(illegal_in_us=True)
