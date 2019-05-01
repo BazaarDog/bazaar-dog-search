@@ -35,7 +35,7 @@ class ListingReport(models.Model):
                    settings.SCAM: self.mark_peer_scam(),
                    settings.ILLEGAL: self.mark_peer_illegal()}
         if self.reason in actions:
-            actions[self.reason]()
+            actions[self.reason]
 
     def mark_listing_nsfw(self):
         Listing.objects.filter(profile_id=self.peerID,
