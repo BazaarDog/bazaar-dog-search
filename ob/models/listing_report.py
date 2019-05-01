@@ -8,10 +8,6 @@ from ob.models.profile import Profile
 
 logger = logging.getLogger(__name__)
 
-actions = {
-    settings.NSFW:
-}
-
 
 class ListingReport(models.Model):
     slug = models.TextField(default='', null=True)
@@ -20,7 +16,6 @@ class ListingReport(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-
 
     def save(self, *args, **kwargs):
 

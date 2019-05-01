@@ -70,7 +70,7 @@ class ListingSearchTests(APITestCase):
         response = self.base_test_listing_page(data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         c = json.loads(response.content.decode('utf-8'))
-        tmp_rank = -1
+        tmp_rank = -100000000000
         for r in c["results"]["results"]:
             l = Listing.objects.get(hash=r['data']['hash'])
             self.assertTrue(l.rank >= tmp_rank)
@@ -94,9 +94,10 @@ class ListingSearchTests(APITestCase):
         c = json.loads(response.content.decode('utf-8'))
         tmp_time = now() - timedelta(weeks=52 * 5)
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.created >= tmp_time)
-            tmp_time = l.created
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.created >= tmp_time)
+                tmp_time = l.created
 
     def test_sort_rating(self):
         data = {'sortBy': '-rating_dot'}
