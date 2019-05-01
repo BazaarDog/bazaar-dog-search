@@ -81,24 +81,18 @@ def update_rating(profile, listing, r_pk, rating_data):
     lr.save()
 
 
-def get_listing_slug(rating_data):
-    data = rating_data.get('ratingData')
-    if data:
-        sig = data.get('vendorSig')
-        r_pk = data.get('ratingKey')
-    else:
-        logger.info("rating had no ratingData")
-    if sig:
-        meta = sig.get('metadata')
-    else:
-        logger.info("rating had no metadata")
-    if meta:
-        slug = meta.get('listingSlug')
-    else:
-        logger.info("ragin had no slug")
+def get_listing_slug(data):
+
+    try:
+        r_pk = data['ratingData']['ratingKey']
+    except KeyError:
+        logger.info("couldn't get rating key")
+
+    try:
+        slug = data['ratingData']['vendorSig']['metadata']['listingSlug']
+    except KeyError:
+        logger.info("couldn't find listing slug")
+
     if slug and r_pk:
         return slug, r_pk
-    elif not slug:
-        logger.info("couldn't find listing slug")
-    elif not r_pk:
-        logger.info("couldn't get rating key")
+
