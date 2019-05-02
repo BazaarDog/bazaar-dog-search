@@ -50,7 +50,8 @@ class ProfileSearchTests(APITestCase):
         tmp_count = 10e6
         for r in c["results"]["results"]:
             p = Profile.objects.get(peerID=r['data']['peerID'])
-            self.assertTrue(p.moderated_items_count <= tmp_count)
+            if p.moderated_items_count:
+                self.assertTrue(p.moderated_items_count <= tmp_count)
             tmp_count = p.moderated_items_count
 
     def test_sorting_param_listing_count(self):
@@ -65,7 +66,7 @@ class ProfileSearchTests(APITestCase):
         tmp_count = 10e6
         for r in c["results"]["results"]:
             p = Profile.objects.get(peerID=r['data']['peerID'])
-            self.assertTrue(p.moderated_items_count <= tmp_count)
+            self.assertTrue(p.listing_count <= tmp_count)
             tmp_count = p.listing_count
 
     def test_sorting_param_rating_dot(self):
@@ -80,5 +81,5 @@ class ProfileSearchTests(APITestCase):
         tmp_count = 10e6
         for r in c["results"]["results"]:
             p = Profile.objects.get(peerID=r['data']['peerID'])
-            self.assertTrue(p.moderated_items_count <= tmp_count)
+            self.assertTrue(p.rating_dot <= tmp_count)
             tmp_count = p.rating_dot
