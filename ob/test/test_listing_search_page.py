@@ -19,15 +19,18 @@ class ListingSearchTests(APITestCase):
 
     def base_test_listing_page(self, data):
         url = reverse('api-public:listing-page')
-        return self.client.get(url, data, format='json')
+        return self.client.get(url,
+                               data,
+                               format='json',
+                               HTTP_USER_AGENT='OpenBazaar')
 
-    # def test_listing_page(self):
-    #     """
-    #     Base search
-    #     """
-    #     data = {'q': '*', 'p': '0', 'ps': '5'}
-    #     response = self.base_test_listing_page(data)
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_listing_page(self):
+        """
+        Base search
+        """
+        data = {'q': '*', 'p': '0', 'ps': '6'}
+        response = self.base_test_listing_page(data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_listing_second_page(self):
         """

@@ -135,14 +135,8 @@ def get_has_moderator_options(params):
         {
             "value": v,
             "label": '\u2696️' * v + ' ' + str(v) + '+',
-            "checked": True,
+            "checked": v == moderator_count,
             "default": False
-        }
-        if v == moderator_count else
-        {
-            "value": v,
-            "label": '\u2696' * v + ' ' + str(v) + '+',
-            "checked": False, "default": False
         } for v in range(3, -1, -1)
     ]
 
