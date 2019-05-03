@@ -64,9 +64,10 @@ class ListingSearchTests(APITestCase):
         c = json.loads(response.content.decode('utf-8'))
         tmp_rank = 100000000000
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.rank <= tmp_rank)
-            tmp_rank = l.rank
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.rank <= tmp_rank)
+                tmp_rank = l.rank
 
     def test_sort_least_relevant(self):
         data = {'sortBy': 'rank'}
@@ -75,9 +76,10 @@ class ListingSearchTests(APITestCase):
         c = json.loads(response.content.decode('utf-8'))
         tmp_rank = -100000000000
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.rank >= tmp_rank)
-            tmp_rank = l.rank
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.rank >= tmp_rank)
+                tmp_rank = l.rank
 
     def test_sort_new(self):
         data = {'sortBy': '-created'}
@@ -86,9 +88,10 @@ class ListingSearchTests(APITestCase):
         c = json.loads(response.content.decode('utf-8'))
         tmp_time = now()
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.created <= tmp_time)
-            tmp_time = l.created
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.created <= tmp_time)
+                tmp_time = l.created
 
     def test_sort_old(self):
         data = {'sortBy': 'created'}
@@ -98,9 +101,10 @@ class ListingSearchTests(APITestCase):
         tmp_time = now() - timedelta(weeks=52 * 5)
         for r in c["results"]["results"]:
             if r['data']['hash']:
-                l = Listing.objects.get(hash=r['data']['hash'])
-                self.assertTrue(l.created >= tmp_time)
-                tmp_time = l.created
+                if r['data']['hash']:
+                    l = Listing.objects.get(hash=r['data']['hash'])
+                    self.assertTrue(l.created >= tmp_time)
+                    tmp_time = l.created
 
     def test_sort_rating(self):
         data = {'sortBy': '-rating_dot'}
@@ -123,8 +127,9 @@ class ListingSearchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         c = json.loads(response.content.decode('utf-8'))
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.nsfw)
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.nsfw)
 
     def test_listing_page_nsfw_options_only_false(self):
         url = reverse('api-public:listing-page')
@@ -133,8 +138,9 @@ class ListingSearchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         c = json.loads(response.content.decode('utf-8'))
         for r in c["results"]["results"]:
-            l = Listing.objects.get(hash=r['data']['hash'])
-            self.assertTrue(l.nsfw is not True)
+            if r['data']['hash']:
+                l = Listing.objects.get(hash=r['data']['hash'])
+                self.assertTrue(l.nsfw is not True)
 
     def test_listing_page_network_options_(self):
         data = {'network_options': 'mainnet'}
