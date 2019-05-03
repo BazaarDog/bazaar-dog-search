@@ -11,6 +11,7 @@ class HumanizeMiddleware(MiddlewareMixin):
         if not settings.DEV and not settings.DEBUG:
             ua = request.META.get('HTTP_USER_AGENT')
             if ua and "OpenBazaar" not in ua:
+                # TODO move this string to settings
                 return redirect('https://www.bazaar.dog/')
 
 

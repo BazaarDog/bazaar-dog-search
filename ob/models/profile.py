@@ -92,6 +92,7 @@ class Profile(models.Model):
     verified = models.BooleanField(default=False)
     scam = models.BooleanField(default=False)
     illegal_in_us = models.BooleanField(default=False)
+    # TODO remove field
     dog_follows = models.BooleanField(default=False)
 
     follower_count = models.IntegerField(default=0, null=False, blank=False)

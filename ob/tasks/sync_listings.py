@@ -20,8 +20,9 @@ def sync_listings(profile):
         response = get(listing_url)
         if response.status_code == 200:
             try:
-                for data in json.loads(response.content.decode('utf-8')):
-                    listing = sync_listing_fast(data, profile)
+                listings_data = json.loads(response.content.decode('utf-8'))
+                for data in listings_data:
+                    listing = parse_listing_fast(data, profile)
                     listing.save()
                     sync_listing_deep(listing)
 
@@ -38,7 +39,7 @@ def sync_listings(profile):
         logger.info("listing peerID " + profile.peerID + " timeout")
 
 
-def sync_listing_fast(listing_data, profile):
+def parse_listing_fast(listing_data, profile):
     # logger.info(profile.peerID + ': ' + listing_data['slug'])
     l, listing_created = Listing.objects.get_or_create(
         profile=profile,
