@@ -4,6 +4,7 @@ from requests.exceptions import ConnectTimeout
 from django.utils.timezone import now
 
 from ob.models.profile import Profile
+from ob.models.util import ObNodeSSLError
 from ob.tasks.sync_profile import sync_profile
 from ob.tasks.sync_listing import sync_listing
 
@@ -32,7 +33,7 @@ def do_sync_peer(profile):
         sync_profile(profile)
         for l in profile.listing_set.all():
             sync_listing(l)
-    except ConnectTimeout:
+    except (ConnectTimeout, ObNodeSSLError):
         pass
 
 
