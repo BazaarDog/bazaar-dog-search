@@ -8,14 +8,14 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from ob.models.listing import Listing
-from .util import json2obj
+from ob.models.profile import Profile
 
 
 class ListingSearchTests(APITestCase):
     fixtures = ['datadump.json']
 
     def setUp(self):
-        pass
+        Profile.objects.filter().update(was_online=now())
 
     def base_test_listing_page(self, data):
         url = reverse('api-public:listing-page')

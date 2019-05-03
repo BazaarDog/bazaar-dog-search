@@ -1,6 +1,7 @@
 import json
 
 from django.urls import reverse
+from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -12,7 +13,7 @@ class ProfileSearchTests(APITestCase):
 
     def setUp(self):
         # Test definitions as before.
-        pass
+        Profile.objects.filter().update(was_online=now())
 
     def test_profile_page(self):
         """
