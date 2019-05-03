@@ -30,4 +30,4 @@ class UpdateHackTests(APITestCase):
         """
         data = {'q': 'QmcUDmZK8PsPYWw5FRHKNZFjszm2K6e68BQSTpnJYUsML7'}
         response = self.base_test_listing_page(data)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
