@@ -25,7 +25,6 @@ class ProfileSearchTests(APITestCase):
                                    data,
                                    format='json',
                                    HTTP_USER_AGENT='OpenBazaar')
-        print(str(response))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_sorting_param(self):
