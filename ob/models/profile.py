@@ -14,7 +14,6 @@ from ob.models.image import Image
 from ob.models.listing_rating import ListingRating
 from ob.models.util import get
 
-
 logger = logging.getLogger(__name__)
 
 OB_HOST = settings.OB_MAINNET_HOST
@@ -92,8 +91,6 @@ class Profile(models.Model):
     verified = models.BooleanField(default=False)
     scam = models.BooleanField(default=False)
     illegal_in_us = models.BooleanField(default=False)
-    # TODO remove field
-    dog_follows = models.BooleanField(default=False)
 
     follower_count = models.IntegerField(default=0, null=False, blank=False)
     rank = models.IntegerField(default=0, null=False, blank=False)
@@ -191,16 +188,16 @@ class Profile(models.Model):
             'rating_average']
         self.rating_average = (r_avg if r_avg else 0)
         self.rating_dot = (r_avg * self.rating_count if r_avg else 0)
-
-        if self.listing_set.filter(nsfw=True).count():
-            self.nsfw = True
-        else:
-            self.nsfw = False
+        if hasattr(self, 'listing_set'):
+            if self.listing_set.filter(nsfw=True).count():
+                self.nsfw = True
+            else:
+                self.nsfw = False
+            self.listing_count = self.listing_set.count()
 
         self.rank = self.get_rank()
-        self.listing_count = self.listing_set.count()
-
-        self.moderated_items_count = self.moderated_items.count()
+        if hasattr(self, 'moderated_items'):
+            self.moderated_items_count = self.moderated_items.count()
         super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):

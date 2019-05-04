@@ -56,7 +56,8 @@ def sync_one_rating(rating_url, profile):
             except Listing.DoesNotExist:
                 logger.debug("Ignoring rating for listing we don't have:"
                              "{peer}"
-                             "{slug}".format(profile.peerID, listing_slug))
+                             "{slug}".format(peer=profile.peerID,
+                                             slug=listing_slug))
         except TypeError:
             logger.debug("ignoring rating")
         except json.decoder.JSONDecodeError:

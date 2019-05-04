@@ -75,7 +75,7 @@ def update_verified(verified_url=None):
         verified_data = json.loads(response.content.decode('utf-8'))
         verified_pks = [p['peerID'] for p in verified_data['moderators']]
         Profile.objects.filter().update(verified=False)
-        r = Profile.objects.filter(pk__in=verified_pks).update(verified=True)
+        r = Profile.objects.filter(peerID__in=verified_pks).update(verified=True)
         return r, verified_url
     else:
         logger.error("Error getting verified vendors from ")

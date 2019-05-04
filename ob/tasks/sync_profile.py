@@ -162,6 +162,8 @@ def get_profile_connection_type(profile):
 def get_profile_follower_count(profile_data):
     if profile_data.get('stats'):
         return profile_data.get('stats').get('followerCount')
+    else:
+        return 0
 
 
 def get_profile_connection(profile):

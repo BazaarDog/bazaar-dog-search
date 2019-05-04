@@ -8,8 +8,7 @@ from ob.util import update_price_values
 
 
 class ClosepollTest(TestCase):
-    fixtures = ['datadump.json']
-
+    #fixtures = ['datadump.json']
 
     def test_command_output(self):
         out = StringIO()
@@ -22,6 +21,7 @@ class ClosepollTest(TestCase):
         response = requests.get('https://search.ob1.io/verified_moderators')
         r_obj = json2obj(response.content)
         num_moderators = len(r_obj.moderators)
+        print(r_obj.moderators)
         self.assertIn(
             "Updated {} verified vendors from {}".format(
                 num_moderators,
