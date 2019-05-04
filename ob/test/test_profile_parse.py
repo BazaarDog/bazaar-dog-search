@@ -10,8 +10,9 @@ from ob.tasks.sync_profile import parse_profile
 
 class ProfileTests(TestCase):
 
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
     def test_profile_parse(self):
         pwd = os.path.dirname(__file__)

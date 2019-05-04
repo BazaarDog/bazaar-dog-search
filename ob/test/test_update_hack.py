@@ -14,9 +14,6 @@ from .util import json2obj
 class UpdateHackTests(APITestCase):
     fixtures = ['datadump.json']
 
-    def setUp(self):
-        pass
-
     def base_test_listing_page(self, data):
         url = reverse('api-public:listing-page')
         return self.client.get(url,
@@ -30,4 +27,4 @@ class UpdateHackTests(APITestCase):
         """
         data = {'q': 'QmcUDmZK8PsPYWw5FRHKNZFjszm2K6e68BQSTpnJYUsML7'}
         response = self.base_test_listing_page(data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200)

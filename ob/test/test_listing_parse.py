@@ -11,8 +11,9 @@ from ob.tasks.sync_listing import parse_listing
 class ListingTests(TestCase):
     fixtures = ['datadump.json']
 
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
     def test_listing_parse(self):
         pwd = os.path.dirname(__file__)

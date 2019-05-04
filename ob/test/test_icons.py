@@ -5,6 +5,7 @@ from ob.views import listing_icons, profile_icons
 
 
 class IconTests(TestCase):
+
     @override_settings(DEBUG=True)
     def test_dev_listing_icon(self):
         url = reverse('logo')

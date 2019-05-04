@@ -10,8 +10,9 @@ from ob.tasks.sync_listings import parse_listing_fast
 class ListingsTests(TestCase):
     fixtures = ['exchange_rates.json']
 
-    def setUp(self):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
     def test_listings_parse(self):
         pwd = os.path.dirname(__file__)

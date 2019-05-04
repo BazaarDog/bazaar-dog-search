@@ -15,7 +15,7 @@ def get_profile_rank(self):
 def mark_scammers():
     from ob.models.profile import Profile
     known_scammers = []
-    Profile.objects.filter(pk__in=known_scammers).update(scam=True)
+    return Profile.objects.filter(pk__in=known_scammers).update(scam=True)
 
 
 def mark_dust():
@@ -29,6 +29,7 @@ def mark_dust():
         .exclude(accepted_currencies__icontains='ZEC')\
         .update(dust=True)
     print("{} listings marked as dust".format(update_count))
+    return update_count
 
 
 good_nodes = [

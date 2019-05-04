@@ -12,6 +12,6 @@ install:
   - pip install coveralls coverage
 script:
   - source postactivate_test
-  - coverage run manage_base.py test
+  - coverage run manage_test.py test --parallel 4
 after_success:
   - coveralls

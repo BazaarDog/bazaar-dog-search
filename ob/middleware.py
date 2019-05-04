@@ -12,7 +12,7 @@ class HumanizeMiddleware(MiddlewareMixin):
             ua = request.META.get('HTTP_USER_AGENT')
             if ua and "OpenBazaar" not in ua:
                 # TODO move this string to settings
-                return redirect('https://www.bazaar.dog/')
+                return redirect(settings.SITE_URL_HUMAN)
 
 
 class ForceCORS(MiddlewareMixin):

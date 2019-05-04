@@ -1,4 +1,4 @@
--r requirements.txt
+-r base.txt
 coverage==4.5.3
 coveralls==1.7.0
 django-debug-toolbar==1.11
@@ -8,4 +8,5 @@ multidict==4.5.2
 pep8==1.7.1
 pycodestyle==2.5.0
 pyflakes==2.1.1
+tblib==1.4.0
 typing-extensions==3.7.2

@@ -14,6 +14,7 @@ class ProfileSearchTests(APITestCase):
     def setUp(self):
         # Test definitions as before.
         Profile.objects.filter().update(was_online=now())
+        super().setUp()
 
     def test_profile_page(self):
         """

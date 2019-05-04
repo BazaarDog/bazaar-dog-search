@@ -8,9 +8,9 @@ from ob.util import update_price_values
 class UpdateExchangeRateTests(TestCase):
     fixtures = ['exchange_rates.json']
 
-    def setUp(self):
-        # Test definitions as before.
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
     def got_usd(self):
         usd = ExchangeRate.objects.get(symbol='USD')

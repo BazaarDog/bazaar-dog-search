@@ -66,11 +66,15 @@ DUST_FEE_PERCENT = 2
 APPEND_SLASH = True
 
 SITE_NAME = 'Bazaar Dog'
+DOMAIN = 'bazaar.dog'
+SUB_DOMAIN = 'admin'
+
+SITE_URL_HUMAN = 'https://www.bazaar.dog'
 
 # the openbazaar client won't work with straight ip addresses, therefore
 # it may be helpful to configure a dns record for development purposes,
 # (against a domain you own and control).
-SITE_URL = 'http://admin.bazaar.dog'
+SITE_URL = 'http://readme.bazaar.dog'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'admin.bazaar.dog', ]
 

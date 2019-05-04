@@ -13,9 +13,9 @@ from ob.models.profile import Profile
 class ListingReportTests(APITestCase):
     fixtures = ['datadump.json']
 
-    def setUp(self):
-        # Test definitions as before.
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
     def test_listing_report_post_random(self):
         """

@@ -10,6 +10,10 @@ from ob.util import update_price_values
 class ClosepollTest(TestCase):
     fixtures = ['datadump.json']
 
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+
     def test_command_output(self):
         out = StringIO()
         ob1_url = 'https://search.ob1.io/verified_moderators'
