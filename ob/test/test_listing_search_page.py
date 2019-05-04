@@ -14,10 +14,8 @@ from ob.models.profile import Profile
 class ListingSearchTests(APITestCase):
     fixtures = ['datadump.json']
 
-    @classmethod
-    def setUpTestData(cls):
+    def setUp(self):
         Profile.objects.filter().update(was_online=now())
-        super().setUpTestData()
 
     def base_test_listing_page(self, data):
         url = reverse('api-public:listing-page')
