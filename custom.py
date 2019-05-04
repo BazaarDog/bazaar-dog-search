@@ -28,7 +28,6 @@ def mark_dust():
         .exclude(accepted_currencies__icontains='LTC')\
         .exclude(accepted_currencies__icontains='ZEC')\
         .update(dust=True)
-    print("{} listings marked as dust".format(update_count))
     return update_count
 
 
