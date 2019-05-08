@@ -8,3 +8,6 @@ class Image(models.Model):
     medium = models.TextField(null=True)
     small = models.TextField(null=True)
     tiny = models.TextField(null=True)
+
+    class Meta:
+        app_label = 'ob'

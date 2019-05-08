@@ -17,6 +17,9 @@ class ListingRating(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = 'ob'
+
     def get_average(self):
         return float(
             self.overall + self.quality + self.description +

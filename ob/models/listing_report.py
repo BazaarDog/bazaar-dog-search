@@ -17,6 +17,9 @@ class ListingReport(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = 'ob'
+
     def save(self, *args, **kwargs):
 
         # This is a hack to handle the case where a report is sourced from the

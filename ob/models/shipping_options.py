@@ -25,6 +25,10 @@ class ShippingOptions(models.Model):
     service_price = models.TextField(null=True)
     service_estimated_delivery = models.TextField(null=True)
 
+    class Meta:
+        app_label = 'ob'
+        unique_together = ('listing', 'name')
+
     @classmethod
     def create_from_json(cls, parent, data):
 
@@ -40,5 +44,3 @@ class ShippingOptions(models.Model):
         c.regions = data.get('regions')
         return c
 
-    class Meta:
-        unique_together = ('listing', 'name')

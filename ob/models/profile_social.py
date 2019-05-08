@@ -8,3 +8,6 @@ class ProfileSocial(models.Model):
     social_type = models.TextField(blank=True, default='')
     username = models.TextField(blank=True, default='')
     proof = models.TextField(blank=True, default='')
+
+    class Meta:
+        app_label = 'ob'

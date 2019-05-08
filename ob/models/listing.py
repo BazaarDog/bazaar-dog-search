@@ -103,6 +103,7 @@ class Listing(models.Model):
     class Meta:
         unique_together = ('profile', 'slug',)
         ordering = ['-rank']
+        app_label = 'ob'
 
     # Listing
     def should_update(self):

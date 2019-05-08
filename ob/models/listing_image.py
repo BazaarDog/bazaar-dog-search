@@ -14,8 +14,10 @@ class ListingImage(models.Model):
     tiny = models.TextField(null=True)
 
     class Meta:
+        app_label = 'ob'
         unique_together = (
             'listing', 'index', 'filename',
             'original', 'large', 'medium',
             'small', 'tiny'
         )
+

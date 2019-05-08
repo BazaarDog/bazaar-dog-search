@@ -114,6 +114,7 @@ class Profile(models.Model):
     pinged = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = 'ob'
         ordering = ['-rank']
 
     def get_seralized_record(self):
