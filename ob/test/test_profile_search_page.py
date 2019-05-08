@@ -15,19 +15,20 @@ class ProfileSearchTests(APITestCase):
     def setUp(self):
         # Test definitions as before.
         Profile.objects.filter().update(was_online=now())
+        super.setUp()
 
-    # def test_profile_page(self):
-    #     """
-    #     Ensure we can create a new account object.
-    #     """
-    #     url = reverse('api-public:profile-page')
-    #     data = {'q': '*'}
-    #     response = self.client.get(url,
-    #                                data,
-    #                                format='json',
-    #                                HTTP_USER_AGENT='OpenBazaar')
-    #     # TODO fix me
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_profile_page(self):
+        """
+        Ensure we can create a new account object.
+        """
+        url = reverse('api-public:profile-page')
+        data = {'q': '*'}
+        response = self.client.get(url,
+                                   data,
+                                   format='json',
+                                   HTTP_USER_AGENT='OpenBazaar')
+        # TODO fix me
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_sorting_param(self):
         url = reverse('api-public:profile-page')
