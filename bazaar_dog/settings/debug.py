@@ -12,7 +12,8 @@ ALLOWED_HOSTS = ['debug.bazaar.dog', '127.0.0.1', 'localhost']
 INTERNAL_IPS = ['debug.bazaar.dog', '127.0.0.1', 'localhost']
 
 
-INSTALLED_APPS = INSTALLED_APPS + ['django.contrib.staticfiles', 'debug_toolbar']
+INSTALLED_APPS = INSTALLED_APPS + ['django.contrib.staticfiles',
+                                   'debug_toolbar']
 
 MIDDLEWARE = [
               'debug_toolbar.middleware.DebugToolbarMiddleware',

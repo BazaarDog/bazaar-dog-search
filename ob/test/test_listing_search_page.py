@@ -12,7 +12,7 @@ from ob.models.listing import Listing
 from ob.models.profile import Profile
 
 
-class ListingSearchTests(TestCase):
+class ListingSearchTests(APITestCase):
     fixtures = ['datadump.json']
 
     def setUp(self):
@@ -34,7 +34,7 @@ class ListingSearchTests(TestCase):
         response = self.base_test_listing_page(data)
         print(response.__dict__)
         # TODO fix me
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_listing_second_page(self):
         """
