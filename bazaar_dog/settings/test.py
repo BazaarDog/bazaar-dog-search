@@ -4,3 +4,6 @@ from .base import *
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.MD5PasswordHasher',
 ]
+
+# Don't deploy middleware for testing
+DEV = True
